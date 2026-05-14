@@ -1,0 +1,30 @@
+﻿{
+    "schema_version":  1,
+    "updated_at":  "2026-05-14T13:03:17.2042421Z",
+    "feature_directory":  "specs/001-spec-superpowers-bridge",
+    "source_of_truth":  {
+                            "constitution":  ".specify/memory/constitution.md",
+                            "spec":  "specs/001-spec-superpowers-bridge/spec.md",
+                            "plan":  "specs/001-spec-superpowers-bridge/plan.md",
+                            "tasks":  "specs/001-spec-superpowers-bridge/tasks.md"
+                        },
+    "supersedes":  [
+                       "speckit.implement"
+                   ],
+    "executor":  "superpowers",
+    "capabilities":  [
+                         "using-git-worktrees",
+                         "test-driven-development",
+                         "systematic-debugging",
+                         "subagent-driven-development",
+                         "executing-plans",
+                         "requesting-code-review",
+                         "verification-before-completion",
+                         "finishing-a-development-branch"
+                     ],
+    "status":  "ready",
+    "blocked_reason":  null,
+    "notes":  null,
+    "last_snapshot_id":  "20260514T1303171758921Z-ready",
+    "instructions":  "Use .agents/skills/speckit-superpowers-bridge/SKILL.md. Do not run speckit.implement or regenerate Spec Kit plan/tasks with Superpowers writing-plans."
+}

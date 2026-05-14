@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/speckit-superpowers-bridge/disposition-matrix.schema.json",
+  "title": "Disposition Matrix",
+  "type": "object",
+  "required": ["schema_version", "entries", "last_audited_at"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "last_audited_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/disposition_entry" }
+    }
+  },
+  "$defs": {
+    "disposition_entry": {
+      "type": "object",
+      "required": ["id", "kind", "disposition", "rationale", "verified_against"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9._:-]*$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["spec_kit_command", "superpowers_skill", "bridge_meta_command"]
+        },
+        "disposition": {
+          "type": "string",
+          "enum": ["COMBINE", "FORBID-UNDER-HANDOFF", "SUPERSEDED-BY", "REVIEW-ONLY"]
+        },
+        "applicability": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["executing", "blocked", "complete"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "superseded_by": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9._:-]*$"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verified_against": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "disposition": { "const": "FORBID-UNDER-HANDOFF" } },
+            "required": ["disposition"]
+          },
+          "then": {
+            "required": ["applicability"]
+          },
+          "else": {
+            "not": { "required": ["applicability"] }
+          }
+        },
+        {
+          "if": {
+            "properties": { "disposition": { "const": "SUPERSEDED-BY" } },
+            "required": ["disposition"]
+          },
+          "then": {
+            "required": ["superseded_by"]
+          }
+        }
+      ]
+    }
+  }
+}

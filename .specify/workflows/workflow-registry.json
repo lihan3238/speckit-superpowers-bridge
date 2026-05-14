@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "workflows": {
+    "speckit": {
+      "name": "Full SDD Cycle",
+      "version": "1.0.0",
+      "description": "Runs specify \u2192 plan \u2192 tasks \u2192 implement with review gates",
+      "source": "bundled",
+      "installed_at": "2026-05-14T11:06:58.137940+00:00",
+      "updated_at": "2026-05-14T11:06:58.137949+00:00"
+    },
+    "speckit-superpowers": {
+      "name": "Spec Kit Design + Superpowers Implementation",
+      "version": "0.1.0",
+      "description": "Runs specify -> clarify -> plan -> tasks -> analyze -> Superpowers handoff without speckit.implement",
+      "source": "local",
+      "installed_at": "2026-05-14T11:45:06.5085972Z",
+      "updated_at": "2026-05-14T11:45:06.5085972Z"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "extensions": {
+    "git": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:9731aa8143a72fbebfdb440f155038ab42642517c2b2bdbbf67c8fdbe076ed79",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "agy": [
+          "speckit.git.feature",
+          "speckit.git.validate",
+          "speckit.git.remote",
+          "speckit.git.initialize",
+          "speckit.git.commit"
+        ],
+        "codex": [
+          "speckit.git.feature",
+          "speckit.git.validate",
+          "speckit.git.remote",
+          "speckit.git.initialize",
+          "speckit.git.commit"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-05-14T11:06:58.109941+00:00"
+    },
+    "speckit-superpowers-bridge": {
+      "version": "0.1.0",
+      "source": "local",
+      "manifest_hash": "sha256:b3f2bfbd6a89c631c9444226d6e78547f2e9a75efddbf016818054719a68bc8b",
+      "enabled": true,
+      "priority": 20,
+      "registered_commands": {
+        "codex": [
+          "speckit.superpowers.handoff",
+          "speckit.superpowers.guard"
+        ]
+      },
+      "registered_skills": [
+        "speckit-superpowers-bridge"
+      ],
+      "installed_at": "2026-05-14T11:45:06.5085972Z"
+    }
+  }
+}

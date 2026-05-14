@@ -1,0 +1,50 @@
+schema_version: "1.0"
+
+extension:
+  id: speckit-superpowers-bridge
+  name: "Superpowers Implementation Bridge"
+  version: "0.1.0"
+  description: "Hands Spec Kit tasks to Superpowers for implementation without running speckit.implement"
+  author: local
+  repository: local
+  license: MIT
+
+requires:
+  speckit_version: ">=0.8.9"
+
+provides:
+  commands:
+    - name: speckit.superpowers.handoff
+      file: commands/speckit.superpowers.handoff.md
+      description: "Create or update the Superpowers implementation handoff state"
+    - name: speckit.superpowers.guard
+      file: commands/speckit.superpowers.guard.md
+      description: "Guard Spec Kit and Superpowers commands from crossing bridge ownership boundaries"
+
+hooks:
+  before_clarify:
+    command: speckit.superpowers.guard
+    optional: false
+    description: "Prevent Spec Kit contract changes while Superpowers implementation is executing"
+  before_plan:
+    command: speckit.superpowers.guard
+    optional: false
+    description: "Prevent Spec Kit contract changes while Superpowers implementation is executing"
+  before_tasks:
+    command: speckit.superpowers.guard
+    optional: false
+    description: "Prevent Spec Kit contract changes while Superpowers implementation is executing"
+  before_implement:
+    command: speckit.superpowers.guard
+    optional: false
+    description: "Block speckit.implement for features handed off to Superpowers"
+  after_tasks:
+    command: speckit.superpowers.handoff
+    optional: false
+    description: "Create the Superpowers handoff after Spec Kit task generation"
+
+tags:
+  - superpowers
+  - implementation
+  - handoff
+  - bridge

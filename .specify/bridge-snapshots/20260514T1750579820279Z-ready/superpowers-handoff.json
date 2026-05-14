@@ -1,0 +1,34 @@
+﻿{
+    "schema_version":  1,
+    "updated_at":  "2026-05-14T16:05:07.1896991Z",
+    "feature_directory":  "specs/002-complete-bridge-protocol",
+    "source_of_truth":  {
+                            "constitution":  ".specify/memory/constitution.md",
+                            "spec":  "specs/002-complete-bridge-protocol/spec.md",
+                            "plan":  "specs/002-complete-bridge-protocol/plan.md",
+                            "tasks":  "specs/002-complete-bridge-protocol/tasks.md"
+                        },
+    "supersedes":  [
+                       "speckit.implement"
+                   ],
+    "executor":  "superpowers",
+    "capabilities":  [
+                         "using-git-worktrees",
+                         "test-driven-development",
+                         "systematic-debugging",
+                         "subagent-driven-development",
+                         "executing-plans",
+                         "requesting-code-review",
+                         "verification-before-completion",
+                         "finishing-a-development-branch"
+                     ],
+    "status":  "blocked",
+    "blocked_reason":  "Claim claude ownership of feature 002 Spec Kit artifacts during clarify pass",
+    "artifact_owner":  "claude",
+    "review_only_agents":  [
+                               "codex"
+                           ],
+    "notes":  null,
+    "last_snapshot_id":  "20260514T1605071726926Z-blocked",
+    "instructions":  "Use .agents/skills/speckit-superpowers-bridge/SKILL.md in Codex or .claude/skills/speckit-superpowers-bridge/SKILL.md in Claude Code. Do not run speckit.implement or regenerate Spec Kit plan/tasks with Superpowers writing-plans."
+}

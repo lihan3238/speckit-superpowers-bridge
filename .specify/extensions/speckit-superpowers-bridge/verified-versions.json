@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "spec_kit_version": "0.8.9",
+  "superpowers_skills": [
+    { "name": "brainstorming",                  "version": "runtime-exposed" },
+    { "name": "executing-plans",                "version": "runtime-exposed" },
+    { "name": "writing-plans",                  "version": "runtime-exposed" },
+    { "name": "subagent-driven-development",    "version": "runtime-exposed" },
+    { "name": "test-driven-development",        "version": "runtime-exposed" },
+    { "name": "systematic-debugging",           "version": "runtime-exposed" },
+    { "name": "using-git-worktrees",            "version": "runtime-exposed" },
+    { "name": "requesting-code-review",         "version": "runtime-exposed" },
+    { "name": "verification-before-completion", "version": "runtime-exposed" },
+    { "name": "finishing-a-development-branch", "version": "runtime-exposed" },
+    { "name": "dispatching-parallel-agents",    "version": "runtime-exposed" },
+    { "name": "receiving-code-review",          "version": "runtime-exposed" },
+    { "name": "using-superpowers",              "version": "runtime-exposed" },
+    { "name": "writing-skills",                 "version": "runtime-exposed" }
+  ],
+  "spec_kit_commands": [
+    "speckit.constitution",
+    "speckit.specify",
+    "speckit.clarify",
+    "speckit.plan",
+    "speckit.tasks",
+    "speckit.analyze",
+    "speckit.checklist",
+    "speckit.taskstoissues",
+    "speckit.implement",
+    "speckit.git.initialize",
+    "speckit.git.feature",
+    "speckit.git.commit",
+    "speckit.git.remote",
+    "speckit.git.validate",
+    "speckit.superpowers.guard",
+    "speckit.superpowers.handoff",
+    "speckit.superpowers.parity"
+  ],
+  "verified_at": "2026-05-15T00:00:00Z",
+  "verified_by": "claude (feature 002 implementation pass)"
+}

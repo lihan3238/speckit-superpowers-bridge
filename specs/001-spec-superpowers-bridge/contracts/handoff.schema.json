@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.spec-kit/speckit-superpowers-bridge/handoff.schema.json",
+  "title": "Spec Kit Superpowers Bridge Handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "updated_at",
+    "feature_directory",
+    "source_of_truth",
+    "supersedes",
+    "executor",
+    "capabilities",
+    "status",
+    "blocked_reason",
+    "artifact_owner",
+    "review_only_agents",
+    "notes",
+    "last_snapshot_id",
+    "instructions"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 2
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "feature_directory": {
+      "type": ["string", "null"]
+    },
+    "source_of_truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["constitution", "spec", "plan", "tasks"],
+      "properties": {
+        "constitution": { "type": ["string", "null"] },
+        "spec": { "type": ["string", "null"] },
+        "plan": { "type": ["string", "null"] },
+        "tasks": { "type": ["string", "null"] }
+      }
+    },
+    "supersedes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "contains": { "const": "speckit.implement" }
+    },
+    "executor": {
+      "const": "superpowers"
+    },
+    "capabilities": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "status": {
+      "enum": ["ready", "executing", "blocked", "complete"]
+    },
+    "blocked_reason": {
+      "type": ["string", "null"]
+    },
+    "artifact_owner": {
+      "type": ["string", "null"],
+      "enum": ["codex", "claude", "unknown", null]
+    },
+    "review_only_agents": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["codex", "claude", "unknown"]
+      },
+      "uniqueItems": true
+    },
+    "notes": {
+      "type": ["string", "null"]
+    },
+    "last_snapshot_id": {
+      "type": ["string", "null"]
+    },
+    "archive_history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["feature_directory", "status_at_archive", "archived_at", "archived_by"],
+        "properties": {
+          "feature_directory": { "type": "string" },
+          "status_at_archive": {
+            "type": "string",
+            "enum": ["ready", "executing", "blocked", "complete"]
+          },
+          "snapshot_id": { "type": ["string", "null"] },
+          "archived_at": { "type": "string", "format": "date-time" },
+          "archived_by": { "type": "string" }
+        }
+      },
+      "default": []
+    },
+    "instructions": {
+      "type": "string"
+    }
+  }
+}
+
