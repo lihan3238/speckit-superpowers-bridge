@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/speckit-superpowers-bridge/resume-context.schema.json",
+  "title": "Resume Context",
+  "description": "Sub-object of superpowers-handoff.json (schema_version 3) capturing the in-flight task + skill + phase so an interrupted session resumes deterministically.",
+  "type": ["object", "null"],
+  "additionalProperties": false,
+  "required": [
+    "current_task_id",
+    "current_skill",
+    "current_phase",
+    "next_expected_action"
+  ],
+  "properties": {
+    "current_task_id": {
+      "type": ["string", "null"],
+      "pattern": "^T[0-9]{3,}$|^$"
+    },
+    "current_skill": {
+      "type": ["string", "null"],
+      "pattern": "^superpowers:[a-z][a-z0-9-]*$|^$"
+    },
+    "current_phase": {
+      "type": ["string", "null"],
+      "enum": [
+        "before-implementation-task",
+        "on-failure",
+        "before-phase-completion",
+        "before-feature-completion",
+        "other",
+        null,
+        ""
+      ]
+    },
+    "next_expected_action": {
+      "type": ["string", "null"],
+      "maxLength": 200
+    },
+    "last_verification_command": {
+      "type": ["string", "null"]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "current_skill": { "type": "string", "minLength": 1 } },
+        "required": ["current_skill"]
+      },
+      "then": {
+        "properties": { "current_phase": { "type": "string", "minLength": 1 } },
+        "required": ["current_phase"]
+      }
+    }
+  ]
+}

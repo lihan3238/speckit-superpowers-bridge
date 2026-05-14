@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/speckit-superpowers-bridge/skill-invocation-event.schema.json",
+  "title": "Skill Invocation Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "timestamp",
+    "action",
+    "status",
+    "feature_directory",
+    "decision",
+    "reason",
+    "actor",
+    "snapshot_id",
+    "skill_id",
+    "phase"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "action": {
+      "const": "skill_invocation"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ready", "executing", "blocked", "complete", "none", ""]
+    },
+    "feature_directory": {
+      "type": ["string", "null"]
+    },
+    "decision": {
+      "type": "string",
+      "enum": ["invoked", "failed"]
+    },
+    "reason": {
+      "type": ["string", "null"]
+    },
+    "actor": {
+      "type": "string",
+      "enum": ["codex", "claude", "unknown"]
+    },
+    "snapshot_id": {
+      "type": ["string", "null"]
+    },
+    "skill_id": {
+      "type": "string",
+      "pattern": "^superpowers:[a-z][a-z0-9-]*$"
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "before-implementation-task",
+        "on-failure",
+        "before-phase-completion",
+        "before-feature-completion",
+        "other"
+      ]
+    },
+    "task_id": {
+      "type": ["string", "null"],
+      "pattern": "^T[0-9]{3,}$"
+    }
+  }
+}

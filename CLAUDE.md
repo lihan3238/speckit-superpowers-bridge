@@ -1,10 +1,12 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
-shell commands, and other important information, read the current plan
+shell commands, and other important information, read the current plan:
+`specs/004-polish-and-publish/plan.md`
 <!-- SPECKIT END -->
 
 ## Claude Code Supplement
 
+- The project's primary design reference is the dev.to comparison article — see the "Primary Design Reference" section in `AGENTS.md`. Consult it first on any architectural question.
 - `AGENTS.md` is the master bridge protocol and wins on conflict.
 - Claude Code should use slash commands generated from skill names, such as `/speckit-plan`, `/speckit-tasks`, and `/speckit-superpowers-bridge`.
 - Internal Spec Kit command IDs may still be dotted, such as `speckit.plan` or `speckit.superpowers.guard`.

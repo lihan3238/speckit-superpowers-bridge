@@ -3,6 +3,24 @@ For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
 <!-- SPECKIT END -->
 
+## Primary Design Reference
+
+The canonical "north star" for this bridge's overall design direction is:
+
+  **[Spec Kit vs Superpowers — A Comprehensive Comparison & Practical Guide to Combining Both](https://dev.to/truongpx396/spec-kit-vs-superpowers-a-comprehensive-comparison-practical-guide-to-combining-both-52jj)**
+
+On any architectural question (which layer owns what, when each tool applies,
+how they combine), consult this article first. The bridge codifies its
+combination pattern: Spec Kit owns WHAT (constitution → spec → plan → tasks);
+Superpowers owns HOW (TDD, worktrees, subagents, review). `tasks.md` is what
+Superpowers' `executing-plans` is designed to consume — this is the contract
+the bridge implements.
+
+The article also warns that Superpowers auto-trigger can derail sessions; the
+bridge therefore uses **explicit** invocation of Superpowers skills at named
+phases (codified by feature 002's disposition matrix and feature 004's FR-009
+/ FR-010).
+
 ## Spec Kit + Superpowers Bridge
 
 - Spec Kit owns design-time artifacts: `.specify/memory/constitution.md`, `specs/<feature>/spec.md`, `specs/<feature>/plan.md`, `specs/<feature>/tasks.md`, checklists, and analysis.

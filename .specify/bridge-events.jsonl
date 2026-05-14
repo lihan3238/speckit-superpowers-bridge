@@ -96,3 +96,9 @@
 
 {"timestamp":"2026-05-14T18:50:35.1669583Z","action":"parity_check","status":"","feature_directory":"","decision":"deny","reason":"parity-check completed: 1 finding(s); P0=0 P1=1 P2=0 P3=0; exit_code=2","actor":"claude","snapshot_id":null}
 
+{"timestamp":"2026-05-14T18:56:57.8354029Z","action":"guard","status":"ready","feature_directory":"specs/004-polish-and-publish","decision":"allow","reason":"","actor":"claude","snapshot_id":"20260514T1826367389508Z-ready","checked_action":"speckit.clarify","policy_ref":"speckit.clarify"}
+
+{"timestamp":"2026-05-14T19:18:47.5841640Z","action":"guard","status":"ready","feature_directory":"specs/004-polish-and-publish","decision":"allow","reason":"","actor":"claude","snapshot_id":"20260514T1826367389508Z-ready","checked_action":"speckit.plan","policy_ref":"speckit.plan"}
+
+{"timestamp":"2026-05-14T19:30:22.4751412Z","action":"guard","status":"ready","feature_directory":"specs/004-polish-and-publish","decision":"allow","reason":"","actor":"claude","snapshot_id":"20260514T1826367389508Z-ready","checked_action":"speckit.tasks","policy_ref":"speckit.tasks"}
+
