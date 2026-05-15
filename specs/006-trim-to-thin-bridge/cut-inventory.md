@@ -29,7 +29,16 @@ This inventory enumerates every path removed or modified by feature 006, grouped
 
 | Path | Type | Reason |
 |------|------|--------|
-|      |      |        |
+| `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/submission-checklist.ps1` | script | marketplace-submission custom feature; manual catalog PR is fine |
+| `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/cleanup-audit.ps1` | script | pre-release cleanup custom feature; redundant with manual review |
+| `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/check-distribution-manifest.ps1` | script | manifest-validation custom feature; manifest itself is being removed |
+| `.specify/extensions/speckit-superpowers-bridge/commands/speckit.speckit-superpowers-bridge.submission-checklist.md` | command md | partner of submission-checklist.ps1 |
+| `.specify/extensions/speckit-superpowers-bridge/commands/speckit.speckit-superpowers-bridge.cleanup-audit.md` | command md | partner of cleanup-audit.ps1 |
+| `.specify/extensions/speckit-superpowers-bridge/contracts/plugin-distribution-manifest.schema.json` | schema | manifest is gone; schema obsolete (contracts/ dir auto-removed) |
+| `.specify/extensions/speckit-superpowers-bridge/plugin-distribution-manifest.yml` | data | distribution-manifest custom feature; marketplace catalog-entry.json is sufficient |
+| `tests/test-submission-checklist.ps1` | test | covers the deleted submission-checklist |
+| `tests/test-cleanup-audit.ps1` | test | covers the deleted cleanup-audit |
+| `tests/test-distribution-manifest.ps1` | test | covers the deleted distribution-manifest |
 
 ---
 
