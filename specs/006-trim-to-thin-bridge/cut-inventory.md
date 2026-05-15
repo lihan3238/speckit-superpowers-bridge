@@ -62,7 +62,13 @@ This inventory enumerates every path removed or modified by feature 006, grouped
 
 | Path | Type | Reason |
 |------|------|--------|
-|      |      |        |
+| `.specify/extensions/speckit-superpowers-bridge/disposition-matrix.json` | data | matrix-driven guard replaced by 5 hardcoded `if/elseif` branches per FR-007 (scheduled in commit 5) |
+| `.specify/extensions/speckit-superpowers-bridge/verified-versions.json` | data | machine-readable version-pinning custom feature; verification is now human inspection at release per assumptions |
+| `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/check-readme-bilingual-parity.ps1` | script | bilingual parity preserved by hand; the parity check itself is a custom feature; H2 anchors stay English for stability |
+| `tests/test-disposition-matrix.ps1` | test | covers the deleted matrix |
+| `tests/test-verified-versions.ps1` | test | covers the deleted verified-versions |
+| `tests/test-readme-bilingual-parity.ps1` | test | covers the deleted bilingual-parity script |
+| `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/common-actor-resolution.ps1` | script (modified) | simplified per FR-008 + R5: drop 4-step chain (the `default_integration` branch), keep 3-step (explicit → env → "unknown"). `-RepoRoot` param retained as no-op for caller compat; commit 5 will remove it from callers and from this signature. 58 → 41 lines. |
 
 ---
 

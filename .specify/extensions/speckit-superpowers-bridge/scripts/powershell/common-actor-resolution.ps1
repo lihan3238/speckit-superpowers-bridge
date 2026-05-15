@@ -21,7 +21,7 @@ function Get-BridgeRepoRoot {
 function Resolve-BridgeActor {
     param(
         [string]$Argument = "",
-        [string]$RepoRoot = ""
+        [string]$RepoRoot = ""  # accepted for backward call-site compat; ignored in v0.3.0 (3-step chain)
     )
 
     $valid = @("codex", "claude", "unknown")
@@ -35,23 +35,6 @@ function Resolve-BridgeActor {
     if (-not [string]::IsNullOrWhiteSpace($env:SPECKIT_BRIDGE_ACTOR)) {
         $envActor = $env:SPECKIT_BRIDGE_ACTOR.Trim().ToLowerInvariant()
         if ($valid -contains $envActor) { return $envActor }
-    }
-
-    if ([string]::IsNullOrWhiteSpace($RepoRoot)) {
-        $RepoRoot = Get-BridgeRepoRoot
-    }
-
-    $integrationPath = Join-Path $RepoRoot ".specify\integration.json"
-    if (Test-Path -LiteralPath $integrationPath) {
-        try {
-            $state = Get-Content -LiteralPath $integrationPath -Raw | ConvertFrom-Json
-            $default = if ($state.default_integration) { [string]$state.default_integration } elseif ($state.integration) { [string]$state.integration } else { "" }
-            $default = $default.Trim().ToLowerInvariant()
-            if ($valid -contains $default) { return $default }
-        }
-        catch {
-            return "unknown"
-        }
     }
 
     return "unknown"
