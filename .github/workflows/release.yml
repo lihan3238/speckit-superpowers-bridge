@@ -11,6 +11,7 @@ permissions:
 jobs:
   release:
     name: Build + publish release
+    if: ${{ !contains(github.ref_name, '-') }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
