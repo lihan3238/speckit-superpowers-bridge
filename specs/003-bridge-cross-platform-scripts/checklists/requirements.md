@@ -1,7 +1,7 @@
-# Specification Quality Checklist: Bridge Cross-Platform Scripts
+# Specification Quality Checklist: Bridge Cross-Platform Scripts — Cleanup Tail
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
-**Created**: 2026-05-15
+**Created**: 2026-05-16
 **Feature**: [spec.md](../spec.md)
 
 ## Content Quality
@@ -31,17 +31,21 @@
 
 ## Notes
 
-- Spec is intentionally explicit about WHAT changes (bash scripts added, validator extended, .gitattributes added) but stays out of HOW (no `jq` query strings, no specific bash patterns, no shebang variations). The Plan phase will commit those.
-- "Implementation details" check: the spec names `jq` and `bash >= 4.0` as **user-facing prerequisites**. That's user-value, not implementation detail (the user has to install jq to use the bridge). The choice between `jq` and pure-bash JSON parsing IS in scope for the spec because it dictates the user prereq, not just the script's internal mechanism.
-- "Technology-agnostic SC" check: SC values use concrete OS names (Ubuntu, macOS, Windows) and tool versions (`pwsh` 7.x). These are environment specifications, not technology choices — a user reading SC needs to know which OS the criterion targets. Acceptable per "user-focused" framing.
-- Spec is "only compat" — no new features added. All FRs are about adding parallel implementations of existing surfaces or extending existing tooling (validator, build script) to cover both flavors. No new bridge commands. No new tests. No new schemas.
+- This redesign **supersedes the v0.4.0 draft** of spec.md (preserved in git
+  history at commit `a4aa833`). The v0.4.0 draft delivered the bash flavor
+  successfully; this redesign captures the cleanup tail v0.4.1 left behind.
+- Spec is intentionally narrow: 4 user stories, 15 FRs, 12 SCs, all
+  surgical. The "byte-frozen" guard at FR-013 is deliberate to prevent
+  scope creep that would re-open the bash work.
+- All 4 user stories are independently shippable in principle, but the
+  release lockstep means they ship together as v0.4.2 in practice.
 
 ## Sanity flags surfaced during drafting (for clarify or plan attention)
 
-All 5 flags resolved in the 2026-05-15 clarify session (see spec `## Clarifications`):
+These do NOT block the spec but are worth tracking:
 
-1. ~~**Spec Kit's `script: ps|sh` mechanism**~~ — RESOLVED: Spec Kit's existing `init-options.json.script` field (verified in `.specify/init-options.json`, v0.8.10) handles dispatch. No bridge changes needed. FR-016 unchanged.
-2. ~~**`extension.yml.requires.tools` schema for per-platform requirements**~~ — RESOLVED: flat list with `required: true|false` per tool, matching `agent-governance` + `azure-devops` live catalog entries. FR-010 refined with concrete tool list (PowerShell required; bash/jq/git/pwsh optional).
-3. ~~**`Compress-Archive` line endings**~~ — RESOLVED: `.gitattributes` enforces `*.sh text eol=lf`. Scripts invoked via `bash <path>` (NOT `./path`), bypassing the Unix-executable-bit problem entirely (ZIP format doesn't carry Unix perms anyway). Same convention as `.specify/extensions/git/scripts/bash/`. FR-020 refined with exact `.gitattributes` content.
-4. ~~**`bridge-events.jsonl` append concurrency**~~ — RESOLVED: NO `flock`. PowerShell scripts don't use locking either; adding it to bash would violate "只做兼容，不增新功能". Edge case remains documented in spec Edge Cases section.
-5. ~~**Test dispatch for both flavors**~~ — RESOLVED: tests auto-detect available flavors via a small helper that inspects `scripts/powershell/` and `scripts/bash/`, then exercises every flavor present. No `-Flavor` parameter; no env knob. FR-014, FR-015 refined.
+1. **B1 fix may regress an obscure edge case**: a user who legitimately wants to *change* `artifact_owner` mid-feature (e.g., transferring design ownership) now has to pass `-ArtifactOwner` explicitly. The constitution doesn't forbid this — but the discoverability is worse. Plan should consider whether to add a deprecation-style warning when explicit override is used (probably not, but worth noting).
+2. **B2 strategy chain may need a 6th step**: if `cygpath -u` exists but produces a path that bash *also* can't reach (e.g., a path with spaces that needs further quoting), the test still fails. Plan should test on a path with spaces / non-ASCII characters.
+3. **C4 gitignore for `.specify/workflows/*/workflow.yml`** uses a glob — make sure it doesn't accidentally ignore future spec-kit-managed workflow files. Plan should confirm the glob's actual reach.
+4. **US4 sandbox run cadence**: the constitution says "every release MUST verify". v0.4.2 IS a release. So US4 is not optional per the constitution, even though spec marks it P2. Plan should reconcile — either P1 (mandatory) or document the exemption rationale (PATCH releases).
+5. **The deferred 17 tasks from original 003 tasks.md**: most map to user-side cross-platform verification (T065 Linux end-to-end, T066 macOS end-to-end, etc.). Plan should decide whether those get absorbed into US4's sandbox verification or stay as a separate "deferred" list inside tasks.md.

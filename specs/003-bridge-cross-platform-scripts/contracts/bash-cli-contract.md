@@ -1,3 +1,11 @@
+<!--
+  Still valid as of v0.4.2 — the bash CLI surface shipped in v0.4.1 is byte-frozen by
+  spec FR-013. This contract continues to pin parameter mapping and exit codes for
+  both flavors. v0.4.2 changes ONE thing in update-handoff's contract: the
+  artifact_owner field is now silently preserved from prior file value when no
+  explicit --artifact-owner flag is passed (data-model.md Entity A, research.md R1).
+-->
+
 # Bash CLI Parity Contract
 
 **Feature**: 003-bridge-cross-platform-scripts
