@@ -103,6 +103,8 @@ Tested on:
 Release validation:
 
 - `specify --version` -> `specify 0.8.10`
+- Release workflow: https://github.com/lihan3238/speckit-superpowers-bridge/actions/runs/25934883753
+- Release ZIP SHA256: `1758f75296f2de7ce1399bd91765c719d50a99700ce852a621a59cb6704e7cf2`
 - `scripts/release/validate-release-readiness.ps1 -Version 0.4.1`
 - `tests/test-handoff-shape.ps1`
 - `tests/test-guard-hardcoded-rules.ps1`
