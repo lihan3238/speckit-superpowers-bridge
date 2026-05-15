@@ -28,7 +28,14 @@ Create `.specify/superpowers-handoff.json` so Spec Kit artifacts explicitly hand
 Run this from the repository root:
 
 ```powershell
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status ready -Actor codex
+.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status ready
 ```
+
+Actor resolution order is:
+
+1. Explicit `-Actor <codex|claude|unknown>`
+2. Environment variable `SPECKIT_BRIDGE_ACTOR`
+3. `.specify/integration.json.default_integration`
+4. Deterministic fallback `unknown`
 
 If required feature artifacts are missing, the script writes status `blocked`. In that case, return to Spec Kit and regenerate or repair the missing artifacts before implementation.

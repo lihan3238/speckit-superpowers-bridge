@@ -6,13 +6,14 @@ param(
 
     [string]$Reason = "",
 
-    [ValidateSet("codex", "claude", "unknown")]
-    [string]$Actor = "unknown",
+    [string]$Actor = "",
 
     [string]$TargetFeatureDirectory = ""
 )
 
 $ErrorActionPreference = "Stop"
+
+. (Join-Path $PSScriptRoot "common-actor-resolution.ps1")
 
 function Get-RepoRoot {
     if (Get-Command git -ErrorAction SilentlyContinue) {
@@ -151,6 +152,7 @@ function Find-DispositionEntry {
 }
 
 $repoRoot = Get-RepoRoot
+$Actor = Resolve-BridgeActor -Argument $Actor -RepoRoot $repoRoot
 $handoffPath = Join-Path $repoRoot ".specify\superpowers-handoff.json"
 $handoff = $null
 if (Test-Path -LiteralPath $handoffPath) {

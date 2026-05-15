@@ -20,8 +20,21 @@ provides:
     - name: speckit.superpowers.guard
       file: commands/speckit.superpowers.guard.md
       description: "Guard Spec Kit and Superpowers commands from crossing bridge ownership boundaries"
+    - name: speckit.superpowers.audit
+      file: commands/speckit.superpowers.audit.md
+      description: "Audit bridge install state and Codex/Claude skill parity"
+    - name: speckit.superpowers.validate
+      file: commands/speckit.superpowers.validate.md
+      description: "Run the bridge end-to-end validation pass"
+    - name: speckit.superpowers.recommend-route
+      file: commands/speckit.superpowers.recommend-route.md
+      description: "Emit advisory routing recommendation before the full Spec Kit pipeline"
 
 hooks:
+  before_specify:
+    command: speckit.superpowers.recommend-route
+    optional: false
+    description: "Suggest direct Superpowers route for small-scope changes before full specification"
   before_clarify:
     command: speckit.superpowers.guard
     optional: false

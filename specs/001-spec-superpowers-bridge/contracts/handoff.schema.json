@@ -12,6 +12,8 @@
     "supersedes",
     "executor",
     "capabilities",
+    "autonomous_mode",
+    "resume_context",
     "status",
     "blocked_reason",
     "artifact_owner",
@@ -24,7 +26,7 @@
     "schema_version": {
       "type": "integer",
       "minimum": 1,
-      "maximum": 2
+      "maximum": 3
     },
     "updated_at": {
       "type": "string",
@@ -56,6 +58,48 @@
       "type": "array",
       "items": { "type": "string" },
       "uniqueItems": true
+    },
+    "autonomous_mode": {
+      "type": "boolean"
+    },
+    "resume_context": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": [
+        "current_task_id",
+        "current_skill",
+        "current_phase",
+        "next_expected_action"
+      ],
+      "properties": {
+        "current_task_id": {
+          "type": ["string", "null"],
+          "pattern": "^T[0-9]{3,}$|^$"
+        },
+        "current_skill": {
+          "type": ["string", "null"],
+          "pattern": "^superpowers:[a-z][a-z0-9-]*$|^$"
+        },
+        "current_phase": {
+          "type": ["string", "null"],
+          "enum": [
+            "before-implementation-task",
+            "on-failure",
+            "before-phase-completion",
+            "before-feature-completion",
+            "other",
+            null,
+            ""
+          ]
+        },
+        "next_expected_action": {
+          "type": ["string", "null"],
+          "maxLength": 200
+        },
+        "last_verification_command": {
+          "type": ["string", "null"]
+        }
+      }
     },
     "status": {
       "enum": ["ready", "executing", "blocked", "complete"]
@@ -105,4 +149,3 @@
     }
   }
 }
-

@@ -125,6 +125,27 @@
       "verified_against": "bridge@002"
     },
     {
+      "id": "speckit.superpowers.audit",
+      "kind": "bridge_meta_command",
+      "disposition": "COMBINE",
+      "rationale": "Install-state audit meta-command introduced by feature 004; always available.",
+      "verified_against": "bridge@004"
+    },
+    {
+      "id": "speckit.superpowers.validate",
+      "kind": "bridge_meta_command",
+      "disposition": "COMBINE",
+      "rationale": "End-to-end validation pass introduced by feature 004; always available.",
+      "verified_against": "bridge@004"
+    },
+    {
+      "id": "speckit.superpowers.recommend-route",
+      "kind": "bridge_meta_command",
+      "disposition": "COMBINE",
+      "rationale": "Advisory routing recommender introduced by feature 004; always available and never auto-routes.",
+      "verified_against": "bridge@004"
+    },
+    {
       "id": "superpowers:brainstorming",
       "kind": "superpowers_skill",
       "disposition": "FORBID-UNDER-HANDOFF",

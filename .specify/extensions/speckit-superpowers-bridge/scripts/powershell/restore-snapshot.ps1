@@ -1,9 +1,13 @@
 param(
     [Parameter(Mandatory = $true)]
-    [string]$SnapshotId
+    [string]$SnapshotId,
+
+    [string]$Actor = ""
 )
 
 $ErrorActionPreference = "Stop"
+
+. (Join-Path $PSScriptRoot "common-actor-resolution.ps1")
 
 function Get-RepoRoot {
     if (Get-Command git -ErrorAction SilentlyContinue) {
@@ -31,7 +35,8 @@ function Write-BridgeEvent {
         [string]$Decision,
         [string]$Reason,
         [string]$SnapshotId,
-        [string[]]$RestoredPaths = @()
+        [string[]]$RestoredPaths = @(),
+        [string]$Actor = ""
     )
 
     $event = [ordered]@{
@@ -41,7 +46,7 @@ function Write-BridgeEvent {
         feature_directory = $FeatureDirectory
         decision = $Decision
         reason = $Reason
-        actor = "speckit-superpowers-bridge"
+        actor = $Actor
         snapshot_id = $SnapshotId
         restored_paths = @($RestoredPaths)
     }
@@ -51,6 +56,7 @@ function Write-BridgeEvent {
 }
 
 $repoRoot = Get-RepoRoot
+$Actor = Resolve-BridgeActor -Argument $Actor -RepoRoot $repoRoot
 $snapshotRoot = Join-Path $repoRoot ".specify\bridge-snapshots\$SnapshotId"
 if (-not (Test-Path -LiteralPath $snapshotRoot)) {
     throw "Snapshot '$SnapshotId' does not exist."
@@ -93,5 +99,5 @@ if (Test-Path -LiteralPath $snapshotHandoff) {
     $restoredPaths.Add(".specify/superpowers-handoff.json")
 }
 
-Write-BridgeEvent -RepoRoot $repoRoot -Status "restored" -FeatureDirectory $featureDirectory -Decision "restored" -Reason "Restored Spec Kit control artifacts from snapshot." -SnapshotId $SnapshotId -RestoredPaths $restoredPaths.ToArray()
+Write-BridgeEvent -RepoRoot $repoRoot -Status "restored" -FeatureDirectory $featureDirectory -Decision "restored" -Reason "Restored Spec Kit control artifacts from snapshot." -SnapshotId $SnapshotId -RestoredPaths $restoredPaths.ToArray() -Actor $Actor
 Write-Output "Restored snapshot '$SnapshotId'."

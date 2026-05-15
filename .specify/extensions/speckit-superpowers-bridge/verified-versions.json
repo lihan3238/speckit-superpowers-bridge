@@ -34,7 +34,10 @@
     "speckit.git.validate",
     "speckit.superpowers.guard",
     "speckit.superpowers.handoff",
-    "speckit.superpowers.parity"
+    "speckit.superpowers.parity",
+    "speckit.superpowers.audit",
+    "speckit.superpowers.validate",
+    "speckit.superpowers.recommend-route"
   ],
   "verified_at": "2026-05-15T00:00:00Z",
   "verified_by": "claude (feature 002 implementation pass)"

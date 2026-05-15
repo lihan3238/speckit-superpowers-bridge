@@ -19,6 +19,13 @@ hooks:
     prompt: Execute speckit.git.feature?
     description: Create feature branch before specification
     condition: null
+  - extension: speckit-superpowers-bridge
+    command: speckit.superpowers.recommend-route
+    enabled: true
+    optional: false
+    prompt: Check whether this request should go direct to Superpowers?
+    description: Suggest direct Superpowers route for small-scope changes before full specification
+    condition: null
   before_clarify:
   - extension: git
     command: speckit.git.commit

@@ -15,7 +15,7 @@ Add the operational discipline + distribution discipline the bridge needs to be 
 2. **Cross-agent correctness** (US2): close CG-006 by replacing the hard-coded `-Actor codex` defaults with a resolution order (explicit arg → `SPECKIT_BRIDGE_ACTOR` env → `default_integration` → `unknown`); add `audit-install-state.ps1` to surface per-agent skill gaps, default-integration, git-extension state, script flavour, and skill-divergence (hash diff between `.agents/skills/<id>/SKILL.md` and `.claude/skills/<id>/SKILL.md`).
 3. **Validation pass** (US3): new script `validation-pass.ps1` that walks the documented happy path and asserts each step; the bridge SKILL.md (both agents) is rewritten to issue **explicit `Skill` tool invocations** at named phases (Q1 of clarify), and every invocation is logged as a new `skill_invocation` event.
 4. **Marketplace readiness** (US4): bilingual `README.md` (EN) + `README.zh-CN.md` (zh-CN), a `plugin-distribution-manifest.yml` listing what an install copies, a parity-check script for the README, and an audited `.gitignore` that separates plugin assets from project-private state.
-5. **Routing recommender** (US5, P3): tiny addition to `/speckit-specify` that emits a one-line "consider going direct to Superpowers" suggestion when the description matches a small-scope heuristic. Advisory only; never auto-routes.
+5. **Routing recommender** (US5, P3): add a `before_specify` bridge hook that makes `/speckit-specify` emit a one-line "consider going direct to Superpowers" suggestion when the description matches a small-scope heuristic. Advisory only; never auto-routes and never edits the vendor-managed `/speckit-specify` skill.
 
 ## Technical Context
 
@@ -104,7 +104,7 @@ specs/004-polish-and-publish/
 
 .agents/skills/speckit-superpowers-bridge/SKILL.md    # MODIFIED: explicit Skill-tool / $skill-name invocations at named phases; resume-signal instruction; routing-recommender note (cross-reference only)
 .claude/skills/speckit-superpowers-bridge/SKILL.md    # MODIFIED: same content, Claude invocation syntax
-.claude/skills/speckit-specify/SKILL.md               # NOT MODIFIED: vendor-managed (principle V); routing recommender lives in a separate wrapper extension command if needed (see R8)
+.claude/skills/speckit-specify/SKILL.md               # NOT MODIFIED: vendor-managed (principle V); routing recommender is surfaced through a before_specify extension hook (see R8)
 
 tests/                                                # 7 new smoke tests (see Technical Context above)
 
@@ -140,7 +140,7 @@ README.zh-CN.md                                       # NEW: Simplified Chinese;
 
 7. **Plugin distribution manifest** — `plugin-distribution-manifest.yml` declares: `includes:` (the plugin's own files) and `excludes:` (project-private state). A clean install reads this manifest and copies only what's listed. Idempotent — re-install checks file hashes; conflict → fail with a list of differing files.
 
-8. **Routing recommender (US5 P3)** — Implemented as a NEW extension command `speckit.superpowers.recommend-route.md` rather than modifying the vendor-managed `/speckit-specify`. The user can invoke it before `/speckit-specify` for an advisory check, OR set `SPECKIT_BRIDGE_RECOMMEND_ROUTE=1` to have the after_specify hook surface a recommendation post-hoc. Default off because P3.
+8. **Routing recommender (US5 P3)** — Implemented as a NEW extension command `speckit.superpowers.recommend-route.md` and wired into `/speckit-specify` through a bridge `before_specify` hook. This honors the spec requirement that `/speckit-specify` surfaces the recommendation while preserving principle V: the vendor-managed `/speckit-specify` skill is not hand-edited. The hook is advisory only; if the heuristic does not match, it emits no routing prompt and the normal Spec Kit flow continues.
 
 9. **CG-006 close** — The `speckit.superpowers.handoff` command markdown is rewritten to remove the hard-coded `-Actor codex` from its example; both bridge SKILL.md files explain the actor-resolution order; tests verify.
 
@@ -157,7 +157,7 @@ The fastest usable implementation should make these changes only:
 - `validation-pass.ps1` (NEW) + `commands/speckit.superpowers.validate.md` + matrix entry.
 - `emit-skill-invocation.ps1` (NEW) — write `skill_invocation` events; bumps event-log consumers.
 - Rewrite both `speckit-superpowers-bridge/SKILL.md` files (Codex + Claude) with explicit Skill-tool invocations at named phases and a resume-signal preamble.
-- New extension command `commands/speckit.superpowers.recommend-route.md` (US5; small-scope heuristic in plain prose).
+- New extension command `commands/speckit.superpowers.recommend-route.md` (US5; small-scope heuristic in plain prose) and a `before_specify` hook registration so `/speckit-specify` surfaces the advisory recommendation without modifying vendor-managed skill files.
 - `README.md` (EN) + `README.zh-CN.md` (zh-CN) — bilingual; mutually linked.
 - `.gitignore` — excludes `.specify/bridge-events.jsonl`, `.specify/bridge-snapshots/`, `.specify/superpowers-handoff.json`, `.specify/feature.json`, `specs/*/checklists/` (per-feature private); keeps plugin assets.
 - `plugin-distribution-manifest.yml` — declared includes/excludes.
@@ -177,4 +177,4 @@ No constitution violations. Two judgment calls worth recording:
 | Choice | Why Not Simpler | Why Not More Complete |
 |---|---|---|
 | Resume context in handoff JSON (vs separate file) | Separate file would mean two write paths to keep in sync, defeating the smooth-handoff principle | A richer "session log" with full message history is out of scope; we only persist the four fields needed to emit the one-line resume signal |
-| Routing recommender as separate extension command (vs editing `/speckit-specify`) | Modifying the vendor-managed `/speckit-specify` SKILL.md would violate principle V; copying it to bypass the upstream would lose future upstream improvements | An auto-recommendation hook that fires after every specify is over-engineered for a P3 feature; the explicit command + opt-in env-var hybrid keeps it small |
+| Routing recommender as `before_specify` hook (vs editing `/speckit-specify`) | Modifying the vendor-managed `/speckit-specify` SKILL.md would violate principle V; a hook lets the command emit the recommendation through the supported extension surface | A complex auto-classifier is out of scope; the hook only runs a small-scope heuristic and never auto-routes |

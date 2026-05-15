@@ -13,4 +13,6 @@ shell commands, and other important information, read the current plan:
 - Treat official generated `.claude/skills/speckit-*` files as vendor-managed. Do not hand-edit them; custom bridge behavior belongs in `.claude/skills/speckit-superpowers-bridge/`.
 - For implementation handoff, use `.claude/skills/speckit-superpowers-bridge/SKILL.md` and pass `-Actor claude` to bridge guard or handoff scripts.
 - For on-demand non-overlap audits, invoke `/speckit-superpowers-parity` (covers the disposition matrix, per-agent skill parity, and verified-version drift). See `.specify/extensions/speckit-superpowers-bridge/disposition-matrix.json` and `verified-versions.json` for the data this check consumes.
+- For install diagnostics, invoke `/speckit-superpowers-audit`.
+- Before completion, invoke `/speckit-superpowers-validate` to run the end-to-end validation pass.
 - The disposition matrix is the authoritative non-overlap policy; the guard consults it before falling back to legacy rules. Constitution edits during an `executing` handoff are denied; checklist generation is always allowed.

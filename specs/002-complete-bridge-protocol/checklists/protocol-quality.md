@@ -20,7 +20,7 @@
 - [x] CHK005 - Is the schema / required fields of a Compatibility Gap Record specified (severity levels, ID scheme, resolution status)? [Gap, Key Entities] (plan-level: data-model.md + contracts/compat-gap-record-contract.md)
 - [x] CHK006 - Is the output format of the parity check report defined (machine-readable? human-readable? both?)? [Gap, Spec §FR-005] (plan-level: contracts/parity-check-contract.md)
 - [ ] CHK007 - Are auto-archive transition rules covered for handoff statuses other than `complete` (e.g., a stale `blocked` from an abandoned feature)? [Coverage, Spec §FR-015]
-- [ ] CHK008 - Does the spec define what the bridge does when the disposition matrix file itself is missing or unparseable? [Edge Case, Gap]
+- [x] CHK008 - Does the spec define what the bridge does when the disposition matrix file itself is missing or unparseable? [Edge Case, Gap] (CLOSED-IN-FEATURE by feature 004 validation-pass + install-state audit coverage)
 
 ## Requirement Clarity
 
@@ -52,7 +52,7 @@
 - [x] CHK025 - Are requirements defined for the primary flow (specify → clarify → plan → tasks → handoff → bridge → implement) end-to-end on each agent? [Coverage, US3]
 - [ ] CHK026 - Are requirements defined for alternate flows (e.g., re-opening a `complete` feature; re-running clarify after plan)? [Coverage, Gap]
 - [ ] CHK027 - Are exception flows specified — what happens when the guard script itself fails or is missing? [Gap, Exception Flow]
-- [ ] CHK028 - Are recovery flows specified for a corrupted handoff state file (not just missing skills)? [Gap, Recovery]
+- [x] CHK028 - Are recovery flows specified for a corrupted handoff state file (not just missing skills)? [Gap, Recovery] (CLOSED-IN-FEATURE by feature 004 validation-pass handoff-state check and restore guidance)
 - [ ] CHK029 - Are concurrent-edit flows covered when both agents are running simultaneously against the same handoff file? [Coverage, Edge Case]
 
 ## Edge Case Coverage
@@ -91,9 +91,9 @@
 
 ## Summary
 
-- **PASS** (`[x]`): 32 items
+- **PASS** (`[x]`): 34 items
 - **PARTIAL** (`[~]`): 4 items (CHK001, CHK017, CHK020, CHK023)
-- **FAIL** (`[ ]`): 10 items (CHK002, CHK007, CHK008, CHK010, CHK026, CHK027, CHK028, CHK029, CHK036, CHK037)
+- **FAIL** (`[ ]`): 8 items (CHK002, CHK007, CHK010, CHK026, CHK027, CHK029, CHK036, CHK037)
 - **FIXED this pass**: CHK015, CHK016, CHK042 (textual edits to spec.md Clarifications and Key Entities)
 
 ## Findings
@@ -104,11 +104,11 @@ These are real gaps in the spec, but they describe behaviors orthogonal to featu
 
 - **CHK002** (no disposition entry behavior) — current implementation silently falls through to legacy rules; the parity check separately catches missing entries as P0 findings. The "what the guard does at request time" gap is acceptable because the parity check is the gating mechanism, not the guard. **Disposition: ACCEPTED — covered by parity check at config time, not by guard at request time.**
 - **CHK007** (auto-archive for non-`complete` statuses) — out of scope; feature 002 only auto-archives `complete`. Stale `blocked` is a manual recovery scenario. **Disposition: OUT-OF-SCOPE.**
-- **CHK008** (matrix file missing/unparseable) — current implementation: parity check raises P0; guard falls through to legacy rules. Spec does not explicitly state this contract. **Disposition: DEFERRED-TO-004** — feature 004 US2 (install-state audit) is the natural place to codify the missing-file response.
+- **CHK008** (matrix file missing/unparseable) — current implementation: parity check raises P0; guard falls through to legacy rules. Feature 004 adds validation-pass coverage that treats missing/unparseable matrix or verified-versions as P0. **Disposition: CLOSED-IN-FEATURE.**
 - **CHK010** (remediable error definition) — current implementation: throws with the matrix entry's rationale + a "suggested fix" line. Spec says "remediable" without defining. **Disposition: DEFERRED-TO-004** — the install-state audit's error UX will set the bar.
 - **CHK026** (re-opening `complete` feature) — not addressed. The disposition matrix already classifies `speckit.specify`/`speckit.clarify`/`speckit.plan`/`speckit.tasks` as COMBINE so a re-run is technically allowed; the guard's same-feature-complete deny would block it. **Disposition: ACCEPTED-DEFECT** — re-open requires manual `update-handoff.ps1 -Status blocked` first; documented behavior, not silent failure.
 - **CHK027** (guard script missing) — PowerShell file-not-found error propagates; no graceful degradation. **Disposition: ACCEPTED-DEFECT** — the script's absence is itself a P0 install state and should fail loudly.
-- **CHK028** (corrupted handoff recovery) — current implementation: `ConvertFrom-Json` failure propagates. **Disposition: DEFERRED-TO-004** — install-state audit can detect + recommend restore-snapshot.
+- **CHK028** (corrupted handoff recovery) — feature 004 validation-pass explicitly checks handoff parse/schema and recommends handoff regeneration or snapshot restore. **Disposition: CLOSED-IN-FEATURE.**
 - **CHK029** (concurrent-edit flows) — constitution mandates single-writer ownership; no file-level locking. **Disposition: ACCEPTED** — single-writer model is the design; concurrent writes are policy-level, not file-system-level, prevented.
 - **CHK036** (events log PII) — current log records `actor` (codex/claude/unknown) + free-text `reason`. No structured PII fields; reasons are author-controlled. **Disposition: DEFERRED-TO-004** — marketplace listing audit should set a no-PII guideline.
 - **CHK037** (events log retention) — append-only with no rotation or size cap. **Disposition: DEFERRED-TO-004** — marketplace install needs a documented retention/cleanup story.

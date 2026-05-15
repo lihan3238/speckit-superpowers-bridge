@@ -35,6 +35,20 @@ This is the Codex bridge skill at `.agents/skills/speckit-superpowers-bridge/SKI
 
 If any required feature artifact is missing, set the handoff status to `blocked` and return to Spec Kit.
 
+## Resume Signal
+
+On session resume, before any other non-tool output, run:
+
+```powershell
+.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-resume-signal.ps1
+```
+
+If `.specify/superpowers-handoff.json.resume_context` is non-null, print that one-line signal first. It names the active task, active Superpowers skill, phase, and next expected action.
+
+## Autonomous Mode
+
+`autonomous_mode` defaults to `false`. When it is `true`, or when `SPECKIT_BRIDGE_AUTONOMOUS=1`, continue across implementation task boundaries without asking for confirmation. Still pause at the named review checkpoints: `superpowers:verification-before-completion`, `superpowers:requesting-code-review`, and `superpowers:finishing-a-development-branch`.
+
 ## Execution Rules
 
 1. Set handoff status to `executing` before making implementation changes:
@@ -43,25 +57,46 @@ If any required feature artifact is missing, set the handoff status to `blocked`
    ```
 2. Run the guard before using any potentially overlapping command:
    ```powershell
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\guard-command.ps1 -Action superpowers.subagent-driven-development -Actor codex
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\guard-command.ps1 -Action superpowers.executing-plans -Actor codex
    ```
 3. Execute `tasks.md` phase by phase and keep checkboxes updated.
-4. Include `spec.md`, `plan.md`, `tasks.md`, and this denylist in every subagent prompt:
+4. Include `spec.md`, `plan.md`, `tasks.md`, and this denylist in every delegated prompt:
    - Deny `speckit.implement`
    - Deny `superpowers:brainstorming`
    - Deny `superpowers:writing-plans`
    - Do not add requirements outside Spec Kit artifacts
-5. Use Superpowers skills for implementation discipline:
-   - `using-git-worktrees` when an isolated workspace is requested or already available.
-   - `test-driven-development` for feature, bugfix, refactor, or behavior changes.
-   - `systematic-debugging` for failures or unexpected behavior.
-   - `subagent-driven-development` when explicitly allowed and tasks are independent; otherwise use `executing-plans`.
-   - `requesting-code-review`, `verification-before-completion`, and `finishing-a-development-branch` before completion.
-6. Do not add requirements beyond `spec.md`, `plan.md`, and `tasks.md`.
-7. If the task list is wrong or incomplete, stop implementation and set:
+5. Before each code-modifying task, persist resume context, record the invocation, and use `$superpowers-test-driven-development` for `superpowers:test-driven-development`:
    ```powershell
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status blocked -Reason "Describe the Spec Kit artifact gap" -Actor codex
+   $resume = @{ current_task_id = "<T###>"; current_skill = "superpowers:test-driven-development"; current_phase = "before-implementation-task"; next_expected_action = "Start implementation task <T###>" } | ConvertTo-Json -Compress
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor codex
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:test-driven-development -Phase before-implementation-task -TaskId <T###> -Actor codex -Decision invoked -Reason "Start implementation task"
    ```
+6. On any failure or unexpected behavior, persist resume context, record the invocation, and use `$superpowers-systematic-debugging` for `superpowers:systematic-debugging`:
+   ```powershell
+   $resume = @{ current_task_id = "<T###>"; current_skill = "superpowers:systematic-debugging"; current_phase = "on-failure"; next_expected_action = "Investigate failure for <T###>" } | ConvertTo-Json -Compress
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor codex
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:systematic-debugging -Phase on-failure -TaskId <T###> -Actor codex -Decision invoked -Reason "Investigate failure"
+   ```
+7. Before marking a phase complete, persist resume context, record the invocation, and use `$superpowers-verification-before-completion` for `superpowers:verification-before-completion`:
+   ```powershell
+   $resume = @{ current_task_id = $null; current_skill = "superpowers:verification-before-completion"; current_phase = "before-phase-completion"; next_expected_action = "Run phase verification" } | ConvertTo-Json -Compress
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor codex
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:verification-before-completion -Phase before-phase-completion -Actor codex -Decision invoked -Reason "Verify phase"
+   ```
+8. Before marking the feature complete, persist resume context before each completion skill, record both completion invocations, and use `$superpowers-requesting-code-review` for `superpowers:requesting-code-review`, then `$superpowers-finishing-a-development-branch` for `superpowers:finishing-a-development-branch`:
+   ```powershell
+   $resume = @{ current_task_id = $null; current_skill = "superpowers:requesting-code-review"; current_phase = "before-feature-completion"; next_expected_action = "Request code review" } | ConvertTo-Json -Compress
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor codex
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:requesting-code-review -Phase before-feature-completion -Actor codex -Decision invoked -Reason "Request review"
+   $resume = @{ current_task_id = $null; current_skill = "superpowers:finishing-a-development-branch"; current_phase = "before-feature-completion"; next_expected_action = "Finish development branch" } | ConvertTo-Json -Compress
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor codex
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:finishing-a-development-branch -Phase before-feature-completion -Actor codex -Decision invoked -Reason "Finish branch"
+   ```
+9. Do not add requirements beyond `spec.md`, `plan.md`, and `tasks.md`.
+10. If the task list is wrong or incomplete, stop implementation and set:
+    ```powershell
+    .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status blocked -Reason "Describe the Spec Kit artifact gap" -Actor codex
+    ```
 
 ## Logs and Rollback
 

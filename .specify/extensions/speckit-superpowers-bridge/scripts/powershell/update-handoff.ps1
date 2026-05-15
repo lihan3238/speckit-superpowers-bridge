@@ -12,7 +12,11 @@ param(
     [ValidateSet("codex", "claude", "unknown")]
     [string[]]$ReviewOnlyAgents = @(),
 
-    [string]$Actor = "speckit-superpowers-bridge",
+    [string]$Actor = "",
+
+    [object]$AutonomousMode = $null,
+
+    [object]$ResumeContext = $null,
 
     [switch]$ClearFeatureDirectory,
 
@@ -20,6 +24,8 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+
+. (Join-Path $PSScriptRoot "common-actor-resolution.ps1")
 
 function Write-BridgeEvent {
     param(
@@ -152,7 +158,8 @@ function Resolve-ArtifactOwnership {
     param(
         [string]$RepoRoot,
         [string]$RequestedOwner,
-        [string[]]$RequestedReviewOnlyAgents
+        [string[]]$RequestedReviewOnlyAgents,
+        [string]$ResolvedActor
     )
 
     $integrationState = Get-InstalledIntegrations -RepoRoot $RepoRoot
@@ -160,11 +167,14 @@ function Resolve-ArtifactOwnership {
 
     $owner = $RequestedOwner
     if ([string]::IsNullOrWhiteSpace($owner)) {
-        if ($integrationState.default -in @("codex", "claude")) {
+        if ($ResolvedActor -in @("codex", "claude")) {
+            $owner = $ResolvedActor
+        }
+        elseif ($integrationState.default -in @("codex", "claude")) {
             $owner = $integrationState.default
         }
         else {
-            $owner = "codex"
+            $owner = "unknown"
         }
     }
 
@@ -188,7 +198,8 @@ function Resolve-ArtifactOwnership {
 }
 
 $repoRoot = Get-RepoRoot
-$ownership = Resolve-ArtifactOwnership -RepoRoot $repoRoot -RequestedOwner $ArtifactOwner -RequestedReviewOnlyAgents $ReviewOnlyAgents
+$Actor = Resolve-BridgeActor -Argument $Actor -RepoRoot $repoRoot
+$ownership = Resolve-ArtifactOwnership -RepoRoot $repoRoot -RequestedOwner $ArtifactOwner -RequestedReviewOnlyAgents $ReviewOnlyAgents -ResolvedActor $Actor
 $specifyDir = Join-Path $repoRoot ".specify"
 if (-not (Test-Path -LiteralPath $specifyDir)) {
     throw "Missing .specify directory. Run this from a Spec Kit project."
@@ -197,6 +208,8 @@ if (-not (Test-Path -LiteralPath $specifyDir)) {
 # Preserve archive_history across writes by reading the existing handoff first (schema_version >= 2).
 $existingHandoffPath = Join-Path $specifyDir "superpowers-handoff.json"
 $existingArchiveHistory = @()
+$existingAutonomousMode = $false
+$existingResumeContext = $null
 $priorFeatureDirectory = $null
 if (Test-Path -LiteralPath $existingHandoffPath) {
     $existingHandoff = Get-Content -LiteralPath $existingHandoffPath -Raw | ConvertFrom-Json
@@ -205,6 +218,12 @@ if (Test-Path -LiteralPath $existingHandoffPath) {
     }
     if ($existingHandoff.PSObject.Properties.Name -contains "feature_directory" -and $existingHandoff.feature_directory) {
         $priorFeatureDirectory = [string]$existingHandoff.feature_directory
+    }
+    if ($existingHandoff.PSObject.Properties.Name -contains "autonomous_mode") {
+        $existingAutonomousMode = [bool]$existingHandoff.autonomous_mode
+    }
+    if ($existingHandoff.PSObject.Properties.Name -contains "resume_context") {
+        $existingResumeContext = $existingHandoff.resume_context
     }
 }
 
@@ -301,8 +320,38 @@ if ($AppendArchiveEntry) {
     $archiveHistory = @($archiveHistory) + @($AppendArchiveEntry)
 }
 
+function Convert-ResumeContext {
+    param([object]$Value)
+
+    if ($null -eq $Value) {
+        return $null
+    }
+
+    if ($Value -is [string]) {
+        if ([string]::IsNullOrWhiteSpace($Value)) {
+            return $null
+        }
+        return ($Value | ConvertFrom-Json)
+    }
+
+    return $Value
+}
+
+$resolvedAutonomousMode = $existingAutonomousMode
+if ($null -ne $AutonomousMode) {
+    $resolvedAutonomousMode = [System.Convert]::ToBoolean($AutonomousMode)
+}
+
+$resolvedResumeContext = $existingResumeContext
+if ($null -ne $ResumeContext) {
+    $resolvedResumeContext = Convert-ResumeContext -Value $ResumeContext
+}
+elseif ($resolvedStatus -in @("ready", "complete") -or $ClearFeatureDirectory) {
+    $resolvedResumeContext = $null
+}
+
 $handoff = [ordered]@{
-    schema_version = 2
+    schema_version = 3
     updated_at = (Get-Date).ToUniversalTime().ToString("o")
     feature_directory = $featureDirectoryProjectPath
     source_of_truth = $sourceOfTruth
@@ -318,6 +367,8 @@ $handoff = [ordered]@{
         "verification-before-completion",
         "finishing-a-development-branch"
     )
+    autonomous_mode = $resolvedAutonomousMode
+    resume_context = $resolvedResumeContext
     status = $resolvedStatus
     blocked_reason = $blockedReason
     artifact_owner = $ownership.owner

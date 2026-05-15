@@ -38,6 +38,20 @@ This is the Claude Code bridge skill at `.claude/skills/speckit-superpowers-brid
 
 If any required feature artifact is missing, set the handoff status to `blocked` and return to Spec Kit.
 
+## Resume Signal
+
+On session resume, before any other non-tool output, run:
+
+```powershell
+.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-resume-signal.ps1
+```
+
+If `.specify/superpowers-handoff.json.resume_context` is non-null, print that one-line signal first. It names the active task, active Superpowers skill, phase, and next expected action.
+
+## Autonomous Mode
+
+`autonomous_mode` defaults to `false`. When it is `true`, or when `SPECKIT_BRIDGE_AUTONOMOUS=1`, continue across implementation task boundaries without asking for confirmation. Still pause at the named review checkpoints: `superpowers:verification-before-completion`, `superpowers:requesting-code-review`, and `superpowers:finishing-a-development-branch`.
+
 ## Execution Rules
 
 1. Set handoff status to `executing` before making implementation changes:
@@ -54,16 +68,38 @@ If any required feature artifact is missing, set the handoff status to `blocked`
    - Deny `superpowers:brainstorming`
    - Deny `superpowers:writing-plans`
    - Do not add requirements outside Spec Kit artifacts
-5. Use Superpowers skills for implementation discipline:
-   - `test-driven-development` for feature, bugfix, refactor, or behavior changes.
-   - `systematic-debugging` for failures or unexpected behavior.
-   - `executing-plans` only against Spec Kit `tasks.md`.
-   - `requesting-code-review`, `verification-before-completion`, and `finishing-a-development-branch` before completion.
-6. Do not add requirements beyond `spec.md`, `plan.md`, and `tasks.md`.
-7. If the task list is wrong or incomplete, stop implementation and set:
+5. Before each code-modifying task, persist resume context, record the invocation, and call the Skill tool with `skill: "superpowers:test-driven-development"`:
    ```powershell
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status blocked -Reason "Describe the Spec Kit artifact gap" -Actor claude
+   $resume = @{ current_task_id = "<T###>"; current_skill = "superpowers:test-driven-development"; current_phase = "before-implementation-task"; next_expected_action = "Start implementation task <T###>" } | ConvertTo-Json -Compress
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor claude
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:test-driven-development -Phase before-implementation-task -TaskId <T###> -Actor claude -Decision invoked -Reason "Start implementation task"
    ```
+6. On any failure or unexpected behavior, persist resume context, record the invocation, and call the Skill tool with `skill: "superpowers:systematic-debugging"`:
+   ```powershell
+   $resume = @{ current_task_id = "<T###>"; current_skill = "superpowers:systematic-debugging"; current_phase = "on-failure"; next_expected_action = "Investigate failure for <T###>" } | ConvertTo-Json -Compress
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor claude
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:systematic-debugging -Phase on-failure -TaskId <T###> -Actor claude -Decision invoked -Reason "Investigate failure"
+   ```
+7. Before marking a phase complete, persist resume context, record the invocation, and call the Skill tool with `skill: "superpowers:verification-before-completion"`:
+   ```powershell
+   $resume = @{ current_task_id = $null; current_skill = "superpowers:verification-before-completion"; current_phase = "before-phase-completion"; next_expected_action = "Run phase verification" } | ConvertTo-Json -Compress
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor claude
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:verification-before-completion -Phase before-phase-completion -Actor claude -Decision invoked -Reason "Verify phase"
+   ```
+8. Before marking the feature complete, persist resume context before each completion skill, record both completion invocations, and call the Skill tool with `skill: "superpowers:requesting-code-review"`, then `skill: "superpowers:finishing-a-development-branch"`:
+   ```powershell
+   $resume = @{ current_task_id = $null; current_skill = "superpowers:requesting-code-review"; current_phase = "before-feature-completion"; next_expected_action = "Request code review" } | ConvertTo-Json -Compress
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor claude
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:requesting-code-review -Phase before-feature-completion -Actor claude -Decision invoked -Reason "Request review"
+   $resume = @{ current_task_id = $null; current_skill = "superpowers:finishing-a-development-branch"; current_phase = "before-feature-completion"; next_expected_action = "Finish development branch" } | ConvertTo-Json -Compress
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor claude
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:finishing-a-development-branch -Phase before-feature-completion -Actor claude -Decision invoked -Reason "Finish branch"
+   ```
+9. Do not add requirements beyond `spec.md`, `plan.md`, and `tasks.md`.
+10. If the task list is wrong or incomplete, stop implementation and set:
+    ```powershell
+    .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status blocked -Reason "Describe the Spec Kit artifact gap" -Actor claude
+    ```
 
 ## Logs and Rollback
 

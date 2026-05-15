@@ -1,0 +1,12 @@
+.DS_Store
+Thumbs.db
+*.bak-parity-drift
+
+# Spec Kit + Superpowers Bridge runtime state
+.specify/bridge-events.jsonl
+.specify/bridge-snapshots/
+.specify/superpowers-handoff.json
+.specify/feature.json
+
+# Local checklist scratch from bridge validation experiments
+specs/*/checklists/protocol-quality.md

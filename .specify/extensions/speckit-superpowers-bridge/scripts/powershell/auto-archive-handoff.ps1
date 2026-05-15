@@ -1,11 +1,12 @@
 param(
-    [ValidateSet("codex", "claude", "unknown")]
-    [string]$Actor = "unknown",
+    [string]$Actor = "",
 
     [string]$Reason = "Auto-archive complete handoff before new feature."
 )
 
 $ErrorActionPreference = "Stop"
+
+. (Join-Path $PSScriptRoot "common-actor-resolution.ps1")
 
 function Get-RepoRoot {
     if (Get-Command git -ErrorAction SilentlyContinue) {
@@ -26,6 +27,7 @@ function Get-RepoRoot {
 }
 
 $repoRoot = Get-RepoRoot
+$Actor = Resolve-BridgeActor -Argument $Actor -RepoRoot $repoRoot
 $handoffPath = Join-Path $repoRoot ".specify\superpowers-handoff.json"
 if (-not (Test-Path -LiteralPath $handoffPath)) {
     Write-Output "No handoff file at $handoffPath; nothing to archive."

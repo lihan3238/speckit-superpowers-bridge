@@ -32,7 +32,9 @@ phases (codified by feature 002's disposition matrix and feature 004's FR-009
 - Superpowers `subagent-driven-development` and `executing-plans` may run only through `speckit-superpowers-bridge` and must use Spec Kit `tasks.md` as the plan.
 - Before crossing these boundaries, run `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/guard-command.ps1`; every allow/deny decision is logged in `.specify/bridge-events.jsonl`.
 - Pass `-Actor codex` from Codex and `-Actor claude` from Claude Code when invoking bridge guard or handoff scripts.
+- If `-Actor` is omitted, bridge scripts resolve actor from `SPECKIT_BRIDGE_ACTOR`, then `.specify/integration.json.default_integration`, then `unknown`.
 - Command IDs and agent invocations are different: internal Spec Kit command IDs use dots such as `speckit.plan`; Codex uses `$speckit-plan`; Claude Code uses slash commands generated from skill names such as `/speckit-plan`.
+- Explicit Superpowers skill invocations must be logged as `skill_invocation` events before the skill is used; validation reads `.specify/bridge-events.jsonl` rather than trying to inspect an agent runtime.
 - `AGENTS.md` is the master bridge protocol. `CLAUDE.md` may add Claude-specific notes, but it must defer to `AGENTS.md` on conflicts.
 - Do not hand-edit official generated `.agents/skills/speckit-*` or `.claude/skills/speckit-*`; put bridge-specific behavior in separate `speckit-superpowers-bridge` skills.
 - Only one agent may own writes to Spec Kit control artifacts for an active feature at a time. Other agents may review only until ownership changes or the handoff is marked `blocked` for repair.
@@ -55,6 +57,8 @@ phases (codified by feature 002's disposition matrix and feature 004's FR-009
 - `superpowers:brainstorming` and `superpowers:writing-plans` → FORBID-UNDER-HANDOFF with applicability `[executing, complete]`.
 - Verified upstream versions live in `.specify/extensions/speckit-superpowers-bridge/verified-versions.json`. The bridge parity check (`.specify/extensions/speckit-superpowers-bridge/scripts/powershell/parity-check.ps1`) reports drift, missing dispositions, missing per-agent skill mirrors, and doc-matrix inconsistencies.
 - Run the parity check on demand via `/speckit-superpowers-parity` (Claude) or `$speckit-superpowers-parity` (Codex); exit code 0 = clean, 1 = P0 finding, 2 = P1 finding.
+- Feature 004 adds three bridge meta-commands: `speckit.superpowers.audit` for install-state diagnostics, `speckit.superpowers.validate` for end-to-end validation, and `speckit.superpowers.recommend-route` for advisory light/heavy workflow routing.
+- `skill_invocation` is a bridge event type for explicit Superpowers skill calls. Required fields include `skill_id`, `phase`, `task_id` when applicable, and `actor`.
 
 ## Format note: matrix files are JSON
 

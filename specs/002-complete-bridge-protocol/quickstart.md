@@ -12,6 +12,69 @@
 - Spec Kit `0.8.9` installed (already configured in `.specify/init-options.json`)
 - Either Codex or Claude Code as the active agent (this guide shows both)
 
+## 0. Complete user workflow
+
+Use this flow when you are using the bridge for real feature development. The later sections in this quickstart are maintainer validation checks.
+
+1. Install both integrations if you want Codex and Claude Code available in the same repo:
+
+   ```powershell
+   specify init . --integration codex
+   specify integration install claude
+   specify integration use codex
+   ```
+
+2. Pick exactly one Spec Kit artifact writer for the feature. Codex uses `$speckit-*` commands; Claude Code uses `/speckit-*` commands. The other agent should review only until ownership changes.
+
+3. Produce the Spec Kit design artifacts:
+
+   ```text
+   $speckit-specify "Describe the feature"
+   $speckit-clarify
+   $speckit-checklist
+   $speckit-plan
+   $speckit-tasks
+   $speckit-analyze
+   ```
+
+   For Claude Code, replace the `$` invocations with slash invocations such as `/speckit-specify`.
+
+4. Confirm or create the handoff. The `after_tasks` hook normally creates it; refresh manually only when needed:
+
+   ```powershell
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status ready -Actor codex
+   ```
+
+5. Execute implementation through Superpowers, not through `speckit.implement`:
+
+   ```text
+   $speckit-superpowers-bridge
+   ```
+
+   Claude Code uses `/speckit-superpowers-bridge`. The bridge reads `constitution.md`, `spec.md`, `plan.md`, and `tasks.md`, then executes `tasks.md` with TDD, debugging, review, verification, and branch finishing.
+
+6. If implementation exposes a missing requirement or wrong design, stop implementation and return to Spec Kit:
+
+   ```powershell
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status blocked -Reason "Spec Kit artifact needs revision" -Actor codex
+   ```
+
+   Revise `spec.md`, `plan.md`, or `tasks.md`, then create a fresh ready handoff and resume.
+
+7. Finish only after validation passes:
+
+   ```powershell
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\validation-pass.ps1 -Json -Actor codex
+   ```
+
+8. Start the next feature by letting the `before_specify` hook auto-archive a complete handoff, or run:
+
+   ```powershell
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\auto-archive-handoff.ps1 -Actor codex
+   ```
+
+Guardrails: do not run `speckit.implement` when `executor` is `superpowers`; do not use Superpowers `brainstorming` or `writing-plans` to replace existing Spec Kit artifacts; do not let two agents write the same Spec Kit files at the same time.
+
 ## 1. Verify the disposition matrix is loaded
 
 ```bash

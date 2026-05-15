@@ -94,8 +94,11 @@ try {
 
     Push-Location $testRoot
 
+    $oldEnvActor = $env:SPECKIT_BRIDGE_ACTOR
+    $env:SPECKIT_BRIDGE_ACTOR = "codex"
     & $updateScript -Status ready | Out-Null
     $handoff = Get-Content -LiteralPath ".specify\superpowers-handoff.json" -Raw | ConvertFrom-Json
+    Assert-Equals 3 $handoff.schema_version "Handoff schema_version should be 3."
     Assert-Equals "ready" $handoff.status "Handoff ready status mismatch."
     Assert-Equals "superpowers" $handoff.executor "Handoff executor mismatch."
     Assert-Equals "specs/001-guard-test" $handoff.feature_directory "Handoff feature directory mismatch."
@@ -104,7 +107,11 @@ try {
     Assert-Equals "specs/001-guard-test/tasks.md" $handoff.source_of_truth.tasks "Handoff tasks source mismatch."
     Assert-True ($handoff.PSObject.Properties.Name -contains "artifact_owner") "Missing handoff artifact_owner field."
     Assert-True ($handoff.PSObject.Properties.Name -contains "review_only_agents") "Missing handoff review_only_agents field."
+    Assert-True ($handoff.PSObject.Properties.Name -contains "autonomous_mode") "Missing handoff autonomous_mode field."
+    Assert-True ($handoff.PSObject.Properties.Name -contains "resume_context") "Missing handoff resume_context field."
     Assert-Equals "codex" $handoff.artifact_owner "Default artifact owner mismatch."
+    Assert-Equals $false $handoff.autonomous_mode "autonomous_mode should default to false."
+    Assert-True ($null -eq $handoff.resume_context) "resume_context should default to null."
     Assert-True (($handoff.review_only_agents -contains "claude")) "Expected claude to be review-only by default."
     Assert-True ($handoff.instructions -match "\.agents/skills/speckit-superpowers-bridge/SKILL.md") "Missing Codex bridge skill instruction."
     Assert-True ($handoff.instructions -match "\.claude/skills/speckit-superpowers-bridge/SKILL.md") "Missing Claude bridge skill instruction."
@@ -114,7 +121,7 @@ try {
     $schemaPath = Join-Path $repoRoot "specs\001-spec-superpowers-bridge\contracts\handoff.schema.json"
     Assert-True (Test-Path -LiteralPath $schemaPath) "Missing handoff schema contract."
     $schema = Get-Content -LiteralPath $schemaPath -Raw | ConvertFrom-Json
-    foreach ($required in @("schema_version", "updated_at", "feature_directory", "source_of_truth", "supersedes", "executor", "capabilities", "status", "blocked_reason", "artifact_owner", "review_only_agents", "notes", "last_snapshot_id", "instructions")) {
+    foreach ($required in @("schema_version", "updated_at", "feature_directory", "source_of_truth", "supersedes", "executor", "capabilities", "autonomous_mode", "resume_context", "status", "blocked_reason", "artifact_owner", "review_only_agents", "notes", "last_snapshot_id", "instructions")) {
         Assert-True ($schema.required -contains $required) "Handoff schema missing required field '$required'."
         Assert-True ($handoff.PSObject.Properties.Name -contains $required) "Handoff missing required schema field '$required'."
     }
@@ -160,9 +167,9 @@ try {
 
     # ===== Phase 2 (002-complete-bridge-protocol) regression tests =====
 
-    # Schema_version is now 2 and archive_history is preserved across writes.
+    # Schema_version is now 3 and archive_history is preserved across writes.
     $handoffStateNow = Get-Content -LiteralPath ".specify\superpowers-handoff.json" -Raw | ConvertFrom-Json
-    Assert-Equals 2 $handoffStateNow.schema_version "Handoff schema_version should be 2 after update-handoff.ps1 modifications."
+    Assert-Equals 3 $handoffStateNow.schema_version "Handoff schema_version should be 3 after update-handoff.ps1 modifications."
     Assert-True ($handoffStateNow.PSObject.Properties.Name -contains "archive_history") "Handoff must include archive_history field."
 
     # Move to complete state for the auto-archive scenarios.
@@ -215,6 +222,7 @@ try {
     Pop-Location
 }
 finally {
+    if ($null -ne $oldEnvActor) { $env:SPECKIT_BRIDGE_ACTOR = $oldEnvActor } else { $env:SPECKIT_BRIDGE_ACTOR = "" }
     if ((Get-Location).Path -eq $testRoot) {
         Pop-Location
     }
