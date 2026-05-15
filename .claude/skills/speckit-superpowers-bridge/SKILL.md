@@ -9,9 +9,11 @@ disable-model-invocation: false
 
 # Spec Kit + Superpowers Bridge
 
-Use `/speckit-superpowers-bridge` when Spec Kit has produced implementation artifacts and Superpowers should execute them.
+Use `/speckit-speckit-superpowers-bridge-execute` when Spec Kit has produced implementation artifacts and Superpowers should execute them. In this source repository, this local skill mirrors the same protocol for direct development and testing.
 
 This is the Claude Code bridge skill at `.claude/skills/speckit-superpowers-bridge/SKILL.md`. Codex uses the sibling bridge skill at `.agents/skills/speckit-superpowers-bridge/SKILL.md`.
+
+Marketplace installs expose the official execute command as `/speckit-speckit-superpowers-bridge-execute` on Claude Code. That generated command is self-contained; this project-local bridge skill mirrors the same protocol for source-repo development.
 
 ## Ownership Boundary
 

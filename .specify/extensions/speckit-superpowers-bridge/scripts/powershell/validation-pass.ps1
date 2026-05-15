@@ -81,7 +81,15 @@ catch {
 }
 
 $featureDirectory = Get-CurrentFeatureDirectory -RepoRoot $repoRoot -Handoff $handoff -Argument $FeatureDirectory
-$featurePath = if ([System.IO.Path]::IsPathRooted($featureDirectory)) { $featureDirectory } else { Join-Path $repoRoot $featureDirectory }
+$featurePath = ""
+if ([string]::IsNullOrWhiteSpace($featureDirectory)) {
+    Add-Step -Steps $steps -Name "feature-directory" -Passed $false -Details "missing"
+    $findings.Add((New-Finding -Code "feature_directory_missing" -Severity "P0" -Target ".specify/superpowers-handoff.json" -Message "No active feature_directory was found in arguments, handoff, or .specify/feature.json." -SuggestedFix "Regenerate handoff with update-handoff.ps1 -FeatureDirectory <specs/...> or pass -FeatureDirectory explicitly."))
+}
+else {
+    $featurePath = if ([System.IO.Path]::IsPathRooted($featureDirectory)) { $featureDirectory } else { Join-Path $repoRoot $featureDirectory }
+    Add-Step -Steps $steps -Name "feature-directory" -Passed $true -Details $featureDirectory
+}
 
 $matrixPath = Join-Path $repoRoot ".specify\extensions\speckit-superpowers-bridge\disposition-matrix.json"
 $verifiedPath = Join-Path $repoRoot ".specify\extensions\speckit-superpowers-bridge\verified-versions.json"
@@ -113,15 +121,17 @@ else {
     $findings.Add((New-Finding -Code "install_state_audit_failed" -Severity "P1" -Target "audit-install-state.ps1" -Message "Install-state audit exited $($audit.exit_code)." -SuggestedFix "Run audit-install-state.ps1 -Json and address findings."))
 }
 
-$requiredArtifacts = @(
-    ".specify\memory\constitution.md",
-    (Join-Path $featureDirectory "spec.md"),
-    (Join-Path $featureDirectory "plan.md"),
-    (Join-Path $featureDirectory "tasks.md")
-)
+$requiredArtifacts = @(".specify\memory\constitution.md")
+if (-not [string]::IsNullOrWhiteSpace($featureDirectory)) {
+    $requiredArtifacts += @(
+        (Join-Path $featureDirectory "spec.md"),
+        (Join-Path $featureDirectory "plan.md"),
+        (Join-Path $featureDirectory "tasks.md")
+    )
+}
 $missingArtifacts = @($requiredArtifacts | Where-Object { -not (Test-Path -LiteralPath (Join-Path $repoRoot $_)) })
 if ($missingArtifacts.Count -eq 0) {
-    Add-Step -Steps $steps -Name "feature-artifacts" -Passed $true -Details $featureDirectory
+    Add-Step -Steps $steps -Name "feature-artifacts" -Passed $true -Details $(if ([string]::IsNullOrWhiteSpace($featureDirectory)) { "constitution only" } else { $featureDirectory })
 }
 else {
     Add-Step -Steps $steps -Name "feature-artifacts" -Passed $false -Details ($missingArtifacts -join ", ")
@@ -217,7 +227,7 @@ elseif ($Strict -and [int]$counts.P2 -gt 0) { $exitCode = 3 }
 else { $exitCode = 0 }
 
 foreach ($finding in $findings) {
-    if (Test-Path -LiteralPath $featurePath) {
+    if (-not [string]::IsNullOrWhiteSpace($featurePath) -and (Test-Path -LiteralPath $featurePath)) {
         Append-CompatibilityGap -FeaturePath $featurePath -Finding $finding
     }
 }

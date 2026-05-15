@@ -8,56 +8,56 @@
       "disposition": "FORBID-UNDER-HANDOFF",
       "applicability": ["executing"],
       "rationale": "Constitution edits change the bridge's rules; deny only while an active handoff is executing. Allowed during ready/blocked/complete.",
-      "verified_against": "spec_kit@0.8.9"
+      "verified_against": "spec_kit@0.8.10"
     },
     {
       "id": "speckit.specify",
       "kind": "spec_kit_command",
       "disposition": "COMBINE",
       "rationale": "Spec creation; design-time ownership. Allowed regardless of handoff status.",
-      "verified_against": "spec_kit@0.8.9"
+      "verified_against": "spec_kit@0.8.10"
     },
     {
       "id": "speckit.clarify",
       "kind": "spec_kit_command",
       "disposition": "COMBINE",
       "rationale": "Spec refinement; design-time ownership.",
-      "verified_against": "spec_kit@0.8.9"
+      "verified_against": "spec_kit@0.8.10"
     },
     {
       "id": "speckit.plan",
       "kind": "spec_kit_command",
       "disposition": "COMBINE",
       "rationale": "Plan creation; design-time ownership.",
-      "verified_against": "spec_kit@0.8.9"
+      "verified_against": "spec_kit@0.8.10"
     },
     {
       "id": "speckit.tasks",
       "kind": "spec_kit_command",
       "disposition": "COMBINE",
       "rationale": "Task generation; design-time ownership; triggers handoff transition via after_tasks hook.",
-      "verified_against": "spec_kit@0.8.9"
+      "verified_against": "spec_kit@0.8.10"
     },
     {
       "id": "speckit.analyze",
       "kind": "spec_kit_command",
       "disposition": "COMBINE",
       "rationale": "Cross-artifact consistency analysis; design-time ownership.",
-      "verified_against": "spec_kit@0.8.9"
+      "verified_against": "spec_kit@0.8.10"
     },
     {
       "id": "speckit.checklist",
       "kind": "spec_kit_command",
       "disposition": "COMBINE",
       "rationale": "Spec-time checklist generation; orthogonal to Superpowers verification-before-completion.",
-      "verified_against": "spec_kit@0.8.9"
+      "verified_against": "spec_kit@0.8.10"
     },
     {
       "id": "speckit.taskstoissues",
       "kind": "spec_kit_command",
       "disposition": "COMBINE",
       "rationale": "Tasks export to GitHub issues; design-time utility.",
-      "verified_against": "spec_kit@0.8.9"
+      "verified_against": "spec_kit@0.8.10"
     },
     {
       "id": "speckit.implement",
@@ -66,84 +66,91 @@
       "applicability": ["ready", "executing", "blocked", "complete"],
       "superseded_by": "superpowers:executing-plans",
       "rationale": "speckit.implement is replaced by Superpowers execution when a handoff exists. Always denied; the previously-hardcoded rule is codified in the matrix.",
-      "verified_against": "spec_kit@0.8.9"
+      "verified_against": "spec_kit@0.8.10"
     },
     {
       "id": "speckit.git.initialize",
       "kind": "spec_kit_command",
       "disposition": "COMBINE",
       "rationale": "Repo bootstrap; no Spec Kit overlap.",
-      "verified_against": "spec_kit@0.8.9"
+      "verified_against": "spec_kit@0.8.10"
     },
     {
       "id": "speckit.git.feature",
       "kind": "spec_kit_command",
       "disposition": "COMBINE",
       "rationale": "Feature branch creation; no overlap.",
-      "verified_against": "spec_kit@0.8.9"
+      "verified_against": "spec_kit@0.8.10"
     },
     {
       "id": "speckit.git.commit",
       "kind": "spec_kit_command",
       "disposition": "COMBINE",
       "rationale": "Auto-commit hooks; no overlap.",
-      "verified_against": "spec_kit@0.8.9"
+      "verified_against": "spec_kit@0.8.10"
     },
     {
       "id": "speckit.git.remote",
       "kind": "spec_kit_command",
       "disposition": "COMBINE",
       "rationale": "Remote configuration; no overlap.",
-      "verified_against": "spec_kit@0.8.9"
+      "verified_against": "spec_kit@0.8.10"
     },
     {
       "id": "speckit.git.validate",
       "kind": "spec_kit_command",
       "disposition": "COMBINE",
       "rationale": "Repo state validation; no overlap.",
-      "verified_against": "spec_kit@0.8.9"
+      "verified_against": "spec_kit@0.8.10"
     },
     {
-      "id": "speckit.superpowers.guard",
+      "id": "speckit.speckit-superpowers-bridge.guard",
       "kind": "bridge_meta_command",
       "disposition": "COMBINE",
       "rationale": "The guard cannot guard itself; always available.",
       "verified_against": "bridge@002"
     },
     {
-      "id": "speckit.superpowers.handoff",
+      "id": "speckit.speckit-superpowers-bridge.handoff",
       "kind": "bridge_meta_command",
       "disposition": "COMBINE",
       "rationale": "Handoff command is a meta-operation; always available.",
       "verified_against": "bridge@002"
     },
     {
-      "id": "speckit.superpowers.parity",
+      "id": "speckit.speckit-superpowers-bridge.parity",
       "kind": "bridge_meta_command",
       "disposition": "COMBINE",
       "rationale": "Parity-check meta-command; introduced by feature 002; always available.",
       "verified_against": "bridge@002"
     },
     {
-      "id": "speckit.superpowers.audit",
+      "id": "speckit.speckit-superpowers-bridge.audit",
       "kind": "bridge_meta_command",
       "disposition": "COMBINE",
       "rationale": "Install-state audit meta-command introduced by feature 004; always available.",
       "verified_against": "bridge@004"
     },
     {
-      "id": "speckit.superpowers.validate",
+      "id": "speckit.speckit-superpowers-bridge.validate",
       "kind": "bridge_meta_command",
       "disposition": "COMBINE",
       "rationale": "End-to-end validation pass introduced by feature 004; always available.",
       "verified_against": "bridge@004"
     },
     {
-      "id": "speckit.superpowers.recommend-route",
+      "id": "speckit.speckit-superpowers-bridge.recommend-route",
       "kind": "bridge_meta_command",
       "disposition": "COMBINE",
       "rationale": "Advisory routing recommender introduced by feature 004; always available and never auto-routes.",
       "verified_against": "bridge@004"
+    },
+    {
+      "id": "speckit.speckit-superpowers-bridge.execute",
+      "kind": "bridge_meta_command",
+      "disposition": "COMBINE",
+      "rationale": "Marketplace-compliant execution entry point for the bridge skill; always available and never replaces Spec Kit artifacts.",
+      "verified_against": "bridge@0.1.1"
     },
     {
       "id": "superpowers:brainstorming",

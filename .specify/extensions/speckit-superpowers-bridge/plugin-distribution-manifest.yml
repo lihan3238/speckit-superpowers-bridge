@@ -5,6 +5,7 @@ includes:
   - path: .claude/skills/speckit-superpowers-bridge/SKILL.md
   - path: README.md
   - path: README.zh-CN.md
+  - path: CHANGELOG.md
   - path: LICENSE
   - path: AGENTS.md
     condition: merge bridge section if host project already has AGENTS.md

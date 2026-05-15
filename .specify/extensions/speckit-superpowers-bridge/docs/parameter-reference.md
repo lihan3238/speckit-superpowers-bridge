@@ -22,7 +22,7 @@ $speckit-checklist
 $speckit-plan
 $speckit-tasks
 $speckit-analyze
-$speckit-superpowers-bridge
+$speckit-speckit-superpowers-bridge-execute
 ```
 
 The bridge handoff records constitution as `source_of_truth.constitution`, and the bridge skill reads it before implementation. Superpowers does not replace constitution. If implementation reveals a governance conflict, mark the handoff `blocked`, revise through Spec Kit, then resume.
@@ -322,4 +322,3 @@ This command never auto-routes. It only advises.
 | `.specify/extensions/speckit-superpowers-bridge/disposition-matrix.json` | yes | Policy source of truth. |
 | `.specify/extensions/speckit-superpowers-bridge/verified-versions.json` | yes | Version verification record. |
 | `.specify/extensions/speckit-superpowers-bridge/plugin-distribution-manifest.yml` | yes | Marketplace/package file list. |
-

@@ -1,21 +1,22 @@
 {
   "schema_version": 1,
-  "spec_kit_version": "0.8.9",
+  "spec_kit_version": "0.8.10",
+  "superpowers_version": "5.1.0",
   "superpowers_skills": [
-    { "name": "brainstorming",                  "version": "runtime-exposed" },
-    { "name": "executing-plans",                "version": "runtime-exposed" },
-    { "name": "writing-plans",                  "version": "runtime-exposed" },
-    { "name": "subagent-driven-development",    "version": "runtime-exposed" },
-    { "name": "test-driven-development",        "version": "runtime-exposed" },
-    { "name": "systematic-debugging",           "version": "runtime-exposed" },
-    { "name": "using-git-worktrees",            "version": "runtime-exposed" },
-    { "name": "requesting-code-review",         "version": "runtime-exposed" },
-    { "name": "verification-before-completion", "version": "runtime-exposed" },
-    { "name": "finishing-a-development-branch", "version": "runtime-exposed" },
-    { "name": "dispatching-parallel-agents",    "version": "runtime-exposed" },
-    { "name": "receiving-code-review",          "version": "runtime-exposed" },
-    { "name": "using-superpowers",              "version": "runtime-exposed" },
-    { "name": "writing-skills",                 "version": "runtime-exposed" }
+    { "name": "brainstorming",                  "version": "5.1.0" },
+    { "name": "executing-plans",                "version": "5.1.0" },
+    { "name": "writing-plans",                  "version": "5.1.0" },
+    { "name": "subagent-driven-development",    "version": "5.1.0" },
+    { "name": "test-driven-development",        "version": "5.1.0" },
+    { "name": "systematic-debugging",           "version": "5.1.0" },
+    { "name": "using-git-worktrees",            "version": "5.1.0" },
+    { "name": "requesting-code-review",         "version": "5.1.0" },
+    { "name": "verification-before-completion", "version": "5.1.0" },
+    { "name": "finishing-a-development-branch", "version": "5.1.0" },
+    { "name": "dispatching-parallel-agents",    "version": "5.1.0" },
+    { "name": "receiving-code-review",          "version": "5.1.0" },
+    { "name": "using-superpowers",              "version": "5.1.0" },
+    { "name": "writing-skills",                 "version": "5.1.0" }
   ],
   "spec_kit_commands": [
     "speckit.constitution",
@@ -32,13 +33,14 @@
     "speckit.git.commit",
     "speckit.git.remote",
     "speckit.git.validate",
-    "speckit.superpowers.guard",
-    "speckit.superpowers.handoff",
-    "speckit.superpowers.parity",
-    "speckit.superpowers.audit",
-    "speckit.superpowers.validate",
-    "speckit.superpowers.recommend-route"
+    "speckit.speckit-superpowers-bridge.guard",
+    "speckit.speckit-superpowers-bridge.handoff",
+    "speckit.speckit-superpowers-bridge.parity",
+    "speckit.speckit-superpowers-bridge.audit",
+    "speckit.speckit-superpowers-bridge.validate",
+    "speckit.speckit-superpowers-bridge.recommend-route",
+    "speckit.speckit-superpowers-bridge.execute"
   ],
   "verified_at": "2026-05-15T00:00:00Z",
-  "verified_by": "claude (feature 002 implementation pass)"
+  "verified_by": "codex marketplace v0.1.1 verification pass"
 }

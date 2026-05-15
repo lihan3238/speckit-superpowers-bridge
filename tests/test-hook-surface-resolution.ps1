@@ -42,7 +42,7 @@ $claude = @(Get-ChildItem -LiteralPath (Join-Path $repoRoot ".claude/skills") -D
 $missing = New-Object System.Collections.Generic.List[string]
 foreach ($cmd in $hookCmds) {
     $skillName = $cmd -replace '\.', '-'
-    $isBridgeMeta = $cmd.StartsWith("speckit.superpowers.")
+    $isBridgeMeta = $cmd.StartsWith("speckit.speckit-superpowers-bridge.")
     if ($isBridgeMeta) {
         # The parent speckit-superpowers-bridge skill covers all bridge meta-commands.
         Assert-True ($codex -contains "speckit-superpowers-bridge") "Codex missing speckit-superpowers-bridge parent skill (covers $cmd)"

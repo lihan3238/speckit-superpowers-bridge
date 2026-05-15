@@ -10,6 +10,8 @@ Use this skill when Spec Kit has produced implementation artifacts and Superpowe
 
 This is the Codex bridge skill at `.agents/skills/speckit-superpowers-bridge/SKILL.md`. Claude Code uses the sibling bridge skill at `.claude/skills/speckit-superpowers-bridge/SKILL.md`.
 
+Marketplace installs expose the official execute command as `$speckit-speckit-superpowers-bridge-execute` on Codex. That generated command is self-contained; this project-local bridge skill mirrors the same protocol for source-repo development.
+
 ## Ownership Boundary
 
 - Spec Kit owns `constitution.md`, `spec.md`, `plan.md`, `tasks.md`, checklists, and analysis.

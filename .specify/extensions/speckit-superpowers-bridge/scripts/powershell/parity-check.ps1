@@ -218,7 +218,7 @@ foreach ($s in $claudeSkills) {
 # 5b: hook command coverage (every hook command resolves to a skill or bridge meta-command)
 foreach ($cmd in $hookCommands) {
     $skillName = $cmd -replace '\.', '-'
-    $isBridgeMetaCommand = $cmd.StartsWith("speckit.superpowers.")
+    $isBridgeMetaCommand = $cmd.StartsWith("speckit.speckit-superpowers-bridge.")
     if ($isBridgeMetaCommand -and ($codexSkills -contains "speckit-superpowers-bridge") -and ($claudeSkills -contains "speckit-superpowers-bridge")) {
         continue
     }

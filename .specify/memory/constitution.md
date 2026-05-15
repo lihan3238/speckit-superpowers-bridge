@@ -1,17 +1,15 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 0.0.0 (uninstantiated template) -> 1.0.0 (initial ratification)
-Bump rationale: First concrete ratification of project principles; all template
-placeholders replaced with project-specific governance. MAJOR per semver
-because this establishes the binding baseline.
+Version change: 1.0.0 -> 1.1.0
+Bump rationale: Marketplace distribution is now explicitly allowed as a thin
+packaging layer for the same repo-local bridge assets. MINOR per semver because
+Principle I is expanded without weakening the lightweight runtime constraints.
 
 Modified principles:
-  - [PRINCIPLE_1_NAME] -> "I. Lightweight & Repo-Local"
-  - [PRINCIPLE_2_NAME] -> "II. Design/Implementation Separation (NON-NEGOTIABLE)"
-  - [PRINCIPLE_3_NAME] -> "III. Agent-Neutral Protocol"
-  - [PRINCIPLE_4_NAME] -> "IV. Smooth Bidirectional Handoff"
-  - [PRINCIPLE_5_NAME] -> "V. Vendor-Managed Boundaries"
+  - "I. Lightweight & Repo-Local" clarified to allow marketplace packaging
+    as distribution only, while still forbidding runtime services, daemons,
+    databases, and global plugin edits.
 
 Added sections:
   - "Boundary & Ownership Rules" (formerly [SECTION_2_NAME])
@@ -21,21 +19,15 @@ Added sections:
 Removed sections: none
 
 Templates requiring updates:
-  - .specify/templates/plan-template.md           - aligned (Constitution Check
-    section already references the constitution generically); pending: add
-    explicit per-principle gate checklist when next plan is drafted (advisory).
-  - .specify/templates/spec-template.md           - aligned (no
-    principle-specific scope sections required at spec stage).
-  - .specify/templates/tasks-template.md          - aligned (no
-    principle-driven task categories require renaming).
+  - .specify/templates/plan-template.md           - aligned.
+  - .specify/templates/spec-template.md           - aligned.
+  - .specify/templates/tasks-template.md          - aligned.
   - .claude/skills/speckit-constitution/*         - aligned (vendor-managed;
     do not hand-edit).
   - .agents/skills/speckit-constitution/*         - aligned (vendor-managed;
     do not hand-edit).
-  - AGENTS.md                                     - aligned (already encodes
-    these principles operationally).
-  - CLAUDE.md                                     - aligned (defers to
-    AGENTS.md per protocol).
+  - AGENTS.md                                     - aligned.
+  - CLAUDE.md                                     - aligned.
 
 Follow-up TODOs: none.
 -->
@@ -48,10 +40,12 @@ Follow-up TODOs: none.
 
 The bridge MUST remain a repo-local protocol composed of small Markdown skills,
 PowerShell scripts, JSON/YAML state files, and Spec Kit extension manifests.
-No new runtime, daemon, service, or marketplace package may be introduced in
-order to satisfy a bridge requirement. Changes MUST prefer the smallest
-diff that delivers the capability and MUST NOT modify the global Superpowers
-plugin cache or any other tool's global installation.
+No new runtime, daemon, service, database, or global plugin modification may
+be introduced in order to satisfy a bridge requirement. Marketplace packaging
+MAY be introduced only as a thin distribution layer for the same repo-local
+assets. Changes MUST prefer the smallest diff that delivers the capability and
+MUST NOT modify the global Superpowers plugin cache or any other tool's global
+installation.
 
 **Rationale**: The bridge's only reason to exist is to glue two existing
 tools together. Any heavier infrastructure invalidates the premise, makes
@@ -91,7 +85,7 @@ agent-specific notes layered in `CLAUDE.md` and Codex-specific files;
 documented explicitly and MUST NOT change behavior:
 
 - Internal Spec Kit command IDs remain dotted (e.g. `speckit.plan`,
-  `speckit.superpowers.guard`).
+  `speckit.speckit-superpowers-bridge.guard`).
 - Codex invokes via `$speckit-plan` style.
 - Claude Code invokes via slash commands derived from skill names
   (e.g. `/speckit-plan`); hook command names with dots are rendered with
@@ -190,4 +184,4 @@ prevents racey edits when both agents are co-resident in a workspace.
 - Use `AGENTS.md` for runtime cross-agent guidance and `CLAUDE.md` for
   Claude-specific supplements.
 
-**Version**: 1.0.0 | **Ratified**: 2026-05-14 | **Last Amended**: 2026-05-14
+**Version**: 1.1.0 | **Ratified**: 2026-05-14 | **Last Amended**: 2026-05-15

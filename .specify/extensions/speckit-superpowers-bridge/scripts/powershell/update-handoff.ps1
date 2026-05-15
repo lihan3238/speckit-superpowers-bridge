@@ -376,7 +376,7 @@ $handoff = [ordered]@{
     notes = $notes
     last_snapshot_id = $snapshotId
     archive_history = @($archiveHistory)
-    instructions = "Use .agents/skills/speckit-superpowers-bridge/SKILL.md in Codex or .claude/skills/speckit-superpowers-bridge/SKILL.md in Claude Code. Do not run speckit.implement or regenerate Spec Kit plan/tasks with Superpowers writing-plans."
+    instructions = 'Use the official bridge execute command: Codex $speckit-speckit-superpowers-bridge-execute or Claude Code /speckit-speckit-superpowers-bridge-execute. In this source repo, .agents/skills/speckit-superpowers-bridge/SKILL.md and .claude/skills/speckit-superpowers-bridge/SKILL.md mirror the same protocol. Do not run speckit.implement or regenerate Spec Kit plan/tasks with Superpowers writing-plans.'
 }
 
 $handoffPath = Join-Path $specifyDir "superpowers-handoff.json"

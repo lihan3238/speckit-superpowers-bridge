@@ -20,7 +20,7 @@ hooks:
     description: Create feature branch before specification
     condition: null
   - extension: speckit-superpowers-bridge
-    command: speckit.superpowers.recommend-route
+    command: speckit.speckit-superpowers-bridge.recommend-route
     enabled: true
     optional: false
     prompt: Check whether this request should go direct to Superpowers?
@@ -35,7 +35,7 @@ hooks:
     description: Auto-commit before spec clarification
     condition: null
   - extension: speckit-superpowers-bridge
-    command: speckit.superpowers.guard
+    command: speckit.speckit-superpowers-bridge.guard
     enabled: true
     optional: false
     prompt: Check Superpowers bridge guard before clarification?
@@ -50,7 +50,7 @@ hooks:
     description: Auto-commit before implementation planning
     condition: null
   - extension: speckit-superpowers-bridge
-    command: speckit.superpowers.guard
+    command: speckit.speckit-superpowers-bridge.guard
     enabled: true
     optional: false
     prompt: Check Superpowers bridge guard before planning?
@@ -65,7 +65,7 @@ hooks:
     description: Auto-commit before task generation
     condition: null
   - extension: speckit-superpowers-bridge
-    command: speckit.superpowers.guard
+    command: speckit.speckit-superpowers-bridge.guard
     enabled: true
     optional: false
     prompt: Check Superpowers bridge guard before task generation?
@@ -80,7 +80,7 @@ hooks:
     description: Auto-commit before implementation
     condition: null
   - extension: speckit-superpowers-bridge
-    command: speckit.superpowers.guard
+    command: speckit.speckit-superpowers-bridge.guard
     enabled: true
     optional: false
     prompt: Block speckit.implement if Superpowers owns execution?
@@ -151,7 +151,7 @@ hooks:
     description: Auto-commit after task generation
     condition: null
   - extension: speckit-superpowers-bridge
-    command: speckit.superpowers.handoff
+    command: speckit.speckit-superpowers-bridge.handoff
     enabled: true
     optional: false
     prompt: Create Superpowers implementation handoff?

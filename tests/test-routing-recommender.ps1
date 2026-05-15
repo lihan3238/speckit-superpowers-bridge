@@ -52,6 +52,6 @@ finally {
 
 $extensions = Get-Content -LiteralPath (Join-Path $repoRoot ".specify\extensions.yml") -Raw
 Assert-True ($extensions -match "before_specify") "extensions.yml should include before_specify hook."
-Assert-True ($extensions -match "speckit.superpowers.recommend-route") "before_specify should surface recommend-route."
+Assert-True ($extensions -match "speckit.speckit-superpowers-bridge.recommend-route") "before_specify should surface recommend-route."
 
 Write-Output "routing-recommender-tests-ok"

@@ -3,56 +3,64 @@ schema_version: "1.0"
 extension:
   id: speckit-superpowers-bridge
   name: "Superpowers Implementation Bridge"
-  version: "0.1.0"
-  description: "Hands Spec Kit tasks to Superpowers for implementation without running speckit.implement"
-  author: local
-  repository: local
+  version: "0.1.1"
+  description: "Spec Kit stays source of truth while Superpowers executes implementation tasks"
+  author: "lihan3238"
+  repository: "https://github.com/lihan3238/speckit-superpowers-bridge"
+  homepage: "https://github.com/lihan3238/speckit-superpowers-bridge"
+  documentation: "https://github.com/lihan3238/speckit-superpowers-bridge#readme"
   license: MIT
 
 requires:
-  speckit_version: ">=0.8.9"
+  speckit_version: ">=0.8.10"
 
 provides:
   commands:
-    - name: speckit.superpowers.handoff
-      file: commands/speckit.superpowers.handoff.md
+    - name: speckit.speckit-superpowers-bridge.handoff
+      file: commands/speckit.speckit-superpowers-bridge.handoff.md
       description: "Create or update the Superpowers implementation handoff state"
-    - name: speckit.superpowers.guard
-      file: commands/speckit.superpowers.guard.md
+    - name: speckit.speckit-superpowers-bridge.guard
+      file: commands/speckit.speckit-superpowers-bridge.guard.md
       description: "Guard Spec Kit and Superpowers commands from crossing bridge ownership boundaries"
-    - name: speckit.superpowers.audit
-      file: commands/speckit.superpowers.audit.md
+    - name: speckit.speckit-superpowers-bridge.audit
+      file: commands/speckit.speckit-superpowers-bridge.audit.md
       description: "Audit bridge install state and Codex/Claude skill parity"
-    - name: speckit.superpowers.validate
-      file: commands/speckit.superpowers.validate.md
+    - name: speckit.speckit-superpowers-bridge.validate
+      file: commands/speckit.speckit-superpowers-bridge.validate.md
       description: "Run the bridge end-to-end validation pass"
-    - name: speckit.superpowers.recommend-route
-      file: commands/speckit.superpowers.recommend-route.md
+    - name: speckit.speckit-superpowers-bridge.parity
+      file: commands/speckit.speckit-superpowers-bridge.parity.md
+      description: "Audit bridge disposition matrix, version pins, and agent parity"
+    - name: speckit.speckit-superpowers-bridge.recommend-route
+      file: commands/speckit.speckit-superpowers-bridge.recommend-route.md
       description: "Emit advisory routing recommendation before the full Spec Kit pipeline"
+    - name: speckit.speckit-superpowers-bridge.execute
+      file: commands/speckit.speckit-superpowers-bridge.execute.md
+      description: "Execute Spec Kit tasks.md through the Superpowers bridge"
 
 hooks:
   before_specify:
-    command: speckit.superpowers.recommend-route
+    command: speckit.speckit-superpowers-bridge.recommend-route
     optional: false
     description: "Suggest direct Superpowers route for small-scope changes before full specification"
   before_clarify:
-    command: speckit.superpowers.guard
+    command: speckit.speckit-superpowers-bridge.guard
     optional: false
     description: "Prevent Spec Kit contract changes while Superpowers implementation is executing"
   before_plan:
-    command: speckit.superpowers.guard
+    command: speckit.speckit-superpowers-bridge.guard
     optional: false
     description: "Prevent Spec Kit contract changes while Superpowers implementation is executing"
   before_tasks:
-    command: speckit.superpowers.guard
+    command: speckit.speckit-superpowers-bridge.guard
     optional: false
     description: "Prevent Spec Kit contract changes while Superpowers implementation is executing"
   before_implement:
-    command: speckit.superpowers.guard
+    command: speckit.speckit-superpowers-bridge.guard
     optional: false
     description: "Block speckit.implement for features handed off to Superpowers"
   after_tasks:
-    command: speckit.superpowers.handoff
+    command: speckit.speckit-superpowers-bridge.handoff
     optional: false
     description: "Create the Superpowers handoff after Spec Kit task generation"
 

@@ -19,9 +19,9 @@ Create `.specify/superpowers-handoff.json` so Spec Kit artifacts explicitly hand
    - `status`
    - `artifact_owner`
    - `review_only_agents`
-4. Tell the implementation agent to use the correct bridge skill:
-   - Codex: `$speckit-superpowers-bridge` via `.agents/skills/speckit-superpowers-bridge/SKILL.md`
-   - Claude Code: `/speckit-superpowers-bridge` via `.claude/skills/speckit-superpowers-bridge/SKILL.md`
+4. Tell the implementation agent to use the marketplace-compliant execute entry point:
+   - Codex: `$speckit-speckit-superpowers-bridge-execute`
+   - Claude Code: `/speckit-speckit-superpowers-bridge-execute`
 
 ## Execution
 

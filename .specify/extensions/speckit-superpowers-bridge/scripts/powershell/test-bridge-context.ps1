@@ -64,14 +64,14 @@ Assert-True ($agents -match "-Actor codex") "AGENTS.md must document Codex actor
 Assert-True ($agents -match "-Actor claude") "AGENTS.md must document Claude actor usage."
 
 Assert-True ($claude -match "AGENTS\.md") "CLAUDE.md must instruct Claude Code to read AGENTS.md."
-Assert-True ($claude -match "/speckit-superpowers-bridge") "CLAUDE.md must document the Claude bridge command."
+Assert-True ($claude -match "/speckit-speckit-superpowers-bridge-execute") "CLAUDE.md must document the Claude bridge execute command."
 Assert-True ($claude -match "\.claude/skills/speckit-superpowers-bridge") "CLAUDE.md must point to the Claude bridge skill."
 Assert-True ($claude -match "vendor-managed") "CLAUDE.md must keep official Claude Spec Kit skills vendor-managed."
 Assert-True ($claude -match "-Actor claude") "CLAUDE.md must document Claude actor usage."
 
 Assert-True ($codexBridgeSkill -match "\.agents/skills/speckit-superpowers-bridge") "Codex bridge skill must mention its agent-specific path."
 Assert-True ($codexBridgeSkill -match "\.claude/skills/speckit-superpowers-bridge") "Codex bridge skill must mention the Claude bridge skill path."
-Assert-True ($claudeBridgeSkill -match "/speckit-superpowers-bridge") "Claude bridge skill must use Claude slash-hyphen examples."
+Assert-True ($claudeBridgeSkill -match "/speckit-speckit-superpowers-bridge-execute") "Claude bridge skill must use Claude slash-hyphen examples."
 Assert-True ($claudeBridgeSkill -match "\.claude/skills/speckit-superpowers-bridge") "Claude bridge skill must mention its agent-specific path."
 Assert-True ($claudeBridgeSkill -match 'Do not call `speckit\.implement`') "Claude bridge skill must preserve the speckit.implement deny rule."
 

@@ -2,15 +2,30 @@
 
 # speckit-superpowers-bridge
 
-Spec Kit + Superpowers Bridge is a lightweight local extension protocol that keeps Spec Kit as the source of truth for specification, planning, and tasks while using Superpowers for implementation discipline.
+Spec Kit + Superpowers Bridge is a lightweight integration protocol: Spec Kit remains the source of truth for constitution, specification, planning, tasks, checklists, and analysis; Superpowers executes implementation discipline only.
+
+## overview
+
+This is not another full Superpowers workflow replacement. The bridge deliberately avoids duplicating either tool:
+
+- Spec Kit owns the design contract.
+- Superpowers owns TDD, debugging, execution, review, verification, and branch finishing.
+- `tasks.md` is the only implementation contract.
+- Guard, handoff, audit, and rollback state keep the two systems from overlapping or leaving gaps.
+- The package is repo-local and small: one Spec Kit extension, one bridge skill pair, one handoff JSON, one JSONL event log, and rollback snapshots. No service, database, daemon, or global Superpowers patching.
 
 ## installation
 
-Install or copy the bridge assets listed in `.specify/extensions/speckit-superpowers-bridge/plugin-distribution-manifest.yml` into a Spec Kit project with Codex, Claude Code, or both integrations installed.
+Marketplace release install:
 
 ```powershell
-specify init . --integration codex
-specify integration install claude
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.1.1/speckit-superpowers-bridge-v0.1.1.zip
+```
+
+Local development install:
+
+```powershell
+specify extension add --dev .\.specify\extensions\speckit-superpowers-bridge
 ```
 
 Run the install-state audit after installation:
@@ -31,7 +46,7 @@ specify integration install claude
 specify integration use codex
 ```
 
-Copy or install this bridge's manifest-listed files, then verify the local install:
+Install the bridge, then verify the local install:
 
 ```powershell
 .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\audit-install-state.ps1 -Json
@@ -76,15 +91,15 @@ Use `-Actor claude` when Claude Code owns execution. Enable long unattended runs
 
 ### 4. Execute with Superpowers
 
-Invoke the bridge instead of `speckit.implement`:
+Invoke the marketplace-compliant execute command instead of `speckit.implement`:
 
 ```text
-$speckit-superpowers-bridge
+$speckit-speckit-superpowers-bridge-execute
 ```
 
-Claude Code uses `/speckit-superpowers-bridge`.
+Claude Code uses `/speckit-speckit-superpowers-bridge-execute`.
 
-The bridge reads `constitution.md`, `spec.md`, `plan.md`, and `tasks.md`, then executes `tasks.md` with Superpowers discipline: TDD, debugging, review, verification, and branch finishing. It updates task checkboxes and handoff state as execution progresses.
+The generated execute command is the marketplace-installed bridge driver. It reads `constitution.md`, `spec.md`, `plan.md`, and `tasks.md`, then executes `tasks.md` with Superpowers discipline: TDD, debugging, review, verification, and branch finishing. It updates task checkboxes and handoff state as execution progresses. In this source repository, `.agents/skills/speckit-superpowers-bridge` and `.claude/skills/speckit-superpowers-bridge` mirror the same protocol for local development.
 
 ### 5. Handle requirement gaps
 
@@ -115,7 +130,7 @@ The bridge marks handoff status `complete` only after tasks are complete and ver
 - Do not run `speckit.implement` while handoff executor is `superpowers`.
 - Do not use Superpowers `brainstorming` or `writing-plans` to replace an existing Spec Kit `spec.md`, `plan.md`, or `tasks.md`.
 - Do not let Codex and Claude Code write the same Spec Kit artifacts at the same time.
-- Use `speckit.superpowers.audit`, `speckit.superpowers.parity`, and `speckit.superpowers.validate` when something feels out of sync.
+- Use `speckit.speckit-superpowers-bridge.audit`, `speckit.speckit-superpowers-bridge.parity`, and `speckit.speckit-superpowers-bridge.validate` when something feels out of sync.
 
 ## configuration
 
@@ -137,18 +152,21 @@ Environment variables:
 
 ## architecture
 
-Spec Kit owns WHAT: constitution, specification, planning, task generation, checklists, and analysis. Superpowers owns HOW: TDD, debugging, execution, review, verification, and branch finishing. This follows the design direction in the Spec Kit vs Superpowers comparison article referenced by `AGENTS.md`.
+Spec Kit owns WHAT: constitution, specification, planning, task generation, checklists, and analysis. Superpowers owns HOW: TDD, debugging, execution, review, verification, and branch finishing. The bridge's advantage is strict separation with minimal glue: it lets each tool do what it is best at without rewriting or replacing the other.
 
 ## commands
 
-Bridge meta-commands:
+Official extension command IDs:
 
-- `speckit.superpowers.guard`: enforce responsibility boundaries
-- `speckit.superpowers.handoff`: create or refresh the handoff
-- `speckit.superpowers.parity`: audit disposition matrix coverage
-- `speckit.superpowers.audit`: audit install state and per-agent skill parity
-- `speckit.superpowers.validate`: run the end-to-end bridge validation pass
-- `speckit.superpowers.recommend-route`: advisory light/heavy workflow route hint
+- `speckit.speckit-superpowers-bridge.execute`: execute Spec Kit `tasks.md` through Superpowers
+- `speckit.speckit-superpowers-bridge.guard`: enforce responsibility boundaries
+- `speckit.speckit-superpowers-bridge.handoff`: create or refresh the handoff
+- `speckit.speckit-superpowers-bridge.parity`: audit disposition matrix coverage
+- `speckit.speckit-superpowers-bridge.audit`: audit install state and per-agent skill parity
+- `speckit.speckit-superpowers-bridge.validate`: run the end-to-end bridge validation pass
+- `speckit.speckit-superpowers-bridge.recommend-route`: advisory light/heavy workflow route hint
+
+Agent integrations render these command IDs into their own invocation style. For example, Codex renders the execute command as `$speckit-speckit-superpowers-bridge-execute`; Claude Code renders it as `/speckit-speckit-superpowers-bridge-execute`.
 
 ## skill-sync-upgrade
 
@@ -178,6 +196,10 @@ Run these checks first:
 ```
 
 If implementation reveals a requirement gap, set the handoff to `blocked` and return to Spec Kit artifacts before resuming.
+
+## marketplace-positioning
+
+The community catalog already contains broader Superpowers bridges. This extension is intentionally narrower: it is a compatibility protocol for teams that want Spec Kit to remain the full design spine while Superpowers supplies execution discipline. The differentiator is the guard/handoff/audit/rollback contract, not another planning layer.
 
 ## license
 
