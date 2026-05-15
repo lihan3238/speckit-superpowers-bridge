@@ -27,6 +27,7 @@ Cross-platform compatibility release. The bridge now ships one ZIP that contains
 ### Fixed
 
 - Fresh marketplace installs no longer leave users with only the long generated `$speckit-speckit-superpowers-bridge-execute` / `/speckit-speckit-superpowers-bridge-execute` entrypoint.
+- Release ZIPs now place `extension.yml` directly at archive root and use portable `/` entry separators, matching Spec Kit's latest Linux/macOS installer expectations.
 
 ### Compatibility
 

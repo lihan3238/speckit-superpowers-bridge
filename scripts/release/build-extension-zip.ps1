@@ -12,8 +12,7 @@ if ($Version -notmatch '^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$') {
 $repoRoot = (& git rev-parse --show-toplevel).Trim()
 $bridgeDir = Join-Path $repoRoot ".specify/extensions/speckit-superpowers-bridge"
 $stageRoot = Join-Path ([System.IO.Path]::GetTempPath()) "speckit-superpowers-bridge-build-$Version"
-$archiveTopDir = "speckit-superpowers-bridge-$Version"
-$stageDir = Join-Path $stageRoot $archiveTopDir
+$stageDir = $stageRoot
 $distDir = Join-Path $repoRoot "dist"
 $outZip = Join-Path $distDir "speckit-superpowers-bridge-v$Version.zip"
 if (-not (Test-Path -LiteralPath $distDir)) { New-Item -ItemType Directory -Force -Path $distDir | Out-Null }
@@ -43,9 +42,57 @@ if ($manifest -notmatch "version:\s*[`"']?$([regex]::Escape($Version))[`"']?\b")
     throw "extension.yml does not declare version '$Version'. Bump it first."
 }
 
-# Build ZIP
+# Build ZIP. Use ZipArchive directly so entry names always use '/' separators
+# even when this script runs on Windows; Linux/macOS installers require real
+# directory entries, not filenames containing backslashes.
 if (Test-Path -LiteralPath $outZip) { Remove-Item -Force -LiteralPath $outZip }
-Compress-Archive -Path (Join-Path $stageRoot "*") -DestinationPath $outZip -CompressionLevel Optimal
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+$zip = [System.IO.Compression.ZipFile]::Open($outZip, [System.IO.Compression.ZipArchiveMode]::Create)
+try {
+    $files = Get-ChildItem -LiteralPath $stageRoot -Recurse -File
+    $stageRootFull = (Resolve-Path -LiteralPath $stageRoot).Path.TrimEnd('\', '/')
+    foreach ($file in $files) {
+        $fileFull = (Resolve-Path -LiteralPath $file.FullName).Path
+        if (-not $fileFull.StartsWith($stageRootFull, [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "Staged file is outside stage root: $fileFull"
+        }
+        $relative = $fileFull.Substring($stageRootFull.Length).TrimStart('\', '/')
+        $entryName = $relative.Replace([System.IO.Path]::DirectorySeparatorChar, '/').Replace([System.IO.Path]::AltDirectorySeparatorChar, '/')
+        [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+            $zip,
+            $file.FullName,
+            $entryName,
+            [System.IO.Compression.CompressionLevel]::Optimal
+        ) | Out-Null
+    }
+} finally {
+    $zip.Dispose()
+}
+
+# Spec Kit extension install expects extension.yml at ZIP root and portable '/'
+# path separators for nested command/script files.
+$zip = [System.IO.Compression.ZipFile]::OpenRead($outZip)
+try {
+    $hasRootManifest = $false
+    $badBackslashEntries = New-Object System.Collections.Generic.List[string]
+    foreach ($entry in $zip.Entries) {
+        if ($entry.FullName -eq "extension.yml") {
+            $hasRootManifest = $true
+        }
+        if ($entry.FullName.Contains("\")) {
+            $badBackslashEntries.Add($entry.FullName)
+        }
+    }
+    if (-not $hasRootManifest) {
+        throw "Built ZIP does not contain extension.yml at archive root."
+    }
+    if ($badBackslashEntries.Count -gt 0) {
+        throw "Built ZIP contains non-portable backslash entry names: $($badBackslashEntries -join ', ')"
+    }
+} finally {
+    $zip.Dispose()
+}
 
 # Report
 $sha = (Get-FileHash -LiteralPath $outZip -Algorithm SHA256).Hash.ToLower()
