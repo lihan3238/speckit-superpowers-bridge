@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/lihan3238/codex_specify_superpower/blob/main/specs/006-trim-to-thin-bridge/contracts/handoff.v1.schema.json",
+  "title": "Superpowers Handoff (v1, post-trim)",
+  "description": "Simplified handoff state file used by the thin orchestrating bridge. Backward-compatible read of v2/v3 documents is achieved via additionalProperties: true and integer-range schema_version. New writes MUST emit only the fields below.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "updated_at",
+    "feature_directory",
+    "source_of_truth",
+    "executor",
+    "status",
+    "artifact_owner"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3,
+      "description": "1 = post-trim shape (new writes). 2 = feature 002 shape (archive_history added). 3 = feature 004 shape (autonomous_mode + resume_context added). Readers MUST accept all three; writers MUST emit 1."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "feature_directory": {
+      "type": ["string", "null"],
+      "pattern": "^specs/[0-9]{3}-[a-z0-9-]+$",
+      "description": "Active feature directory (relative path) or null when status is ready and no feature is queued."
+    },
+    "source_of_truth": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["constitution", "spec", "plan", "tasks"],
+      "properties": {
+        "constitution": {
+          "type": "string",
+          "const": ".specify/memory/constitution.md"
+        },
+        "spec": { "type": "string" },
+        "plan": { "type": "string" },
+        "tasks": { "type": "string" }
+      }
+    },
+    "supersedes": {
+      "type": ["string", "null"]
+    },
+    "executor": {
+      "type": "string",
+      "enum": ["speckit", "superpowers"]
+    },
+    "capabilities": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ready", "executing", "complete", "blocked"]
+    },
+    "blocked_reason": {
+      "type": ["string", "null"]
+    },
+    "artifact_owner": {
+      "type": "string",
+      "enum": ["codex", "claude"]
+    },
+    "review_only_agents": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["codex", "claude"]
+      }
+    },
+    "notes": {
+      "type": ["string", "null"]
+    },
+    "last_snapshot_id": {
+      "type": ["string", "null"]
+    },
+    "instructions": {
+      "type": ["string", "null"]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "blocked" } }
+      },
+      "then": {
+        "required": ["blocked_reason"],
+        "properties": {
+          "blocked_reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "status": { "const": "executing" } }
+      },
+      "then": {
+        "properties": {
+          "feature_directory": { "type": "string" },
+          "artifact_owner": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  ]
+}

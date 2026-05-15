@@ -1,7 +1,7 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-`specs/005-marketplace-alignment/plan.md`
+`specs/006-trim-to-thin-bridge/plan.md`
 <!-- SPECKIT END -->
 
 ## Claude Code Supplement
