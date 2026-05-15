@@ -76,7 +76,16 @@ This inventory enumerates every path removed or modified by feature 006, grouped
 
 | Path | Type | Before | After | Reason |
 |------|------|--------|-------|--------|
-|      |      |        |       |        |
+| `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/update-handoff.ps1` | script (modified) | 393 lines | 178 lines | Drop v3 fields (`autonomous_mode`, `resume_context`, `archive_history` round-trip) per FR-006. Keep snapshot taking (Principle IV). Tolerantly reads older shapes (FR-009). `blocked_reason` now only carries value when status is `blocked`. |
+| `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/guard-command.ps1` | script (modified) | 259 lines | 92 lines | Replace matrix lookup with 5 hardcoded if/elseif branches per FR-007 + R3: deny `speckit.implement` during executing, deny `superpowers:writing-plans`/`:brainstorming` with artifacts, deny `speckit.constitution` during executing, allow `speckit.*` otherwise, default allow. |
+| `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/auto-archive-handoff.ps1` | script (modified) | 97 lines | 54 lines | Delegate snapshot to update-handoff; drop `archive_history` patching (v1 schema makes it optional); emit `archive` event (renamed from `auto_archive`). Idempotent: no-op when status ≠ `complete`. |
+| `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/test-bridge-context.ps1` | script (deleted) | 84 lines | 0 | Obsolete: tested resume-context plumbing that the v1 schema drops. |
+| `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/test-bridge-guard.ps1` | script (deleted) | 235 lines | 0 | Obsolete: tested matrix-driven guard decisions that the hardcoded rules replace. Guard rule coverage is reinstated in `tests/test-guard-hardcoded-rules.ps1` in commit 8. |
+
+**Surface budget after commit 5**: 4 retained scripts (3 callable + 1 dot-sourced helper) = 178 + 92 + 54 + 41 = **365 lines**.
+
+- SC-001 (≥ 88% reduction from pre-trim ~3,042 lines): `(3042 - 365) / 3042 = 88.0%` → **MET**.
+- Plan target "≤ 300 lines" is a soft derivative of SC-001; 365 reflects load-bearing helpers (`Convert-ToProjectPath`, `Write-BridgeEvent`, `New-BridgeSnapshot`, snapshot logic) that the constitution's Principle IV requires. Squeezing further would inline helpers without saving net work. Trade-off accepted; documented here for the verification gate.
 
 ---
 
