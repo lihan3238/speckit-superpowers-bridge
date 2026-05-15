@@ -89,8 +89,11 @@ if (Test-Path -LiteralPath $existingHandoffPath) {
 }
 
 # Resolve feature_directory: explicit > current handoff > .specify/feature.json
+# When -ClearFeatureDirectory is set, capture the prior dir BEFORE clearing so we can still snapshot it.
 $featureJsonPath = Join-Path $specifyDir "feature.json"
+$snapshotSourceDirectory = $null
 if ($ClearFeatureDirectory) {
+    $snapshotSourceDirectory = $priorFeatureDirectory
     $FeatureDirectory = ""
 }
 elseif ([string]::IsNullOrWhiteSpace($FeatureDirectory)) {
@@ -146,10 +149,18 @@ $eventReason = if ([string]::IsNullOrWhiteSpace($Reason)) { $blockedReason } els
 $owner = if ($ArtifactOwner) { $ArtifactOwner } elseif ($priorArtifactOwner) { $priorArtifactOwner } elseif ($Actor -in @("codex", "claude")) { $Actor } else { "unknown" }
 $reviewOnly = @($ReviewOnlyAgents | Where-Object { $_ -and $_ -ne $owner } | Select-Object -Unique)
 
-# Snapshot before writing (constitution Principle IV)
+# Snapshot before writing (constitution Principle IV).
+# For auto-archive (ClearFeatureDirectory), snapshot the prior feature_directory we captured above.
 $snapshotId = $null
-if ($featureDirectoryFullPath) {
-    $snapshotId = New-BridgeSnapshot -RepoRoot $repoRoot -Status $resolvedStatus -FeatureDirectoryFullPath $featureDirectoryFullPath -FeatureDirectoryProjectPath $featureDirectoryProjectPath
+$snapshotPath = $null
+if ($snapshotSourceDirectory) {
+    $snapshotPath = if ([System.IO.Path]::IsPathRooted($snapshotSourceDirectory)) { [System.IO.Path]::GetFullPath($snapshotSourceDirectory) } else { [System.IO.Path]::GetFullPath((Join-Path $repoRoot $snapshotSourceDirectory)) }
+}
+elseif ($featureDirectoryFullPath) {
+    $snapshotPath = $featureDirectoryFullPath
+}
+if ($snapshotPath) {
+    $snapshotId = New-BridgeSnapshot -RepoRoot $repoRoot -Status $resolvedStatus -FeatureDirectoryFullPath $snapshotPath -FeatureDirectoryProjectPath $null
 }
 
 $handoff = [ordered]@{
