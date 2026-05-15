@@ -6,6 +6,16 @@ description: "Tasks for v0.4.2 cleanup-tail of feature 003-bridge-cross-platform
 
 **Input**: Design documents from `specs/003-bridge-cross-platform-scripts/`
 
+> **Historical note (per FR-005 of v0.4.2 redesign)**: This tasks.md
+> is the v0.4.2 task list. The original v0.4.0 tasks.md (67 items
+> covering the bash-flavor addition that shipped in v0.4.1) lives in
+> git history at commit `a4aa833`. The ~17 user-side cross-platform
+> verification tasks from that file (T065 Linux end-to-end, T066
+> macOS end-to-end, similar) are NOT re-listed here — they are
+> absorbed into US4 of this redesign (see `verification.md`). Use
+> `git show a4aa833:specs/003-bridge-cross-platform-scripts/tasks.md`
+> to inspect the v0.4.0 task list.
+
 **Prerequisites**: [plan.md](./plan.md), [spec.md](./spec.md), [research.md](./research.md), [data-model.md](./data-model.md), [contracts/bash-cli-contract.md](./contracts/bash-cli-contract.md), [contracts/verification-record.md](./contracts/verification-record.md), [quickstart.md](./quickstart.md)
 
 **Tests**: TDD discipline is mandatory per spec FR-013 and memory `feedback_cross_reference_drift_needs_tests`. Every new fix gets its test extension FIRST, observed RED, then the fix, then GREEN.
