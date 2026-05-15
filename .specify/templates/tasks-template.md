@@ -156,6 +156,7 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] TXXX Performance optimization across all stories
 - [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
 - [ ] TXXX Security hardening
+- [ ] TXXX **(Release-only)** End-user verification in `..\test_specify_superpower` per constitution §"End-User Verification Sandbox": fresh `specify init` → install from published release URL → drive one full bridge cycle per supported platform → record outcome in feature's `quickstart.md` or `verification.md`.
 - [ ] TXXX Run quickstart.md validation
 
 ---

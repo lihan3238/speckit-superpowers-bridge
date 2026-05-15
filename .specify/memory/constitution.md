@@ -1,35 +1,38 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.0.0 -> 1.1.0
-Bump rationale: Marketplace distribution is now explicitly allowed as a thin
-packaging layer for the same repo-local bridge assets. MINOR per semver because
-Principle I is expanded without weakening the lightweight runtime constraints.
+Version change: 1.1.0 -> 1.2.0
+Bump rationale: Add a mandatory end-user verification workflow gate using a
+fixed sibling sandbox directory (`..\test_specify_superpower`). This is new
+materially-expanded guidance under "Development Workflow & Quality Gates",
+not a change to any existing principle's semantics. MINOR per semver.
 
-Modified principles:
-  - "I. Lightweight & Repo-Local" clarified to allow marketplace packaging
-    as distribution only, while still forbidding runtime services, daemons,
-    databases, and global plugin edits.
+Modified sections:
+  - "Development Workflow & Quality Gates" gained a new bullet group
+    "End-User Verification Sandbox" (rule + rationale).
 
-Added sections:
-  - "Boundary & Ownership Rules" (formerly [SECTION_2_NAME])
-  - "Development Workflow & Quality Gates" (formerly [SECTION_3_NAME])
-  - "Governance" populated
-
-Removed sections: none
+Added sections: none (expanded existing section).
+Removed sections: none.
 
 Templates requiring updates:
-  - .specify/templates/plan-template.md           - aligned.
-  - .specify/templates/spec-template.md           - aligned.
-  - .specify/templates/tasks-template.md          - aligned.
-  - .claude/skills/speckit-constitution/*         - aligned (vendor-managed;
-    do not hand-edit).
-  - .agents/skills/speckit-constitution/*         - aligned (vendor-managed;
-    do not hand-edit).
-  - AGENTS.md                                     - aligned.
-  - CLAUDE.md                                     - aligned.
+  - .specify/templates/plan-template.md           - PENDING: add a one-line
+    note in the Constitution Check / Quality Gates section referencing the
+    new sandbox verification expectation for release-shipping features.
+  - .specify/templates/tasks-template.md          - PENDING: add a note in
+    the Polish / final-verification phase pointing to the sandbox sequence
+    for features that ship a release artifact.
+  - .specify/templates/spec-template.md           - no change required.
+  - .claude/skills/speckit-constitution/*         - vendor-managed; no edit.
+  - .agents/skills/speckit-constitution/*         - vendor-managed; no edit.
+  - AGENTS.md                                     - PENDING: brief mention
+    of the sandbox in workflow / release context.
+  - CLAUDE.md                                     - no change required.
 
-Follow-up TODOs: none.
+Follow-up TODOs:
+  - Wire the sandbox into the next feature's release polish phase
+    (concrete tasks captured during /speckit-tasks for that feature).
+  - Optionally add a small dev-time helper script to set up the sandbox
+    project from scratch (not required by this amendment).
 -->
 
 # Spec Kit Superpowers Bridge Constitution
@@ -138,7 +141,8 @@ prevents racey edits when both agents are co-resident in a workspace.
 ## Boundary & Ownership Rules
 
 - The bridge guard script
-  (`.specify/extensions/speckit-superpowers-bridge/scripts/powershell/guard-command.ps1`)
+  (`.specify/extensions/speckit-superpowers-bridge/scripts/powershell/guard-command.ps1`
+  on Windows; the matching `.sh` under `scripts/bash/` on Linux/macOS)
   is the only sanctioned enforcement point; agents MUST call it before
   crossing a Spec Kit/Superpowers boundary and MUST honor its decision.
 - `.specify/bridge-events.jsonl` is append-only; no agent may rewrite or
@@ -165,6 +169,50 @@ prevents racey edits when both agents are co-resident in a workspace.
   and whether any new complexity required justification under
   Complexity Tracking.
 
+### End-User Verification Sandbox
+
+The sibling directory `..\test_specify_superpower` (relative to this
+source repo's parent) is the **canonical end-user simulation sandbox**.
+It is NOT a part of this repo; it is a separate Spec Kit project used
+exclusively for verifying that a freshly released bridge artifact works
+the way a real user encounters it. Every feature that ships a release
+artifact (i.e., bumps `extension.yml.extension.version` and tags a
+`vX.Y.Z` release) MUST be verified there BEFORE the feature's handoff
+transitions to `complete`. The sequence is:
+
+1. Initialize / reset the sandbox project (`specify init . --integration
+   <codex|claude> --script <ps|sh> --here --force`) under the target
+   platform's flavor.
+2. Install the bridge via the **published release URL**, not via local
+   `--dev` path:
+   `specify extension add speckit-superpowers-bridge --from
+   https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/vX.Y.Z/speckit-superpowers-bridge-vX.Y.Z.zip`.
+3. Drive at least one complete bridge cycle in the sandbox:
+   `/speckit-specify` → `/speckit-clarify` (if applicable) → `/speckit-plan`
+   → `/speckit-tasks` → bridge orchestration → handoff `complete`.
+4. Repeat for every platform the release supports (at minimum: Windows
+   PowerShell; Linux bash; macOS bash once the bash flavor ships).
+   Cross-platform coverage is the gate's primary value over the in-repo
+   smoke tests.
+5. Record the outcome in the source feature's `quickstart.md` (or a
+   `verification.md` peer) — pass/fail per platform, the bridge SHA256
+   exercised, and any observed gap. The sandbox's transient project
+   files themselves are not committed; only the source-repo record is.
+
+If any sandbox run fails, the handoff MUST move to `blocked` and the
+spec MUST be revised to capture the gap before re-attempting release.
+
+**Rationale**: In-repo smoke tests (under `tests/`) verify the bridge in
+dogfood mode — all source files local and editable, no real install
+step. They do NOT catch problems users actually hit on first contact:
+hand-built ZIP shape, install-time skill generation, marketplace
+`download_url` resolution, platform-script dispatch via
+`init-options.json.script`, line-ending preservation through ZIP, and
+absent local dev-mode mirrors after a fresh install. The v0.4.0 release
+cycle required three RC tags before the published artifact installed
+cleanly; a fixed sibling sandbox front-loads that discovery to the
+spec-completion stage where fixing it costs hours, not days.
+
 ## Governance
 
 - This constitution supersedes any conflicting guidance in skills,
@@ -184,4 +232,4 @@ prevents racey edits when both agents are co-resident in a workspace.
 - Use `AGENTS.md` for runtime cross-agent guidance and `CLAUDE.md` for
   Claude-specific supplements.
 
-**Version**: 1.1.0 | **Ratified**: 2026-05-14 | **Last Amended**: 2026-05-15
+**Version**: 1.2.0 | **Ratified**: 2026-05-14 | **Last Amended**: 2026-05-16

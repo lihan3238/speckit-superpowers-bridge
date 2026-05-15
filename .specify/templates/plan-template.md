@@ -42,6 +42,12 @@
 
 [Gates determined based on constitution file]
 
+> **Release gate** (constitution §"End-User Verification Sandbox", v1.2.0+):
+> Features that ship a release artifact MUST plan an end-user verification
+> sandbox run in `..\test_specify_superpower` BEFORE handoff completion.
+> The sandbox install uses the published release URL, not the local `--dev`
+> path. Plan a task for each supported platform under the Polish phase.
+
 ## Project Structure
 
 ### Documentation (this feature)
