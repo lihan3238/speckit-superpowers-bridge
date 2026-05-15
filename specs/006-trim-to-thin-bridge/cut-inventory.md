@@ -46,7 +46,15 @@ This inventory enumerates every path removed or modified by feature 006, grouped
 
 | Path | Type | Reason |
 |------|------|--------|
-|      |      |        |
+| `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/recommend-route.ps1` | script | per FR-021: routing decision is now user-driven; README §"When to Skip Spec Kit" replaces the automated recommender. Scheduled README addition in US4. |
+| `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/emit-resume-signal.ps1` | script | custom resume-context emitter; v3-only; new v1 schema drops `resume_context` so the emitter is dead code |
+| `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/emit-skill-invocation.ps1` | script | custom event-log emitter; bridge-events.jsonl no longer carries `skill_invocation` events (per data-model.md §2 trim) |
+| `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/restore-snapshot.ps1` | script | snapshot rollback becomes manual `cp -r` per data-model.md §4 trim impact; automation surface removed |
+| `.specify/extensions/speckit-superpowers-bridge/commands/speckit.speckit-superpowers-bridge.recommend-route.md` | command md | partner of recommend-route.ps1 |
+| `tests/test-routing-recommender.ps1` | test | covers the deleted recommend-route |
+| `tests/test-resume-signal.ps1` | test | covers the deleted emit-resume-signal |
+| `tests/test-skill-invocation-event.ps1` | test | covers the deleted emit-skill-invocation |
+| `tests/test-extension-manifest-install.ps1` | test | covers the now-deleted plugin-distribution-manifest install behavior |
 
 ---
 
