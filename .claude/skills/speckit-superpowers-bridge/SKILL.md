@@ -21,12 +21,12 @@ This skill is the **thin orchestrator** between Spec Kit (design) and Superpower
 
 1. Read `.specify/superpowers-handoff.json` to find `feature_directory`. If status is `complete`, run the platform-selected auto-archive script first so the new feature begins from `ready`.
 2. Read `<feature_directory>/spec.md`, `plan.md`, `tasks.md`, and `.specify/memory/constitution.md`.
-3. Transition handoff to `executing` using `.specify/init-options.json.script` (`ps` => PowerShell, `sh` => bash):
+3. Transition handoff to `executing` using `.specify/init-options.json.script` (`ps` => PowerShell, `sh` => bash). **Do NOT pass `-ArtifactOwner` / `--artifact-owner`** — the script silently preserves the prior owner from the handoff JSON when the flag is omitted (per spec 003-bridge-cross-platform-scripts FR-001). Pass `-ArtifactOwner` only if you are intentionally transferring ownership (e.g., a maintainer rebasing a feature onto a different designer).
    ```powershell
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -FeatureDirectory <project-relative-path> -ArtifactOwner claude -Actor claude
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -FeatureDirectory <project-relative-path> -Actor claude
    ```
    ```bash
-   bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/update-handoff.sh --status executing --feature-directory <project-relative-path> --artifact-owner claude --actor claude
+   bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/update-handoff.sh --status executing --feature-directory <project-relative-path> --actor claude
    ```
 4. Invoke `superpowers:executing-plans` against `tasks.md`. That skill drives the per-task loop and dispatches `superpowers:test-driven-development` and `superpowers:systematic-debugging` as needed.
 5. At completion of all tasks, invoke `superpowers:verification-before-completion`.

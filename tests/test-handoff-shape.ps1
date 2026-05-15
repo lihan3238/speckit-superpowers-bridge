@@ -133,6 +133,34 @@ try {
         foreach ($dropped in @("autonomous_mode","resume_context","archive_history")) {
             Assert-True (-not ($postNames -contains $dropped)) "[$flavor] after reading v3, new write echoed back: $dropped"
         }
+        # --- (c) prior artifact_owner preserved when -ArtifactOwner is NOT passed (B1 / FR-001) ---
+        # Setup: write a synthetic handoff with artifact_owner=claude
+        $synthetic = @{
+            schema_version = 1
+            updated_at = "2026-05-15T00:00:00Z"
+            feature_directory = "specs/006-trim-to-thin-bridge"
+            source_of_truth = @{
+                constitution = ".specify/memory/constitution.md"
+                spec = "specs/006-trim-to-thin-bridge/spec.md"
+                plan = "specs/006-trim-to-thin-bridge/plan.md"
+                tasks = "specs/006-trim-to-thin-bridge/tasks.md"
+            }
+            executor = "superpowers"
+            status = "executing"
+            artifact_owner = "claude"
+        } | ConvertTo-Json -Depth 5
+        Set-Content -LiteralPath $handoffPath -Value $synthetic -Encoding UTF8
+
+        # Invoke with -Actor codex but NO -ArtifactOwner — preservation should kick in
+        Invoke-UpdateHandoff -Flavor $flavor -Arguments @("-Status", "executing", "-Actor", "codex", "-Reason", "smoke test (c) implicit preservation")
+        $preserved = Get-Content -LiteralPath $handoffPath -Raw | ConvertFrom-Json
+        Assert-True ($preserved.artifact_owner -eq "claude") "[$flavor] (c) artifact_owner should preserve prior 'claude', got '$($preserved.artifact_owner)'"
+
+        # Inverse: invoke WITH explicit -ArtifactOwner codex — should override
+        Set-Content -LiteralPath $handoffPath -Value $synthetic -Encoding UTF8
+        Invoke-UpdateHandoff -Flavor $flavor -Arguments @("-Status", "executing", "-Actor", "codex", "-ArtifactOwner", "codex", "-Reason", "smoke test (c) explicit override")
+        $overridden = Get-Content -LiteralPath $handoffPath -Raw | ConvertFrom-Json
+        Assert-True ($overridden.artifact_owner -eq "codex") "[$flavor] (c) explicit -ArtifactOwner codex should override prior, got '$($overridden.artifact_owner)'"
     }
 
     Write-Output "handoff-shape-tests-ok ($($flavors -join ', '))"
