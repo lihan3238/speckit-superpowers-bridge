@@ -19,9 +19,9 @@ Create `.specify/superpowers-handoff.json` so Spec Kit artifacts explicitly hand
    - `status`
    - `artifact_owner`
    - `review_only_agents`
-4. Tell the implementation agent to use the marketplace-compliant execute entry point:
-   - Codex: `$speckit-speckit-superpowers-bridge-execute`
-   - Claude Code: `/speckit-speckit-superpowers-bridge-execute`
+4. Tell the implementation agent to invoke the bridge:
+   - Codex: `$speckit-superpowers-bridge`
+   - Claude Code: `/speckit-superpowers-bridge`
 
 ## Execution
 
@@ -35,7 +35,6 @@ Actor resolution order is:
 
 1. Explicit `-Actor <codex|claude|unknown>`
 2. Environment variable `SPECKIT_BRIDGE_ACTOR`
-3. `.specify/integration.json.default_integration`
-4. Deterministic fallback `unknown`
+3. Deterministic fallback `unknown`
 
 If required feature artifacts are missing, the script writes status `blocked`. In that case, return to Spec Kit and regenerate or repair the missing artifacts before implementation.

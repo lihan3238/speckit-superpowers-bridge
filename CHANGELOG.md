@@ -1,14 +1,169 @@
 # Changelog
 
-## v0.1.1 - 2026-05-15
+All notable changes to **speckit-superpowers-bridge** are documented in this file.
 
-- Prepared the extension for Spec Kit Marketplace submission.
-- Raised the verified baseline to Spec Kit `0.8.10` and Superpowers `5.1.0`.
-- Switched bridge extension commands to the official namespace `speckit.speckit-superpowers-bridge.*`.
-- Added the `execute` command as the marketplace-facing entry point for running Spec Kit `tasks.md` through Superpowers.
-- Updated README documentation to emphasize the lightweight non-overlap protocol: Spec Kit remains the source of truth while Superpowers handles implementation discipline.
-- Added install compatibility coverage for Spec Kit extension manifest validation.
+This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) and to [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
 
-## v0.1.0 - 2026-05-15
+> **AI-assistance disclosure**: This extension is developed with AI coding assistants (Claude Code for design + planning, Codex for implementation passes, Claude Code for the v0.3.0 trim), per the AI-disclosure requirement in [Spec Kit CONTRIBUTING.md](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md). Every artifact passes human review before commit. As of v0.3.0 the verification surface is three retained smoke tests under `tests/`.
 
-- Initial bridge protocol with handoff state, guard rules, audit logging, rollback snapshots, Codex and Claude Code bridge skills, and local validation scripts.
+## [0.3.0] - 2026-05-15
+
+A deliberate drastic trim — the bridge becomes the thin orchestrating layer it was always supposed to be. **~87% PowerShell line reduction**, no functional capability added. See [`specs/006-trim-to-thin-bridge/spec.md`](specs/006-trim-to-thin-bridge/spec.md) for the full rationale, and [`specs/006-trim-to-thin-bridge/cut-inventory.md`](specs/006-trim-to-thin-bridge/cut-inventory.md) for the enumerated removal list.
+
+### Removed
+
+PowerShell scripts (13 deletions):
+
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/parity-check.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/audit-install-state.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/validation-pass.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/submission-checklist.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/cleanup-audit.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/check-distribution-manifest.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/check-readme-bilingual-parity.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/recommend-route.ps1` (replaced by README "When to Skip Spec Kit" section; routing decision is now user-driven)
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/emit-resume-signal.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/emit-skill-invocation.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/restore-snapshot.ps1` (snapshot rollback is now manual `cp -r`)
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/test-bridge-context.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/test-bridge-guard.ps1`
+
+Bridge command markdowns (6 deletions):
+
+- `commands/speckit.speckit-superpowers-bridge.parity.md`
+- `commands/speckit.speckit-superpowers-bridge.audit.md`
+- `commands/speckit.speckit-superpowers-bridge.validate.md`
+- `commands/speckit.speckit-superpowers-bridge.submission-checklist.md`
+- `commands/speckit.speckit-superpowers-bridge.cleanup-audit.md`
+- `commands/speckit.speckit-superpowers-bridge.recommend-route.md`
+
+Bridge data files (3 deletions):
+
+- `.specify/extensions/speckit-superpowers-bridge/disposition-matrix.json` (replaced by 5 hardcoded `if`/`elseif` rules inside `guard-command.ps1`)
+- `.specify/extensions/speckit-superpowers-bridge/verified-versions.json` (version compatibility is now human-inspection at release time, recorded in this CHANGELOG)
+- `.specify/extensions/speckit-superpowers-bridge/plugin-distribution-manifest.yml` (catalog-entry.json is sufficient)
+
+Bridge contracts and docs (2 deletions):
+
+- `.specify/extensions/speckit-superpowers-bridge/contracts/plugin-distribution-manifest.schema.json` (the schema for a now-removed manifest)
+- `.specify/extensions/speckit-superpowers-bridge/docs/parameter-reference.md` (parameters it documented no longer exist)
+
+Tests under `tests/` (15 deletions; 2 more in commit 5 under `scripts/powershell/`):
+
+- `test-parity-drift.ps1`, `test-install-state-audit.ps1`, `test-validation-pass.ps1`, `test-submission-checklist.ps1`, `test-cleanup-audit.ps1`, `test-distribution-manifest.ps1`, `test-routing-recommender.ps1`, `test-resume-signal.ps1`, `test-skill-invocation-event.ps1`, `test-extension-manifest-install.ps1`, `test-disposition-matrix.ps1`, `test-verified-versions.ps1`, `test-readme-bilingual-parity.ps1`, `test-actor-resolution.ps1`, `test-constitution-checklist-guard.ps1`, `test-guard-uses-matrix.ps1`, `test-hook-surface-resolution.ps1`
+
+Handoff schema v3 fields (now `schema_version: 1` in new writes; older v2/v3 documents are still readable):
+
+- `autonomous_mode`
+- `resume_context`
+- `archive_history`
+
+Hooks in `.specify/extensions.yml`:
+
+- `before_specify` hook entry removed entirely (its sole handler was `recommend-route`)
+- Every hook referencing a removed command was deleted
+
+`docs/` directory:
+
+- `docs/release-runbook.md` and any future maintainer-only files under `docs/` are now gitignored (kept on the maintainer's local disk; not shipped in the repo).
+
+### Changed
+
+- `extension.yml.version` bumped to `0.3.0`.
+- `extension.yml.provides.commands` reduced from 9 to 3 (`execute`, `handoff`, `guard`).
+- `extension.yml.hooks` reduced from 6 to 5 (`before_specify` removed).
+- `marketplace/catalog-entry.json`: version `0.3.0`, `provides.commands: 3`, `provides.hooks: 5`, refreshed description to "A thin orchestrating bridge between Spec Kit (design) and Superpowers (implementation). Cross-agent (Codex + Claude Code). Native skills only — no custom discipline."
+- `marketplace/upstream-pr-body.md`: rewritten for 0.3.0; AI-assistance disclosure paragraph preserved verbatim.
+- `marketplace/extensions-readme-row.md` + `marketplace/README.md`: updated for 0.3.0 description and the manual-submission workflow.
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/update-handoff.ps1`: 393 → 189 lines. New writes use v1 schema. Reads tolerate v2/v3 unknown fields per FR-009 (the trim's explicit user-friendliness goal for in-flight upgrades).
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/guard-command.ps1`: 259 → 92 lines. Five hardcoded rules replace the matrix lookup.
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/auto-archive-handoff.ps1`: 97 → 54 lines. Emits an `archive` event (renamed from `auto_archive`).
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/common-actor-resolution.ps1`: 58 → 41 lines. Three-step actor chain (explicit → env → "unknown"); dropped `.specify/integration.json` consultation.
+- `.claude/skills/speckit-superpowers-bridge/SKILL.md`: 149 → 62 lines. Now describes orchestration only.
+- `.agents/skills/speckit-superpowers-bridge/SKILL.md`: 146 → 59 lines. Content-identical Codex peer.
+- `README.md` + `README.zh-CN.md`: rewritten to reflect the thin bridge; added new `## When to Skip Spec Kit` section replacing the deleted `recommend-route` advisory. Bilingual H2 parity preserved (10 H2s in each, English anchors).
+- `AGENTS.md` + `CLAUDE.md`: removed references to deleted commands and to `disposition-matrix.json` / `verified-versions.json`.
+- `.gitignore`: added `docs/`; removed an obsolete comment referencing `cleanup-audit`.
+- The `bridge-events.jsonl` log no longer carries event types: `skill_invocation`, `parity_check`, `submission_check`, `auto_archive` (the last is now `archive` with `status: "archived"`).
+
+### Compatibility notes
+
+- **Reading old handoff JSON**: a 0.3.0 install reads handoff JSON written by 0.1.x / 0.2.x without error; v2/v3-only fields are silently ignored. The next write produces a clean v1 document. No migration step required.
+- **CI / Make files**: if you reference any of the removed scripts (e.g., `parity-check.ps1`, `validation-pass.ps1`, `submission-checklist.ps1`, `cleanup-audit.ps1`, `recommend-route.ps1`), update or remove those references. The trim does not provide compatibility shims.
+- **Routing recommendation**: the previous `recommend-route` command is gone. See the new README `## When to Skip Spec Kit` section; the user decides the route.
+- **Snapshot rollback**: `restore-snapshot.ps1` is gone. Snapshots are still taken under `.specify/bridge-snapshots/`; rollback becomes a manual `cp -r <snapshot-dir>/* <destination>`.
+
+### Verification
+
+- Three retained smoke tests, all green: `tests/test-claude-codex-skill-parity.ps1` (renamed from `test-claude-skill-parity.ps1`), `tests/test-handoff-shape.ps1` (new), `tests/test-guard-hardcoded-rules.ps1` (new).
+- `specs/001-spec-superpowers-bridge` through `specs/005-marketplace-alignment` are byte-identical to their pre-trim state (verified by checksum `1f09423e4e91ec5b9edb396b7c7f2fe4a0a2a56a`).
+- PowerShell line surface: 2,984 → 376 (~87.4% reduction across the retained 3 scripts + 1 helper).
+
+## [0.2.0] - 2026-05-15
+
+### Added
+
+- `LICENSE` at repo root (MIT) for upstream catalog submission completeness.
+- `marketplace/` directory holding the upstream-PR-ready artifacts: `catalog-entry.json`, `extensions-readme-row.md`, `upstream-pr-body.md`, plus a directory `README.md` explaining their use. Excluded from distribution per `plugin-distribution-manifest.yml`.
+- `submission-checklist.ps1` script + `tests/test-submission-checklist.ps1`: mirrors the Spec Kit maintainers' upstream verification (manifest schema, file presence, URL HTTP 200, tag set, semver shape, description length, AI-disclosure presence). Exit 0 = submission-ready.
+- `cleanup-audit.ps1` script + `tests/test-cleanup-audit.ps1`: surfaces stale source-repo files (`*.bak`, unreferenced `docs/`, abandoned one-shot scripts, `.gitignore` gaps, distribution manifest inconsistencies). Includes an opt-in `-Fix` mode.
+- `docs/release-runbook.md`: 11-step release procedure with explicit `Verify:` lines for every step.
+- README badges (4): license, latest release, last commit, Spec Kit compatibility.
+- README sections covering pure-Codex / pure-Claude / dual-agent install paths, "first feature in 10 minutes" walkthrough, troubleshooting matrix, maintenance & versioning, and Architecture-in-60-seconds (paraphrasing the [dev.to comparison article](https://dev.to/truongpx396/spec-kit-vs-superpowers-a-comprehensive-comparison-practical-guide-to-combining-both-52jj) with attribution).
+- Peer-extension comparison paragraph naming AIDE, architect-preview, api-contract-evolution, impact-predictor.
+- Two new bridge meta-commands: `speckit.speckit-superpowers-bridge.submission-checklist`, `speckit.speckit-superpowers-bridge.cleanup-audit` (both `COMBINE` in the disposition matrix).
+
+### Changed
+
+- `extension.yml.version` bumped to `0.2.0`.
+- `extension.yml.tags` replaced with the locked 6-tag set (`bridge, superpowers, cross-agent, governance, tdd, workflow`) per feature 005 clarify Q3.
+- `verified-versions.json.verified_at` refreshed to 2026-05-15T19:00:00Z.
+- `README.md` reflowed to the 11-section structure optimized for first-time readers (bilingual toggle → badges → value prop → workflow diagram → install paths → walkthrough → commands → configuration → troubleshooting → maintenance → architecture → contributing).
+- `README.zh-CN.md` mirror-reflowed to identical H2 structure; bilingual parity check exits 0.
+- `.gitignore` re-audited and grouped by category (per-developer state, OS junk, backup patterns, editor scratch, build artifacts).
+- `plugin-distribution-manifest.yml` re-confirmed: `LICENSE`, `CHANGELOG.md`, `docs/release-runbook.md` in includes; `marketplace/**` added to excludes with reason.
+
+### Fixed
+
+- `extension.yml.tags` was 4 generic terms (`superpowers, implementation, handoff, bridge`); now matches the discoverability-tuned 6-tag set chosen via feature 005's clarify.
+
+## [0.1.1] - 2026-05-15
+
+### Added
+
+- Bridge handoff schema v3: `autonomous_mode` + `resume_context` fields.
+- Bridge meta-commands `speckit.speckit-superpowers-bridge.audit`, `.validate`, `.parity`, `.recommend-route`, `.execute` with corresponding scripts (`audit-install-state.ps1`, `validation-pass.ps1`, `parity-check.ps1`, `recommend-route.ps1`).
+- Five mirrored `.claude/skills/speckit-git-*/SKILL.md` for cross-agent parity (`speckit-git-commit`, `-feature`, `-initialize`, `-remote`, `-validate`).
+- Bilingual README scaffold (`README.md` + `README.zh-CN.md`) with structural parity check.
+- `plugin-distribution-manifest.yml` declaring marketplace includes/excludes.
+- 8 smoke test suites under `tests/`.
+- `disposition-matrix.json` (31 entries) classifying every Spec Kit command + Superpowers skill as COMBINE / FORBID-UNDER-HANDOFF / SUPERSEDED-BY / REVIEW-ONLY.
+- `verified-versions.json` pinning Spec Kit and Superpowers skill-pack versions.
+
+### Changed
+
+- Bridge `SKILL.md` on both Codex and Claude rewritten to issue explicit `Skill` tool / `$skill-name` invocations at named lifecycle phases.
+- Actor resolution rewritten to a 4-step chain: explicit `-Actor` argument → `SPECKIT_BRIDGE_ACTOR` env var → `.specify/integration.json.default_integration` → `unknown`. Hard-coded `-Actor codex` defaults removed.
+- Bridge extension commands moved to the official namespace `speckit.speckit-superpowers-bridge.*`.
+
+### Fixed
+
+- **CG-006**: Handoff command no longer hardcodes `-Actor codex`; correct actor resolved per the chain.
+- **CG-003**: A `complete` handoff for one feature no longer blocks contract changes on a different feature (auto-archive path + cross-feature guard exemption added).
+- **CG-004**: First-touch artifact-ownership claim now happens automatically via the auto-archive helper.
+
+## [0.1.0] - 2026-05-15
+
+### Added
+
+- Initial bridge protocol with handoff state file (`.specify/superpowers-handoff.json`), guard rules (`guard-command.ps1`), audit logging (`bridge-events.jsonl`), rollback snapshots (`bridge-snapshots/`).
+- Codex (`.agents/skills/speckit-superpowers-bridge/SKILL.md`) and Claude Code (`.claude/skills/speckit-superpowers-bridge/SKILL.md`) bridge skills.
+- Local validation scripts: `update-handoff.ps1`, `restore-snapshot.ps1`, `test-bridge-guard.ps1`.
+- AGENTS.md as the master cross-agent protocol; CLAUDE.md as the Claude-specific supplement.
+- Constitution (`.specify/memory/constitution.md`) ratifying 5 principles: lightweight & repo-local, design/implementation separation, agent-neutral protocol, smooth bidirectional handoff, vendor-managed boundaries.
+
+[Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.3.0
+[0.2.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.2.0
+[0.1.1]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.1.1
+[0.1.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.1.0

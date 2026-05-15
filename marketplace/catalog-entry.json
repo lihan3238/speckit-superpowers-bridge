@@ -1,0 +1,32 @@
+{
+  "id": "speckit-superpowers-bridge",
+  "name": "Superpowers Implementation Bridge",
+  "description": "A thin orchestrating bridge between Spec Kit (design) and Superpowers (implementation). Cross-agent (Codex + Claude Code). Native skills only — no custom discipline.",
+  "author": "lihan3238",
+  "version": "0.3.0",
+  "license": "MIT",
+  "repository": "https://github.com/lihan3238/speckit-superpowers-bridge",
+  "homepage": "https://github.com/lihan3238/speckit-superpowers-bridge",
+  "documentation": "https://github.com/lihan3238/speckit-superpowers-bridge#readme",
+  "changelog": "https://github.com/lihan3238/speckit-superpowers-bridge/blob/main/CHANGELOG.md",
+  "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.3.0/speckit-superpowers-bridge-v0.3.0.zip",
+  "requires": {
+    "speckit_version": ">=0.8.10",
+    "tools": [
+      { "name": "powershell", "version": ">=5.1", "required": true },
+      { "name": "git", "version": ">=2.30", "required": false }
+    ]
+  },
+  "provides": {
+    "commands": 3,
+    "hooks": 5
+  },
+  "tags": [
+    "bridge",
+    "superpowers",
+    "cross-agent",
+    "governance",
+    "tdd",
+    "workflow"
+  ]
+}

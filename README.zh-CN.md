@@ -1,206 +1,184 @@
 [English](README.md)
 
+![License](https://img.shields.io/github/license/lihan3238/speckit-superpowers-bridge)
+![Latest release](https://img.shields.io/github/v/release/lihan3238/speckit-superpowers-bridge)
+![Last commit](https://img.shields.io/github/last-commit/lihan3238/speckit-superpowers-bridge)
+![Spec Kit](https://img.shields.io/badge/spec--kit-%E2%89%A50.8.10-blue)
+
 # speckit-superpowers-bridge
 
-Spec Kit + Superpowers Bridge 是一个轻量融合协议：Spec Kit 继续作为 constitution、spec、plan、tasks、checklists 和 analyze 的事实源；Superpowers 只负责实现阶段的工程纪律。
+**一座连接 Spec Kit（设计）与 Superpowers（实现）的轻量编排桥。** Spec Kit 仍是设计的唯一真相源（constitution → spec → plan → tasks）。Superpowers 负责实现期的 TDD、验证、code review 等纪律，由桥在指定生命周期阶段**显式**调用。跨 Agent：Codex、Claude Code 任选其一或同时使用。仓库内协议；无守护进程、无服务、无超出 Superpowers 原生能力的自定义纪律。
 
-## overview
+> 设计意图参见 [Spec Kit vs Superpowers 对比文章](https://dev.to/truongpx396/spec-kit-vs-superpowers-a-comprehensive-comparison-practical-guide-to-combining-both-52jj) —— 本插件是让二者合作所需的最小接线。
 
-这不是另一个“大而全”的 Superpowers 工作流替代品。bridge 刻意避免重复两边能力：
+## workflow
 
-- Spec Kit 负责设计契约。
-- Superpowers 负责 TDD、debug、执行、review、verification 和 branch finishing。
-- `tasks.md` 是唯一实现契约。
-- guard、handoff、audit 和 rollback 状态保证两套系统不重叠、不缺失。
-- 包体保持 repo-local 且很小：一个 Spec Kit extension、一对 bridge skill、一个 handoff JSON、一个 JSONL 事件日志，以及 rollback snapshots。没有服务、数据库、daemon，也不修改全局 Superpowers 插件。
+```text
+                  ┌───────────────────── Spec Kit 阶段 ─────────────────────┐
+  user ─► /speckit-constitution ─► /speckit-specify ─► /speckit-clarify ─►
+          /speckit-plan ─► /speckit-tasks
+                                                       │
+                                                       │ after_tasks 钩子
+                                                       ▼
+                          ┌──────── speckit-superpowers-bridge ─────────┐
+                          │  handoff（写入 superpowers-handoff.json）   │
+                          │  guard（5 条硬编码边界规则）                 │
+                          │  execute（编排原生 Superpowers 技能）       │
+                          └──────────────────┬──────────────────────────┘
+                                             │
+                  ┌────────── Superpowers 阶段（显式调用）───────┐
+                  ▼                                                            ▼
+       superpowers:executing-plans                   superpowers:verification-before-completion
+       superpowers:test-driven-development           superpowers:requesting-code-review
+       superpowers:systematic-debugging              superpowers:finishing-a-development-branch
+                                             │
+                                             │ handoff 状态转换写入日志
+                                             ▼
+                                   .specify/bridge-events.jsonl
+```
 
 ## installation
 
-Marketplace release 安装：
+先装 Spec Kit。然后任选下列三种路径之一。
+
+### 纯 Codex
 
 ```powershell
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.1.1/speckit-superpowers-bridge-v0.1.1.zip
+specify init my-project --integration codex
+cd my-project
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.3.0/speckit-superpowers-bridge-v0.3.0.zip
 ```
 
-本地开发安装：
+无 Claude Code 依赖。桥完全跑在 Codex 的 `$speckit-*` 调用面上。
+
+### 纯 Claude Code
+
+```powershell
+specify init my-project --integration claude
+cd my-project
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.3.0/speckit-superpowers-bridge-v0.3.0.zip
+```
+
+无 Codex 依赖。桥跑在 Claude Code 的 `/speckit-*` 斜杠命令上。
+
+### 双 Agent（跨 Agent 交接）
+
+```powershell
+specify init my-project --integration claude         # 或 --integration codex
+cd my-project
+specify integration add codex                         # 反之 'claude'
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.3.0/speckit-superpowers-bridge-v0.3.0.zip
+```
+
+`.agents/skills/`（Codex）与 `.claude/skills/`（Claude Code）都会拿到桥的同名 skill 文件。一边设计、一边实现，只需切换 Tab。
+
+### 本地开发安装
+
+为开发桥本身：
 
 ```powershell
 specify extension add --dev .\.specify\extensions\speckit-superpowers-bridge
 ```
 
-安装后运行 install-state audit：
-
-```powershell
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\audit-install-state.ps1 -Json
-```
-
-## quick-usage-example
-
-### 0. Install once
-
-从一个 Spec Kit 项目开始，安装一个或两个 agent integration：
-
-```powershell
-specify init . --integration codex
-specify integration install claude
-specify integration use codex
-```
-
-安装 bridge 后验证本地状态：
-
-```powershell
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\audit-install-state.ps1 -Json
-```
-
-### 1. Pick the Spec Kit writer
-
-每个 feature 同一时间只允许一个 agent 写 Spec Kit 控制产物。另一个 agent 只能 review。
-
-- Codex 命令风格：`$speckit-specify`、`$speckit-plan`、`$speckit-tasks`
-- Claude Code 命令风格：`/speckit-specify`、`/speckit-plan`、`/speckit-tasks`
-
-### 2. Create the Spec Kit artifacts
-
-当项目治理是新的或需要变更时，先运行 constitution；然后用选定 writer 跑标准 Spec Kit 设计流程：
+## your first feature in 10 minutes
 
 ```text
-$speckit-constitution
-$speckit-specify "描述要构建的功能"
-$speckit-clarify
-$speckit-checklist
-$speckit-plan
-$speckit-tasks
-$speckit-analyze
+1. /speckit-constitution            （项目内一次）
+2. /speckit-specify "新增 OAuth2 登录"
+3. /speckit-clarify                 （桥提 2–5 个针对性问题）
+4. /speckit-plan                    （生成 plan.md + research.md + data-model.md + contracts/）
+5. /speckit-tasks                   （生成 tasks.md）
+                       │
+                       │ after_tasks 钩子触发 → 写入 handoff JSON；status=executing
+                       ▼
+6. /speckit-superpowers-bridge      （Claude Code）  或  $speckit-superpowers-bridge  （Codex）
+       │
+       │ 桥 SKILL.md 加载；按顺序调用原生 Superpowers 技能：
+       │   • superpowers:executing-plans 驱动逐任务循环
+       │   • superpowers:test-driven-development 在每个改码任务前
+       │   • superpowers:verification-before-completion 在阶段结束
+       │   • superpowers:requesting-code-review 然后 :finishing-a-development-branch 在功能结束
+       ▼
+7. handoff → complete；下一次 /speckit-specify 自动归档上一次
 ```
 
-Claude Code 使用同名 slash 命令，例如 `/speckit-specify`。
+## When to Skip Spec Kit
 
-### 3. Hand off implementation
+并非所有改动都需要完整的 Spec Kit → 桥 → Superpowers 流程，由你自己决定路径：
 
-`after_tasks` hook 应创建 `.specify/superpowers-handoff.json`。需要手动刷新时：
+| 改动类型 | 建议路径 |
+|---------|---------|
+| 错别字修复、单行 bug、小范围 refactor | 直接调用 Superpowers，跳过 `/speckit-specify`。 |
+| 新功能、跨多文件 refactor、含设计决策的改动 | 走完整流程：`/speckit-specify` → `/speckit-clarify` → `/speckit-plan` → `/speckit-tasks` → `/speckit-superpowers-bridge`。 |
+| 范围不明的探索 / spike | 先用 Superpowers `brainstorming`；若涌现出 spec，再升级到完整流程。 |
 
-```powershell
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status ready -Actor codex
-```
-
-如果 Claude Code 负责执行，使用 `-Actor claude`。只有明确想要长时间无人值守执行时才开启 autonomous mode：
-
-```powershell
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status ready -AutonomousMode $true -Actor codex
-```
-
-### 4. Execute with Superpowers
-
-调用 marketplace 合规的 execute 命令，而不是 `speckit.implement`：
-
-```text
-$speckit-speckit-superpowers-bridge-execute
-```
-
-Claude Code 使用 `/speckit-speckit-superpowers-bridge-execute`。
-
-生成的 execute 命令就是 marketplace 安装后的 bridge 执行入口。它会先读取 `constitution.md`、`spec.md`、`plan.md` 和 `tasks.md`，再用 Superpowers 的工程纪律执行 `tasks.md`：TDD、debug、review、verification 和 branch finishing。执行过程中会更新任务勾选和 handoff 状态。在本源码仓库中，`.agents/skills/speckit-superpowers-bridge` 和 `.claude/skills/speckit-superpowers-bridge` 是同一协议的本地开发镜像。
-
-### 5. Handle requirement gaps
-
-如果实现时发现需求缺失或设计错误，停止编码并把 handoff 标记为 blocked：
-
-```powershell
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status blocked -Reason "Spec Kit artifact needs revision" -Actor codex
-```
-
-回到 Spec Kit 修订 `spec.md`、`plan.md` 或 `tasks.md`，再创建新的 ready handoff 并恢复 bridge 执行。
-
-### 6. Verify and finish
-
-确认 feature 完成前运行：
-
-```powershell
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\validation-pass.ps1 -Json -Actor codex
-```
-
-只有任务完成且验证通过后，bridge 才会把 handoff 标记为 `complete`。开始下一个 feature 时，`before_specify` hook 会自动归档已完成 handoff；也可以手动运行：
-
-```powershell
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\auto-archive-handoff.ps1 -Actor codex
-```
-
-### 7. Guardrails
-
-- handoff executor 是 `superpowers` 时，不要运行 `speckit.implement`。
-- 不要用 Superpowers `brainstorming` 或 `writing-plans` 覆盖已有 Spec Kit `spec.md`、`plan.md` 或 `tasks.md`。
-- 不要让 Codex 和 Claude Code 同时写同一份 Spec Kit 产物。
-- 感觉状态不一致时，运行 `speckit.speckit-superpowers-bridge.audit`、`speckit.speckit-superpowers-bridge.parity` 和 `speckit.speckit-superpowers-bridge.validate`。
-
-## configuration
-
-handoff 文件是 `.specify/superpowers-handoff.json`。
-
-关键字段：
-
-- `executor`: 必须是 `superpowers`
-- `autonomous_mode`: 默认 `false`
-- `resume_context`: 当前 task、skill、phase 和下一步动作
-- `artifact_owner`: 唯一允许写 Spec Kit 控制产物的 agent
-
-详细脚本参数和 handoff 字段行为见 `.specify/extensions/speckit-superpowers-bridge/docs/parameter-reference.md`。
-
-环境变量：
-
-- `SPECKIT_BRIDGE_ACTOR`: 覆盖 actor 自动检测
-- `SPECKIT_BRIDGE_AUTONOMOUS=1`: 运行时启用 autonomous execution
-
-## architecture
-
-Spec Kit 负责 WHAT：constitution、spec、plan、tasks、checklists 和 analyze。Superpowers 负责 HOW：TDD、debug、execution、review、verification 和 branch finishing。bridge 的优势是用最少胶水保持严格分工，让两边都做自己最擅长的事，而不是互相改写或替代。
+桥不再自动给你推荐路径（0.2.x 时代的 `recommend-route` 命令已在 0.3.0 移除），决策权在你手上。guard 在两条路径下都仍会执行边界规则 —— 没有活动的 Spec Kit handoff 时它不会阻塞你直接使用 Superpowers。
 
 ## commands
 
-官方 extension command IDs：
+| 命令（Claude Code） | 命令（Codex） | 用途 |
+|---|---|---|
+| `/speckit-superpowers-bridge` | `$speckit-superpowers-bridge` | 通过桥协议把 Spec Kit `tasks.md` 跑进 Superpowers |
+| `/speckit-speckit-superpowers-bridge-handoff` | `$speckit-speckit-superpowers-bridge-handoff` | 创建或更新 Superpowers handoff 状态 |
+| `/speckit-speckit-superpowers-bridge-guard` | `$speckit-speckit-superpowers-bridge-guard` | 检查请求的命令是否被当前 handoff 状态允许 |
 
-- `speckit.speckit-superpowers-bridge.execute`: 通过 Superpowers 执行 Spec Kit `tasks.md`
-- `speckit.speckit-superpowers-bridge.guard`: 执行职责边界保护
-- `speckit.speckit-superpowers-bridge.handoff`: 创建或刷新 handoff
-- `speckit.speckit-superpowers-bridge.parity`: 审计 disposition matrix 覆盖
-- `speckit.speckit-superpowers-bridge.audit`: 审计安装状态和双 agent skill parity
-- `speckit.speckit-superpowers-bridge.validate`: 运行端到端 bridge validation pass
-- `speckit.speckit-superpowers-bridge.recommend-route`: 给出轻/重工作流建议
+v0.2.x 中存在的 6 个元命令（`audit`、`validate`、`parity`、`recommend-route`、`submission-checklist`、`cleanup-audit`）**已在 0.3.0 移除**。它们要么重复了原生 Superpowers 已经提供的纪律，要么属于超出薄桥范围的自定义功能。详见 `CHANGELOG.md`。
 
-Agent integration 会把这些 command ID 渲染为各自的调用风格。例如 Codex 会把 execute 命令渲染为 `$speckit-speckit-superpowers-bridge-execute`；Claude Code 会渲染为 `/speckit-speckit-superpowers-bridge-execute`。
+## configuration
 
-## skill-sync-upgrade
+桥按优先级读取两层配置：显式脚本参数 > 环境变量。
 
-Codex 和 Claude Code 使用不同的 skill 目录。用下面命令保持同步：
+### actor resolution
 
-```powershell
-specify integration upgrade codex
-specify integration upgrade claude
-```
+桥脚本需要知道是哪个 Agent 在调用它（`-Actor`）时，按下面顺序解析：
 
-如果上游 Spec Kit 没有自动镜像 extension skills，只手动复制 bridge skill：
+1. 显式 `-Actor <codex|claude|unknown>` 参数。
+2. `SPECKIT_BRIDGE_ACTOR` 环境变量。
+3. 字面量 `"unknown"`。
 
-```powershell
-Copy-Item .agents\skills\speckit-superpowers-bridge .claude\skills\speckit-superpowers-bridge -Recurse
-```
+每个 Agent 的桥 `SKILL.md` 都把 `-Actor` 写死为自己 —— 所以正常对话使用中你完全不用设环境变量。这个链对 CI 或手动调脚本场景才有意义。
 
-不要手改官方生成的 `.agents/skills/speckit-*` 或 `.claude/skills/speckit-*` 文件。
+主跨 Agent 协议见 `AGENTS.md`；Claude Code 专属补充见 `CLAUDE.md`。
 
 ## troubleshooting
 
-优先运行这些检查：
+| 现象 | 可能原因 | 修复 |
+|---|---|---|
+| `handoff stuck in executing` | 上一次桥执行在转 `complete`/`blocked` 之前被中断 | 检查 `superpowers-handoff.json`；若工作确实做完了，运行 `update-handoff.ps1 -Status complete`；若被放弃，`-Status blocked -Reason "abandoned"` |
+| `missing per-agent peer skill` | 一边的 `.X/skills/<id>` 存在但另一边不存在 | 把存在那一侧的 SKILL.md 镜像过去；或删掉孤立项 |
+| guard 拒绝了一个你没预期的命令 | `guard-command.ps1` 里 5 条硬编码规则之一触发了 | 阅读 guard 打印的拒绝原因；规则集很小、可读 |
+| 老安装写的 handoff JSON 含 v3 字段 | 0.3.0 前的 handoff 里有 `autonomous_mode` / `resume_context` / `archive_history` | 无需操作。0.3.0 桥会容忍读、下次写入时静默丢弃。 |
 
-```powershell
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\parity-check.ps1 -Json
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\audit-install-state.ps1 -Json
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\validation-pass.ps1 -Json
-```
+## maintenance and versioning
 
-如果实现阶段发现需求缺口，把 handoff 标记为 `blocked`，回到 Spec Kit 产物修正后再继续。
+本版本针对以下版本验证：
 
-## marketplace-positioning
+- **Spec Kit** `0.8.10`
+- **Superpowers** skill 包 `5.x`
 
-社区 catalog 里已经有更宽泛的 Superpowers bridge。本 extension 刻意更窄：它服务于希望 Spec Kit 保持完整设计主干，同时让 Superpowers 提供实现纪律的团队。差异点是 guard/handoff/audit/rollback 契约，而不是另一个 planning layer。
+版本兼容性现在由 release 时的人工检查保障（0.2.x 时代自动化的 `verified-versions.json` 与 `parity-check.ps1` 已在 0.3.0 移除）。当上游工具的新版破坏了桥，我们要么修补 3 个保留脚本，要么在 `CHANGELOG.md` 中钉住已验证的兼容版本。
 
-## license
+## architecture in 60 seconds
 
-MIT。包元数据见 extension manifest。
+> 改编自 [Spec Kit vs Superpowers 对比文章（truongpx396, dev.to）](https://dev.to/truongpx396/spec-kit-vs-superpowers-a-comprehensive-comparison-practical-guide-to-combining-both-52jj)。
+
+- **Spec Kit 拥有 WHAT。** Constitution、spec、clarify、plan、tasks、checklists、analysis 都是 `.specify/` 与 `specs/` 下的耐久设计 artifact。
+- **Superpowers 拥有 HOW。** TDD、debugging、executing-plans、requesting-code-review、verification-before-completion、finishing-a-development-branch，是在生命周期阶段调用的实现纪律技能。
+- **桥编排原生技能，不提供自定义纪律。** 它只贡献：每个 Agent 一份描述编排顺序的 SKILL.md、三个小 PowerShell 脚本（`update-handoff.ps1`、`guard-command.ps1`、`auto-archive-handoff.ps1`）用于状态管理、5 条硬编码边界规则。没有 matrix、没有 audit、没有 validation pass、没有 parity check。
+
+### how the bridge differs from peer extensions
+
+| 插件 | 关注点 | 桥的差异 |
+|---|---|---|
+| [AIDE](https://github.com/mnriem/spec-kit-extensions) | 7 步项目启动工作流 | AIDE 在 Spec Kit 之上加 workflow；本桥**连接** Spec Kit 到 Superpowers 的执行层 |
+| [architect-preview](https://github.com/UmmeHabiba1312/spec-kit-architect-preview) | AI 协作下的持续架构治理 | Architect-preview 审 spec/plan/code 漂移；本桥编排两个工具但不添加纪律 |
+| api-contract-evolution | API 契约演进、破坏性变更检测 | 完全不同的层；本桥是 Spec Kit + Superpowers 上面的元层，与 API 形状无关 |
+| impact-predictor | 预测变更的架构影响 / 风险 | 预测 vs. 我们这种“机械执行”的桥 |
+
+## contributing and license
+
+MIT —— 见 [`LICENSE`](LICENSE)。
+
+本插件使用 AI 协作开发（Claude Code 负责设计 + 规划；Codex 负责实现；0.3.0 的瘦身由 Claude Code 独立完成）满足 [Spec Kit CONTRIBUTING.md](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md) 的 AI 披露要求。所有 artifact 都经人工 review 后提交。`tests/` 下保留 3 个 smoke 测试，覆盖 handoff schema、硬编码 guard 规则、跨 Agent skill 对等。
+
+Issues 与讨论：<https://github.com/lihan3238/speckit-superpowers-bridge/issues>
