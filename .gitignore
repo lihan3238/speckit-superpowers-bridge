@@ -6,7 +6,7 @@ Thumbs.db
 desktop.ini
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Backup patterns (cleanup-audit detects these as `backup_file_present`)
+# Backup patterns
 # ─────────────────────────────────────────────────────────────────────────────
 *.bak
 *.bak-*
@@ -40,3 +40,9 @@ node_modules/
 
 # Local checklist scratch from bridge validation experiments
 specs/*/checklists/protocol-quality.md
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Maintainer-only docs (FR-020): release notes, runbooks, working drafts.
+# Kept on the maintainer's local disk; not shipped in the repo.
+# ─────────────────────────────────────────────────────────────────────────────
+docs/

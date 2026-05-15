@@ -102,7 +102,10 @@ This inventory enumerates every path removed or modified by feature 006, grouped
 
 | Path | Type | Reason |
 |------|------|--------|
-|      |      |        |
+| `docs/` | gitignore entry added | Per FR-020: docs/ is maintainer-only; files remain on local disk but stop being tracked. |
+| `docs/release-runbook.md` | tracked → untracked | Removed from git index via `git rm -r --cached docs/`; still present on maintainer's local disk. |
+| `.specify/extensions/speckit-superpowers-bridge/docs/parameter-reference.md` | deleted | The bridge's own docs file; obsolete after the trim removes the parameters it documented (matrix entries, autonomous_mode, resume_context, etc.). The empty `docs/` directory under the bridge was removed too. |
+| `.gitignore` | modified | Added `docs/` line under a new "Maintainer-only docs" section. Removed the obsolete reference to cleanup-audit in a comment. |
 
 ---
 
@@ -116,4 +119,6 @@ This inventory enumerates every path removed or modified by feature 006, grouped
 
 ## Verification
 
-Filled in during Phase 7 polish (T075–T078).
+| Check | Result | Notes |
+|-------|--------|-------|
+| US3 — specs/001–005 byte-identical | ✅ PASS | `git diff --stat 845157b..HEAD -- specs/001..005/` empty; checksum `1f09423e…56a` matches baseline exactly (T044+T045). |
