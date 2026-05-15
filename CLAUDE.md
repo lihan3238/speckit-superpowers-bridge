@@ -1,7 +1,7 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-`specs/006-trim-to-thin-bridge/plan.md`
+`specs/003-bridge-cross-platform-scripts/plan.md`
 <!-- SPECKIT END -->
 
 ## Claude Code Supplement
