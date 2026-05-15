@@ -41,4 +41,4 @@ if ($missingOnCodex.Count -gt 0) {
     throw "Missing Codex peers: " + ($missingOnCodex -join ", ")
 }
 
-Write-Output "claude-skill-parity-tests-ok"
+Write-Output "claude-codex-skill-parity-tests-ok"

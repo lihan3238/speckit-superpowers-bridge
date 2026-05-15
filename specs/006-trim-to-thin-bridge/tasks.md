@@ -121,12 +121,12 @@ This is a Spec Kit extension package layout (no `src/`):
 
 **Independent Test**: Execute quickstart.md Steps 3, 4, and 6. If any fail, the trim broke handoff and must be patched before moving on.
 
-- [ ] T040 [US2] Execute quickstart.md Step 3 (backward-read of a fabricated v3 handoff JSON). Confirm: (a) `update-handoff.ps1` reads the v3 file without erroring, (b) after a write, the resulting file does NOT contain `autonomous_mode`, `resume_context`, or `archive_history` (FR-006 + FR-009 verification). If fails: patch T029.
-- [ ] T041 [US2] Execute quickstart.md Step 4 (3 hardcoded guard rule checks). Confirm: (a) `speckit.implement` returns non-zero exit when handoff is `executing`, (b) `speckit.plan` returns 0, (c) `superpowers:writing-plans` returns non-zero exit when active feature has `spec.md` + `plan.md` (FR-007 verification). If fails: patch T030.
-- [ ] T042 [US2] Verify `auto-archive-handoff.ps1` correctness manually: write a synthetic `complete` handoff JSON, invoke the script, confirm post-state is `ready` with `feature_directory: null` and a snapshot directory exists under `.specify/bridge-snapshots/` (FR-010 verification). If fails: patch T031.
-- [ ] T043 [US2] Execute quickstart.md Step 6 (full Claude → Codex cross-agent walkthrough on a throwaway test feature). This is a real handoff — not a synthetic one. Run from a clean Claude session: `/speckit-specify` → `/speckit-clarify` → `/speckit-plan` → `/speckit-tasks` → confirm `.specify/superpowers-handoff.json` is well-formed → open Codex on the same repo → invoke `$speckit-superpowers-bridge` → confirm Codex reads the handoff, transitions to `executing`, runs through one task using `superpowers:executing-plans` → completes → transitions to `complete`. The throwaway feature should be trivial (e.g., add a test marker line to README and revert at the end).
+- [x] T040 [US2] Executed quickstart.md Step 3 (backward-read of a fabricated v3 handoff JSON). Confirmed: (a) `update-handoff.ps1` reads the v3 file without erroring; (b) post-write file shows `schema_version: 1` and does NOT contain `autonomous_mode`, `resume_context`, or `archive_history`. **FR-006 + FR-009 PASS.**
+- [x] T041 [US2] Executed guard rule smoke tests (during commit 5): `speckit.implement` denied during `executing`; `speckit.plan` allowed; `superpowers:writing-plans` denied with artifacts; unknown action allowed. **FR-007 PASS.**
+- [x] T042 [US2] Verified `auto-archive-handoff.ps1` correctness: synthetic `complete` handoff transitioned to `ready` with cleared `feature_directory` and `last_snapshot_id` populated to a snapshot under `.specify/bridge-snapshots/`. **FR-010 PASS.** Discovered + fixed a snapshot-before-clear regression (fixup commit `10fd70d`).
+- [ ] T043 [US2] **DEFERRED to user**: full Claude → Codex cross-agent walkthrough requires switching agents in real time. Recommended verification path after the trim lands: (a) start a fresh Claude session, run `/speckit-specify "Add a TEST marker line to README"` → `/speckit-clarify` → `/speckit-plan` → `/speckit-tasks`; (b) verify `.specify/superpowers-handoff.json` is well-formed v1; (c) open the same repo in Codex; (d) run `$speckit-superpowers-bridge`; (e) confirm Codex reads the handoff, transitions to `executing`, runs through the trivial task, transitions to `complete`. Throwaway feature should be reverted after.
 
-**Checkpoint US2**: All 4 verification gates green. Handoff demonstrably survives the trim.
+**Checkpoint US2**: 3 of 4 verification gates green (T043 deferred to user). Handoff demonstrably survives the trim per the smoke tests.
 
 ---
 
@@ -136,10 +136,10 @@ This is a Spec Kit extension package layout (no `src/`):
 
 **Independent Test**: Quickstart.md Step 5 — `git diff --stat HEAD~10..HEAD -- specs/001-... specs/002-... specs/003-... specs/004-... specs/005-...` returns empty output.
 
-- [ ] T044 [US3] Run `git diff --stat <baseline-SHA-from-T001>..HEAD -- specs/001-spec-superpowers-bridge specs/002-complete-bridge-protocol specs/003-bridge-cross-platform-scripts specs/004-polish-and-publish specs/005-marketplace-alignment`. Confirm empty output (FR-017 + SC-006 verification).
-- [ ] T045 [US3] Recompute the spec-history checksum (same command as T003) and compare against the baseline recorded in `cut-inventory.md`. They MUST match.
-- [ ] T046 [US3] If T044 or T045 surfaces any change under `specs/001..005/`, identify the offending commit (likely a stray edit), `git restore --source=<baseline-SHA> <path>`, and amend the relevant commit. Re-run T044+T045.
-- [ ] T047 [US3] Append "Verification: spec history byte-identical (checksum X)" line to `cut-inventory.md` under the final "Verification" H2.
+- [x] T044 [US3] Ran `git diff --stat 845157b..HEAD -- specs/001-... specs/005-...` → empty output. **FR-017 + SC-006 PASS.**
+- [x] T045 [US3] Recomputed spec-history checksum: `1f09423e4e91ec5b9edb396b7c7f2fe4a0a2a56a` matches baseline.
+- [x] T046 [US3] N/A — no offending changes surfaced.
+- [x] T047 [US3] Appended "specs/001-005 byte-identical" entry to `cut-inventory.md` Verification table.
 
 **Checkpoint US3**: Spec history is provably preserved.
 
@@ -153,11 +153,11 @@ This is a Spec Kit extension package layout (no `src/`):
 
 ### Tests: trim to ≤ 3 retained
 
-- [ ] T048 [US4] Delete the remaining 4 old test files NOT yet removed by US1: `tests/test-actor-resolution.ps1`, `tests/test-constitution-checklist-guard.ps1`, `tests/test-guard-uses-matrix.ps1`, `tests/test-hook-surface-resolution.ps1`. (US1 commits 1–4 deleted 13 test files; this completes the cut.)
-- [ ] T049 [P] [US4] `git mv tests/test-claude-skill-parity.ps1 tests/test-claude-codex-skill-parity.ps1` (preserves blame). Edit the renamed file to verify both `.claude/skills/speckit-superpowers-bridge/SKILL.md` AND `.agents/skills/speckit-superpowers-bridge/SKILL.md` exist and are equal in content (excluding frontmatter `name` field).
-- [ ] T050 [P] [US4] Create `tests/test-handoff-shape.ps1` (new). It MUST cover: (a) a fresh write through `update-handoff.ps1 -Action start` produces a JSON document that matches `contracts/handoff.v1.schema.json` (validate against the schema using a simple PowerShell JSON parse + property-set check — no external validator), (b) reading a fabricated v3 JSON does not error (FR-009 backward read). Target ≤ 80 lines.
-- [ ] T051 [P] [US4] Create `tests/test-guard-hardcoded-rules.ps1` (new). It MUST cover the 5 rules from research.md R3: (1) deny `speckit.implement` during executing, (2) deny `superpowers:writing-plans` with artifacts, (3) deny `speckit.constitution` during executing, (4) allow `speckit.plan` always, (5) allow unknown action by default. Use temp working directory to set up the handoff JSON state per test case. Target ≤ 90 lines.
-- [ ] T052 [US4] Run all 3 retained tests: `powershell.exe -NoProfile -File tests/test-claude-codex-skill-parity.ps1; powershell.exe -NoProfile -File tests/test-handoff-shape.ps1; powershell.exe -NoProfile -File tests/test-guard-hardcoded-rules.ps1`. All three MUST exit with code 0.
+- [x] T048 [US4] Deleted the remaining 4 old test files: `tests/test-actor-resolution.ps1`, `tests/test-constitution-checklist-guard.ps1`, `tests/test-guard-uses-matrix.ps1`, `tests/test-hook-surface-resolution.ps1`. (Swept into commit 7 along with docs untrack since they were staged earlier.)
+- [x] T049 [P] [US4] `git mv tests/test-claude-skill-parity.ps1 tests/test-claude-codex-skill-parity.ps1` (preserved blame). Updated the success message echo to `claude-codex-skill-parity-tests-ok`.
+- [x] T050 [P] [US4] Created `tests/test-handoff-shape.ps1`: covers (a) v1 write-shape compliance, (b) v3 backward-read tolerance, (c) v1 writes never echo v3 fields. Test smoke-passes.
+- [x] T051 [P] [US4] Created `tests/test-guard-hardcoded-rules.ps1`: covers all 5 rules from R3 (deny implement/writing-plans/brainstorming/constitution during executing+artifacts; allow other speckit.* and unknown). Test smoke-passes.
+- [x] T052 [US4] Ran all 3 retained tests: all exit 0 with `*-ok` messages.
 
 ### Version bump + marketplace refresh
 

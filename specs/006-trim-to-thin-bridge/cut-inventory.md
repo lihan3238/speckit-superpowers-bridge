@@ -98,7 +98,9 @@ This inventory enumerates every path removed or modified by feature 006, grouped
 
 ---
 
-## Commit 7 — Untrack docs/ and remove bridge parameter-reference
+## Commit 7 — Untrack docs/, remove bridge parameter-reference, trim test inventory
+
+> Commit 7 also swept in the test deletions/rename that `git rm` + `git mv` had staged earlier (T048+T049). Recorded here for honesty; the changes were already revertable per FR-018.
 
 | Path | Type | Reason |
 |------|------|--------|
@@ -106,6 +108,11 @@ This inventory enumerates every path removed or modified by feature 006, grouped
 | `docs/release-runbook.md` | tracked → untracked | Removed from git index via `git rm -r --cached docs/`; still present on maintainer's local disk. |
 | `.specify/extensions/speckit-superpowers-bridge/docs/parameter-reference.md` | deleted | The bridge's own docs file; obsolete after the trim removes the parameters it documented (matrix entries, autonomous_mode, resume_context, etc.). The empty `docs/` directory under the bridge was removed too. |
 | `.gitignore` | modified | Added `docs/` line under a new "Maintainer-only docs" section. Removed the obsolete reference to cleanup-audit in a comment. |
+| `tests/test-actor-resolution.ps1` | test (deleted) | Custom 4-step actor-resolution chain is gone; behaviour is now exercised by test-handoff-shape (commit 8). |
+| `tests/test-claude-skill-parity.ps1` → `tests/test-claude-codex-skill-parity.ps1` | test (renamed) | Renamed for clarity that the parity covers BOTH agents' bridge SKILL.md. |
+| `tests/test-constitution-checklist-guard.ps1` | test (deleted) | Constitution guard rule now lives in the 5 hardcoded if/elseif branches; covered by test-guard-hardcoded-rules (commit 8). |
+| `tests/test-guard-uses-matrix.ps1` | test (deleted) | Matrix is gone; the test premise is invalid. Hardcoded-rules test supersedes. |
+| `tests/test-hook-surface-resolution.ps1` | test (deleted) | Tested hook surface that now has fewer entries; the simplified extensions.yml (commit 8) is hand-verifiable. |
 
 ---
 
@@ -113,7 +120,21 @@ This inventory enumerates every path removed or modified by feature 006, grouped
 
 | Path | Type | Reason |
 |------|------|--------|
-|      |      |        |
+| `.specify/extensions/speckit-superpowers-bridge/extension.yml` | manifest (modified) | version → 0.3.0; provides.commands reduced from 9 to 3 (execute, handoff, guard); hooks reduced from 6 to 5 (before_specify bridge-handler removed); description refreshed to thin-bridge framing. |
+| `marketplace/catalog-entry.json` | listing (modified) | version 0.3.0; provides.commands 3; provides.hooks 5; description refreshed; download_url bumped to v0.3.0. |
+| `marketplace/extensions-readme-row.md` | listing (modified) | Description column refreshed. |
+| `marketplace/upstream-pr-body.md` | listing (modified) | PR body rewritten for 0.3.0; AI-disclosure paragraph preserved verbatim. |
+| `marketplace/README.md` | listing (modified) | Updated to describe the manual submission workflow (was: 11-step automated runbook). |
+| `README.md` | doc (modified) | Rewrote workflow diagram, install URLs (v0.3.0), commands table (drop 6 removed commands), configuration (2-section actor chain), troubleshooting, maintenance, architecture sections. Added new `## When to Skip Spec Kit` H2 section per FR-021 (replaces deleted `recommend-route`). |
+| `README.zh-CN.md` | doc (modified) | Bilingual mirror of README.md changes. H2 anchors stay English. Parity check: 10/10 H2s match between EN and ZH. |
+| `CHANGELOG.md` | doc (modified) | New `[0.3.0] - 2026-05-15` section names all removed files (≥ 30 specific items), Changed entries describe the 3 simplified scripts and 2 rewritten SKILL.md peers, Compatibility notes call out v2/v3 read tolerance and CI updates required. AI-disclosure header amended to reflect Claude Code running the v0.3.0 trim. |
+| `.specify/extensions.yml` | config (modified) | Removed the bridge's `recommend-route` entry under `before_specify` (the git.feature entry stays — it's owned by the git extension, not the bridge, and feature branch creation is still needed). All other hooks referencing deleted bridge commands were already absent (the hook file had 5 bridge-guard hooks + 1 bridge-handoff hook; all 6 stay, all reference surviving commands). |
+| `AGENTS.md` | protocol (modified) | Removed all references to disposition-matrix.json, verified-versions.json, parity-check, validation-pass, submission-checklist, cleanup-audit, audit, recommend-route, autonomous_mode, resume_context, skill_invocation events, archive_history. Added a new "Guard rules" H2 listing the 5 hardcoded rules. Added a "Handoff schema" H2 pointing at the v1 schema. Preserved §"User-Facing Language Routing" (user-added) and the bridge ownership statements. |
+| `CLAUDE.md` | protocol (modified) | Removed references to deleted commands (`/speckit-speckit-superpowers-bridge-parity`, `-audit`, `-validate`, `-submission-checklist`, `-cleanup-audit`); replaced with a one-line summary of the 5 hardcoded guard rules. Updated the slash-command example from `/speckit-speckit-superpowers-bridge-execute` to `/speckit-superpowers-bridge` (the canonical entry point). |
+
+### FR-011 interpretation note
+
+FR-011 reads "The `before_specify` hook MUST be removed entirely (its only prior handler was `recommend-route`)…". Strictly applied, this would also remove the `speckit.git.feature` entry under `before_specify`, which is owned by the **git extension** (creates feature branches when `/speckit-specify` runs) — unrelated to the bridge and load-bearing for the workflow. Constitution Principle V scopes the trim to `speckit-superpowers-bridge/` files only; deleting another extension's hook entry violates that principle. So the actual change: removed only the bridge's `recommend-route` handler, kept the git extension's `feature` handler. The spirit of FR-011 ("no bridge entry in before_specify") is satisfied; the literal "remove the entire hook key" is not. Documented here for the verification gate.
 
 ---
 

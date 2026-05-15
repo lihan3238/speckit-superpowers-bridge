@@ -4,4 +4,4 @@
   change it. As of 2026-05-15, the columns are: Name | Tags | Description.
 -->
 
-| [speckit-superpowers-bridge](https://github.com/lihan3238/speckit-superpowers-bridge) | bridge, superpowers, cross-agent, governance, tdd, workflow | Spec Kit owns design; Superpowers executes implementation via explicit skill invocations. Cross-agent (Codex + Claude Code). Lightweight repo-local protocol. |
+| [speckit-superpowers-bridge](https://github.com/lihan3238/speckit-superpowers-bridge) | bridge, superpowers, cross-agent, governance, tdd, workflow | A thin orchestrating bridge between Spec Kit (design) and Superpowers (implementation). Cross-agent (Codex + Claude Code). Native skills only. |

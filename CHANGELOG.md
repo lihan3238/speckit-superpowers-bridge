@@ -4,9 +4,100 @@ All notable changes to **speckit-superpowers-bridge** are documented in this fil
 
 This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1.1.0/) and to [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html).
 
-> **AI-assistance disclosure**: This extension is developed with AI coding assistants (Claude Code for design + planning, Codex for implementation), per the AI-disclosure requirement in [Spec Kit CONTRIBUTING.md](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md). Every artifact passes human review before commit; the bridge's own validation pass and 17+ smoke tests are the verification surface.
+> **AI-assistance disclosure**: This extension is developed with AI coding assistants (Claude Code for design + planning, Codex for implementation passes, Claude Code for the v0.3.0 trim), per the AI-disclosure requirement in [Spec Kit CONTRIBUTING.md](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md). Every artifact passes human review before commit. As of v0.3.0 the verification surface is three retained smoke tests under `tests/`.
 
-## [Unreleased]
+## [0.3.0] - 2026-05-15
+
+A deliberate drastic trim — the bridge becomes the thin orchestrating layer it was always supposed to be. **~87% PowerShell line reduction**, no functional capability added. See [`specs/006-trim-to-thin-bridge/spec.md`](specs/006-trim-to-thin-bridge/spec.md) for the full rationale, and [`specs/006-trim-to-thin-bridge/cut-inventory.md`](specs/006-trim-to-thin-bridge/cut-inventory.md) for the enumerated removal list.
+
+### Removed
+
+PowerShell scripts (13 deletions):
+
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/parity-check.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/audit-install-state.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/validation-pass.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/submission-checklist.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/cleanup-audit.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/check-distribution-manifest.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/check-readme-bilingual-parity.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/recommend-route.ps1` (replaced by README "When to Skip Spec Kit" section; routing decision is now user-driven)
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/emit-resume-signal.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/emit-skill-invocation.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/restore-snapshot.ps1` (snapshot rollback is now manual `cp -r`)
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/test-bridge-context.ps1`
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/test-bridge-guard.ps1`
+
+Bridge command markdowns (6 deletions):
+
+- `commands/speckit.speckit-superpowers-bridge.parity.md`
+- `commands/speckit.speckit-superpowers-bridge.audit.md`
+- `commands/speckit.speckit-superpowers-bridge.validate.md`
+- `commands/speckit.speckit-superpowers-bridge.submission-checklist.md`
+- `commands/speckit.speckit-superpowers-bridge.cleanup-audit.md`
+- `commands/speckit.speckit-superpowers-bridge.recommend-route.md`
+
+Bridge data files (3 deletions):
+
+- `.specify/extensions/speckit-superpowers-bridge/disposition-matrix.json` (replaced by 5 hardcoded `if`/`elseif` rules inside `guard-command.ps1`)
+- `.specify/extensions/speckit-superpowers-bridge/verified-versions.json` (version compatibility is now human-inspection at release time, recorded in this CHANGELOG)
+- `.specify/extensions/speckit-superpowers-bridge/plugin-distribution-manifest.yml` (catalog-entry.json is sufficient)
+
+Bridge contracts and docs (2 deletions):
+
+- `.specify/extensions/speckit-superpowers-bridge/contracts/plugin-distribution-manifest.schema.json` (the schema for a now-removed manifest)
+- `.specify/extensions/speckit-superpowers-bridge/docs/parameter-reference.md` (parameters it documented no longer exist)
+
+Tests under `tests/` (15 deletions; 2 more in commit 5 under `scripts/powershell/`):
+
+- `test-parity-drift.ps1`, `test-install-state-audit.ps1`, `test-validation-pass.ps1`, `test-submission-checklist.ps1`, `test-cleanup-audit.ps1`, `test-distribution-manifest.ps1`, `test-routing-recommender.ps1`, `test-resume-signal.ps1`, `test-skill-invocation-event.ps1`, `test-extension-manifest-install.ps1`, `test-disposition-matrix.ps1`, `test-verified-versions.ps1`, `test-readme-bilingual-parity.ps1`, `test-actor-resolution.ps1`, `test-constitution-checklist-guard.ps1`, `test-guard-uses-matrix.ps1`, `test-hook-surface-resolution.ps1`
+
+Handoff schema v3 fields (now `schema_version: 1` in new writes; older v2/v3 documents are still readable):
+
+- `autonomous_mode`
+- `resume_context`
+- `archive_history`
+
+Hooks in `.specify/extensions.yml`:
+
+- `before_specify` hook entry removed entirely (its sole handler was `recommend-route`)
+- Every hook referencing a removed command was deleted
+
+`docs/` directory:
+
+- `docs/release-runbook.md` and any future maintainer-only files under `docs/` are now gitignored (kept on the maintainer's local disk; not shipped in the repo).
+
+### Changed
+
+- `extension.yml.version` bumped to `0.3.0`.
+- `extension.yml.provides.commands` reduced from 9 to 3 (`execute`, `handoff`, `guard`).
+- `extension.yml.hooks` reduced from 6 to 5 (`before_specify` removed).
+- `marketplace/catalog-entry.json`: version `0.3.0`, `provides.commands: 3`, `provides.hooks: 5`, refreshed description to "A thin orchestrating bridge between Spec Kit (design) and Superpowers (implementation). Cross-agent (Codex + Claude Code). Native skills only — no custom discipline."
+- `marketplace/upstream-pr-body.md`: rewritten for 0.3.0; AI-assistance disclosure paragraph preserved verbatim.
+- `marketplace/extensions-readme-row.md` + `marketplace/README.md`: updated for 0.3.0 description and the manual-submission workflow.
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/update-handoff.ps1`: 393 → 189 lines. New writes use v1 schema. Reads tolerate v2/v3 unknown fields per FR-009 (the trim's explicit user-friendliness goal for in-flight upgrades).
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/guard-command.ps1`: 259 → 92 lines. Five hardcoded rules replace the matrix lookup.
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/auto-archive-handoff.ps1`: 97 → 54 lines. Emits an `archive` event (renamed from `auto_archive`).
+- `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/common-actor-resolution.ps1`: 58 → 41 lines. Three-step actor chain (explicit → env → "unknown"); dropped `.specify/integration.json` consultation.
+- `.claude/skills/speckit-superpowers-bridge/SKILL.md`: 149 → 62 lines. Now describes orchestration only.
+- `.agents/skills/speckit-superpowers-bridge/SKILL.md`: 146 → 59 lines. Content-identical Codex peer.
+- `README.md` + `README.zh-CN.md`: rewritten to reflect the thin bridge; added new `## When to Skip Spec Kit` section replacing the deleted `recommend-route` advisory. Bilingual H2 parity preserved (10 H2s in each, English anchors).
+- `AGENTS.md` + `CLAUDE.md`: removed references to deleted commands and to `disposition-matrix.json` / `verified-versions.json`.
+- `.gitignore`: added `docs/`; removed an obsolete comment referencing `cleanup-audit`.
+- The `bridge-events.jsonl` log no longer carries event types: `skill_invocation`, `parity_check`, `submission_check`, `auto_archive` (the last is now `archive` with `status: "archived"`).
+
+### Compatibility notes
+
+- **Reading old handoff JSON**: a 0.3.0 install reads handoff JSON written by 0.1.x / 0.2.x without error; v2/v3-only fields are silently ignored. The next write produces a clean v1 document. No migration step required.
+- **CI / Make files**: if you reference any of the removed scripts (e.g., `parity-check.ps1`, `validation-pass.ps1`, `submission-checklist.ps1`, `cleanup-audit.ps1`, `recommend-route.ps1`), update or remove those references. The trim does not provide compatibility shims.
+- **Routing recommendation**: the previous `recommend-route` command is gone. See the new README `## When to Skip Spec Kit` section; the user decides the route.
+- **Snapshot rollback**: `restore-snapshot.ps1` is gone. Snapshots are still taken under `.specify/bridge-snapshots/`; rollback becomes a manual `cp -r <snapshot-dir>/* <destination>`.
+
+### Verification
+
+- Three retained smoke tests, all green: `tests/test-claude-codex-skill-parity.ps1` (renamed from `test-claude-skill-parity.ps1`), `tests/test-handoff-shape.ps1` (new), `tests/test-guard-hardcoded-rules.ps1` (new).
+- `specs/001-spec-superpowers-bridge` through `specs/005-marketplace-alignment` are byte-identical to their pre-trim state (verified by checksum `1f09423e4e91ec5b9edb396b7c7f2fe4a0a2a56a`).
+- PowerShell line surface: 2,984 → 376 (~87.4% reduction across the retained 3 scripts + 1 helper).
 
 ## [0.2.0] - 2026-05-15
 
