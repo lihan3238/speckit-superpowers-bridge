@@ -6,6 +6,48 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 > **AI-assistance disclosure**: This extension is developed with AI coding assistants (Claude Code for design + planning, Codex for implementation passes, Claude Code for the v0.3.0 trim), per the AI-disclosure requirement in [Spec Kit CONTRIBUTING.md](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md). Every artifact passes human review before commit. As of v0.3.0 the verification surface is three retained smoke tests under `tests/`.
 
+## [0.3.1] - 2026-05-15
+
+Tooling + alignment patch. No behavior changes in the bridge itself; this release ships the release-automation infrastructure that v0.3.0 didn't have, and aligns several stale references that were missed during the v0.3.0 cut.
+
+### Added
+
+- `.github/workflows/release.yml` — GitHub Actions workflow that fires on `v*.*.*` tag push and automates the build → release → asset upload chain. Runs the validator + bridge smoke tests + release-tooling self-tests before building; extracts the matching CHANGELOG section as release notes; emits SHA256 + asset URL to the workflow's step summary.
+- `scripts/release/validate-release-readiness.ps1` — pre-flight validator checking four cross-references (extension.yml version, catalog-entry.json version, catalog-entry.json download_url, CHANGELOG section presence). Runnable locally before tagging and in CI.
+- `scripts/release/test-validate-release-readiness.ps1` — 5-case TDD test suite (1 positive + 4 negative) for the validator.
+- `scripts/release/build-extension-zip.ps1` — already added in v0.3.0; now made cross-platform (replaced `$env:TEMP` with `[System.IO.Path]::GetTempPath()` so it runs on ubuntu pwsh, not just Windows).
+
+### Changed
+
+- `extension.yml.extension.version` → `0.3.1`.
+- `marketplace/catalog-entry.json` `version` + `download_url` → 0.3.1; description shortened earlier in this cycle to 91 chars to stay under the publishing-guide soft cap.
+- `marketplace/README.md` — release procedure rewritten to reflect the automated workflow; distinguishes pre-tag manual edits, auto on tag push, and the cross-repo issue comment that stays manual.
+- `marketplace/upstream-pr-body.md` — references corrected from auto-archive URL back to release-asset URL; "since v0.2.0" framing corrected to "since v0.1.1" (v0.2.0 was a CHANGELOG marker, never tagged).
+- `.specify/workflows/speckit-superpowers/workflow.yml` — `workflow.version` `0.1.1` → `0.3.0` (the trim should have included this; caught during post-release sweep).
+- `.specify/workflows/workflow-registry.json` — speckit-superpowers entry version bumped to 0.3.0 with refreshed `updated_at`.
+- `.specify/extensions/.registry` — speckit-superpowers-bridge entry version bumped to 0.3.0; `registered_commands` trimmed from 7 (stale) to 3 (current).
+- `.gitignore` — `docs/` rule (already in v0.3.0); obsolete cleanup-audit comment removed.
+
+### Fixed
+
+- 5 cross-reference drifts caught by code review on v0.3.0 (commit `f9f5490` in the v0.3.0 timeline):
+  - `commands/speckit.speckit-superpowers-bridge.execute.md` referenced deleted `emit-skill-invocation.ps1` and the dropped `-ResumeContext` parameter.
+  - `commands/speckit.speckit-superpowers-bridge.guard.md` documented guard rules that didn't match the actual hardcoded set, plus a non-existent `-AllowDiscardSpecArtifacts` parameter.
+  - `commands/speckit.speckit-superpowers-bridge.handoff.md` described a 4-step actor chain that the trim collapsed to 3 steps.
+  - `contracts/handoff.v1.schema.json` — `artifact_owner` enum was missing `"unknown"` while the script wrote it as default.
+  - `contracts/handoff.v1.schema.json` — `supersedes` typed as `string|null` while the script wrote it as an array.
+
+### Compatibility
+
+Functionally identical to v0.3.0. Users on v0.3.0 can upgrade or skip; no migration required.
+
+### Validation
+
+- All 3 bridge smoke tests green.
+- 5/5 validator TDD cases green.
+- Local validator passes for version 0.3.1.
+- Release artifact build verified locally to match `agent-governance` shape.
+
 ## [0.3.0] - 2026-05-15
 
 A deliberate drastic trim — the bridge becomes the thin orchestrating layer it was always supposed to be. **~87% PowerShell line reduction**, no functional capability added. See [`specs/006-trim-to-thin-bridge/spec.md`](specs/006-trim-to-thin-bridge/spec.md) for the full rationale, and [`specs/006-trim-to-thin-bridge/cut-inventory.md`](specs/006-trim-to-thin-bridge/cut-inventory.md) for the enumerated removal list.
@@ -162,7 +204,8 @@ Hooks in `.specify/extensions.yml`:
 - AGENTS.md as the master cross-agent protocol; CLAUDE.md as the Claude-specific supplement.
 - Constitution (`.specify/memory/constitution.md`) ratifying 5 principles: lightweight & repo-local, design/implementation separation, agent-neutral protocol, smooth bidirectional handoff, vendor-managed boundaries.
 
-[Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.3.1
 [0.3.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.3.0
 [0.2.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.2.0
 [0.1.1]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.1.1
