@@ -6,6 +6,39 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 > **AI-assistance disclosure**: This extension is developed with AI coding assistants (Claude Code for design + planning, Codex for implementation passes, Claude Code for the v0.3.0 trim), per the AI-disclosure requirement in [Spec Kit CONTRIBUTING.md](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md). Every artifact passes human review before commit. As of v0.3.0 the verification surface is three retained smoke tests under `tests/`.
 
+## [0.4.2] - 2026-05-16
+
+Patch / cleanup release with no new bridge capability. This release closes the v0.4.0 → v0.4.1 cleanup tail by addressing **B1**, **B2**, **C1**, **C4**, and **US4** — the five items left open after v0.4.1's marketplace alignment. The bridge runtime (handoff, guard, auto-archive, actor resolution) is byte-frozen aside from one surgical SKILL.md edit (B1).
+
+This release also closes the first execution of the constitution v1.2.0 "End-User Verification Sandbox" gate — `..\test_specify_superpower` is the canonical sibling sandbox; every release artifact from v0.4.2 forward MUST be verified there before its handoff transitions to `complete`.
+
+### Fixed
+
+- **B1**: `.claude/skills/speckit-superpowers-bridge/SKILL.md` and `.agents/skills/speckit-superpowers-bridge/SKILL.md` no longer hardcode `-ArtifactOwner claude` / `--artifact-owner claude` in their step-3 update-handoff example. The 4-step actor-precedence chain inside `update-handoff.ps1` / `update-handoff.sh` was always correct (explicit arg → prior handoff value → resolved actor → `"unknown"`); the SKILL example was overriding step 2 unnecessarily and could clobber a valid prior `artifact_owner` on cross-agent handoff. Both peers now omit the flag and document that the script silently preserves the prior owner. (US1)
+- **B2**: `tests/test-handoff-shape.ps1` and `tests/test-guard-hardcoded-rules.ps1` now translate Windows paths to bash-reachable paths through a 5-strategy chain (`cygpath` → `/mnt/<drive>` → MSYS shorthand `/<drive>` → native `bash.exe` direct → skip-with-reason). The bash flavor is also gated on a prerequisite probe; if `jq` or another dependency is missing, the flavor is skipped with a recorded reason instead of producing a false-red. PowerShell flavor remains the source of truth on Windows dev boxes. (US2)
+
+### Changed
+
+- **C1**: `.gitignore` now excludes install-time registry state — `.specify/workflows/workflow-registry.json`, `.specify/workflows/*/workflow.yml`, and `.specify/extensions/.registry`. These files are regenerated locally by `specify extension add` / `specify extension list` and should never be tracked. Existing tracked copies were removed from the index in this release. (US3)
+- **C4**: `specs/003-bridge-cross-platform-scripts/tasks.md` was refreshed to a v0.4.2 task list focused on the cleanup tail (B1 + B2 + C1 + C4 + US4 sandbox), with a historical pointer to commit `a4aa833` for the original v0.4.0 task list. The previous tail of 17 work-in-progress tasks is absorbed by this redesign. (US3)
+- `AGENTS.md` gained a new "Install-time registries are local state, not tracked" subsection documenting the C1 gitignore rule and the rationale (per-developer, locally generated, not vendored).
+- `extension.yml`, `marketplace/catalog-entry.json`, and `marketplace/extension-submission-body.md` now target v0.4.2.
+
+### Added
+
+- **US4**: `specs/003-bridge-cross-platform-scripts/verification.md` records the sandbox-install verification run required by constitution v1.2.0 §"End-User Verification Sandbox". Each release from v0.4.2 forward appends one `## <version>` section with a row per supported platform (Windows PowerShell, Linux/macOS bash). Schema is pinned by `contracts/verification-record.md`. v0.4.2 records Windows PowerShell + WSL Linux bash as the two real-host runs; macOS is PENDING with the noted reason "no host available" per Clarifications Q3.
+
+### Compatibility
+
+Functionally identical to v0.4.1. The bridge runtime (handoff schema, guard rules, actor chain, auto-archive, audit log) is byte-frozen. Users on v0.4.0 or v0.4.1 may upgrade directly; no migration required.
+
+### Validation
+
+- All 3 bridge smoke tests green: `tests/test-handoff-shape.ps1`, `tests/test-guard-hardcoded-rules.ps1`, `tests/test-claude-codex-skill-parity.ps1`.
+- Validator self-test green: `scripts/release/test-validate-release-readiness.ps1`.
+- Local validator passes for version 0.4.2.
+- Constitution v1.2.0 sandbox gate satisfied (`..\test_specify_superpower`): Windows PowerShell + WSL Linux bash recorded in `specs/003-bridge-cross-platform-scripts/verification.md`; macOS deferred per Clarifications Q3.
+
 ## [0.4.1] - 2026-05-16
 
 Marketplace alignment patch. No bridge runtime behavior changed.
@@ -254,7 +287,8 @@ Hooks in `.specify/extensions.yml`:
 - AGENTS.md as the master cross-agent protocol; CLAUDE.md as the Claude-specific supplement.
 - Constitution (`.specify/memory/constitution.md`) ratifying 5 principles: lightweight & repo-local, design/implementation separation, agent-neutral protocol, smooth bidirectional handoff, vendor-managed boundaries.
 
-[Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.2
 [0.4.1]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.1
 [0.4.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.0
 [0.3.1]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.3.1

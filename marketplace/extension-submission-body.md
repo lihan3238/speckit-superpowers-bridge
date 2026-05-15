@@ -1,4 +1,4 @@
-# Extension Submission: Superpowers Implementation Bridge
+﻿# Extension Submission: Superpowers Implementation Bridge
 
 ### Extension ID
 
@@ -10,7 +10,7 @@ Superpowers Implementation Bridge
 
 ### Version
 
-0.4.1
+0.4.2
 
 ### Description
 
@@ -26,7 +26,7 @@ https://github.com/lihan3238/speckit-superpowers-bridge
 
 ### Download URL
 
-https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.1/speckit-superpowers-bridge-v0.4.1.zip
+https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.2/speckit-superpowers-bridge-v0.4.2.zip
 
 ### License
 
@@ -105,7 +105,7 @@ Release validation:
 - `specify --version` -> `specify 0.8.10`
 - Release workflow: https://github.com/lihan3238/speckit-superpowers-bridge/actions/runs/25934883753
 - Release ZIP SHA256: `1758f75296f2de7ce1399bd91765c719d50a99700ce852a621a59cb6704e7cf2`
-- `scripts/release/validate-release-readiness.ps1 -Version 0.4.1`
+- `scripts/release/validate-release-readiness.ps1 -Version 0.4.2`
 - `tests/test-handoff-shape.ps1`
 - `tests/test-guard-hardcoded-rules.ps1`
 - `tests/test-claude-codex-skill-parity.ps1`
@@ -114,8 +114,8 @@ Release validation:
 
 Fresh install smoke:
 
-- Windows + Codex: installed from the v0.4.1 release ZIP; verified short alias, canonical fallbacks, PowerShell handoff, and guard allow/deny decisions.
-- WSL/Linux + Claude: installed from the v0.4.1 release ZIP; verified short alias, canonical fallbacks, bash handoff, and guard allow/deny decisions.
+- Windows + Codex: installed from the v0.4.2 release ZIP; verified short alias, canonical fallbacks, PowerShell handoff, and guard allow/deny decisions.
+- WSL/Linux + Claude: installed from the v0.4.2 release ZIP; verified short alias, canonical fallbacks, bash handoff, and guard allow/deny decisions.
 - ZIP structure: `extension.yml` at archive root; `commands/`, `scripts/powershell/`, and `scripts/bash/` use portable `/` separators.
 
 ### Example Usage
@@ -123,7 +123,7 @@ Fresh install smoke:
 ```powershell
 specify init my-project --integration codex
 cd my-project
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.1/speckit-superpowers-bridge-v0.4.1.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.2/speckit-superpowers-bridge-v0.4.2.zip
 
 $speckit-specify
 $speckit-clarify
@@ -151,13 +151,13 @@ Claude Code users run the same flow with slash commands:
     "name": "Superpowers Implementation Bridge",
     "description": "Thin orchestrator between Spec Kit (design) and Superpowers (implementation). Cross-agent.",
     "author": "lihan3238",
-    "version": "0.4.1",
+    "version": "0.4.2",
     "license": "MIT",
     "repository": "https://github.com/lihan3238/speckit-superpowers-bridge",
     "homepage": "https://github.com/lihan3238/speckit-superpowers-bridge",
     "documentation": "https://github.com/lihan3238/speckit-superpowers-bridge#readme",
     "changelog": "https://github.com/lihan3238/speckit-superpowers-bridge/blob/main/CHANGELOG.md",
-    "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.1/speckit-superpowers-bridge-v0.4.1.zip",
+    "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.2/speckit-superpowers-bridge-v0.4.2.zip",
     "requires": {
       "speckit_version": ">=0.8.10",
       "tools": [
@@ -183,7 +183,7 @@ Claude Code users run the same flow with slash commands:
 
 ### Additional Context
 
-This is the clean v0.4.1 submission for `speckit-superpowers-bridge`. It supersedes the older exploratory issue #2575, whose body and comments describe earlier pre-trim releases.
+This is the clean v0.4.2 submission for `speckit-superpowers-bridge`. It supersedes the older exploratory issue #2575, whose body and comments describe earlier pre-trim releases.
 
 The bridge combines Spec Kit and Superpowers by keeping their responsibilities separate:
 
