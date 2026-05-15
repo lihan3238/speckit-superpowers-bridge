@@ -45,7 +45,9 @@
       }
     },
     "supersedes": {
-      "type": ["string", "null"]
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Spec Kit commands this handoff supersedes (typically [\"speckit.implement\"])."
     },
     "executor": {
       "type": "string",
@@ -65,7 +67,7 @@
     },
     "artifact_owner": {
       "type": "string",
-      "enum": ["codex", "claude"]
+      "enum": ["codex", "claude", "unknown"]
     },
     "review_only_agents": {
       "type": "array",

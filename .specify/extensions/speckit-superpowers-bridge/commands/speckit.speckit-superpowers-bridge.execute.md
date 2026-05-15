@@ -28,7 +28,7 @@ Before implementation begins, run:
 
 ```powershell
 .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -Actor <codex|claude>
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\guard-command.ps1 -Action superpowers.executing-plans -Actor <codex|claude>
+.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\guard-command.ps1 -Action "superpowers:executing-plans" -Actor <codex|claude>
 ```
 
 Do not invoke Superpowers `brainstorming` or `writing-plans` for this active feature. Spec Kit artifacts are the only design and execution contract.
@@ -43,13 +43,7 @@ Use Superpowers execution skills only against Spec Kit `tasks.md`:
 - `superpowers:requesting-code-review` before final completion.
 - `superpowers:finishing-a-development-branch` before handing off merge, PR, or branch cleanup decisions.
 
-Before each required Superpowers skill invocation, persist resume context and append an audit event:
-
-```powershell
-$resume = @{ current_task_id = "<T###>"; current_skill = "superpowers:test-driven-development"; current_phase = "before-implementation-task"; next_expected_action = "Start implementation task <T###>" } | ConvertTo-Json -Compress
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor <codex|claude>
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:test-driven-development -Phase before-implementation-task -TaskId <T###> -Actor <codex|claude> -Decision invoked -Reason "Start implementation task"
-```
+Before each required Superpowers skill invocation, the agent simply calls the skill — no extra logging or resume-context plumbing is needed. The bridge's only state is `superpowers-handoff.json`, updated at lifecycle boundaries (start / block / complete) via `update-handoff.ps1`. See the bridge `SKILL.md` (linked above) for the authoritative 8-step orchestration sequence.
 
 For delegated implementation prompts, include:
 

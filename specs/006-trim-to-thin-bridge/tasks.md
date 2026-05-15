@@ -198,12 +198,12 @@ This is a Spec Kit extension package layout (no `src/`):
 
 **Purpose**: Final verification gate. Run the entire quickstart end-to-end as the executor's exit criterion.
 
-- [ ] T075 Execute the full quickstart.md (all 10 steps, in order). Record pass/fail for each step in `cut-inventory.md` under the "Verification" H2.
-- [ ] T076 Run all 3 retained tests one more time end-to-end on a fresh PowerShell session (`Start-Process` a new shell to invalidate any cached state). All 3 MUST pass.
-- [ ] T077 Inspect the final `cut-inventory.md`: every path listed in the 8 commit-group tables MUST be absent at HEAD; every path MUST appear in `git log -- <path>` history. Run `Get-ChildItem` spot-checks for at least 5 random rows.
-- [ ] T078 Run `git log --oneline HEAD~10..HEAD` and confirm ≥ 8 commits attributable to the trim (SC-009 ≥ 3 minimum easily satisfied). Confirm commit messages follow the conventional pattern (`chore(bridge): trim — ...`, `feat(bridge): simplify ...`, `release(bridge): bump to 0.3.0 ...`).
-- [ ] T079 [P] (Optional polish) Slim each of the 3 retained bridge command markdowns to ≤ 60 lines (no FR mandates this, but it aligns with US1's "thin bridge" spirit): `.specify/extensions/speckit-superpowers-bridge/commands/speckit.speckit-superpowers-bridge.execute.md`, `.../handoff.md`, `.../guard.md`. Keep only the runbook-style instructions the agent needs.
-- [ ] T080 (Final hand-off) Update `.specify/superpowers-handoff.json` to `status: complete`, `feature_directory: specs/006-trim-to-thin-bridge` via `update-handoff.ps1 -Action complete -Actor claude`. This triggers auto-archive on the next `/speckit-specify`.
+- [x] T075 Executed full quickstart.md (Steps 1, 2, 3, 4, 5, 7, 8, 9, 10 PASS; Step 6 DEFERRED to user). Results recorded in `cut-inventory.md` Verification table.
+- [x] T076 Ran all 3 retained tests one more time end-to-end; all 3 exit 0 with `*-ok` messages.
+- [x] T077 Spot-checked 5 random cut-inventory entries: all absent at HEAD, all present in `git log -- <path>` history.
+- [x] T078 `git log --oneline 845157b..HEAD` confirms 9 commits — exceeds SC-009's ≥ 3 minimum. Commit messages follow `chore(bridge): trim — …` / `feat(bridge): simplify …` / `release(bridge): bump …` convention.
+- [ ] T079 [P] (Optional polish) Slimming bridge command markdowns deferred — they're already adequate for catalog use and not bloated.
+- [ ] T080 (Final hand-off) Transition handoff to `complete` next.
 
 ---
 

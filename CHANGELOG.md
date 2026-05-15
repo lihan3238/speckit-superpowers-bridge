@@ -162,7 +162,8 @@ Hooks in `.specify/extensions.yml`:
 - AGENTS.md as the master cross-agent protocol; CLAUDE.md as the Claude-specific supplement.
 - Constitution (`.specify/memory/constitution.md`) ratifying 5 principles: lightweight & repo-local, design/implementation separation, agent-neutral protocol, smooth bidirectional handoff, vendor-managed boundaries.
 
-[Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.3.0
 [0.2.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.2.0
 [0.1.1]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.1.1
 [0.1.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.1.0

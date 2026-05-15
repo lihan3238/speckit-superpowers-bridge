@@ -143,3 +143,36 @@ FR-011 reads "The `before_specify` hook MUST be removed entirely (its only prior
 | Check | Result | Notes |
 |-------|--------|-------|
 | US3 — specs/001–005 byte-identical | ✅ PASS | `git diff --stat 845157b..HEAD -- specs/001..005/` empty; checksum `1f09423e…56a` matches baseline exactly (T044+T045). |
+| Quickstart Step 1 — bridge surface | ✅ PASS | 4 scripts (3 callable + 1 helper); 3 command markdowns; matches FR-001/002. All 11 removed scripts absent. |
+| Quickstart Step 2 — line budgets | ⚠️ PARTIAL | PS total **376** vs ≤300 target (over by 76). SC-001 reduction (2984 → 376) = **87.4%** vs ≥88% target (0.6pt under). Trade-off: keeping load-bearing snapshot logic in `update-handoff.ps1` (constitution Principle IV requires snapshots before guarded writes; the 11-line snapshot-prior-directory fix from `10fd70d` was non-negotiable). Documented in cut-inventory Commit 5 surface-budget note. |
+| Quickstart Step 2 — SKILL.md ≤ 100 | ✅ PASS | Claude 62 lines, Codex 59 lines. |
+| Quickstart Step 2 — tests ≤ 3 | ✅ PASS | Exactly 3 files in `tests/`: claude-codex-skill-parity, handoff-shape, guard-hardcoded-rules. |
+| Quickstart Step 3 — v3 backward read | ✅ PASS | Synthetic v3 JSON read without error; subsequent write contains no v3 fields. (T040) |
+| Quickstart Step 4 — guard rules | ✅ PASS | All 5 rules behave as specified. (T041 + `tests/test-guard-hardcoded-rules.ps1`) |
+| Quickstart Step 5 — spec history | ✅ PASS | Same as US3 above. |
+| Quickstart Step 6 — cross-agent walkthrough | ⏳ DEFERRED | T043 requires switching between Claude Code and Codex in real time; not executable within a single agent session. Recommended for user-side smoke test. |
+| Quickstart Step 7 — version + CHANGELOG | ✅ PASS | extension.yml `0.3.0`, catalog-entry.json `0.3.0`, CHANGELOG `[0.3.0]` section names ≥30 removed items. |
+| Quickstart Step 8 — docs untracked | ✅ PASS | `git ls-files docs/` empty; `.gitignore` contains `docs/`. |
+| Quickstart Step 9 — README "When to Skip Spec Kit" | ✅ PASS | Section present in both READMEs with English H2 anchor. |
+| Quickstart Step 10 — bilingual H2 parity | ✅ PASS | 10/10 H2s match between README.md and README.zh-CN.md. |
+| All 3 retained tests green | ✅ PASS | `test-claude-codex-skill-parity-ok`, `handoff-shape-tests-ok`, `guard-hardcoded-rules-tests-ok` all exit 0. |
+| FR-018 commit reversibility | ✅ PASS | 9 commits between baseline and HEAD (8 R9 commits + 1 fixup). Each independently `git revert`-able. |
+| Cut-inventory paths absent at HEAD | ✅ PASS | Spot-checked 5 random paths; all gone. |
+| Cut-inventory paths in git log history | ✅ PASS | Spot-checked 2 random paths; both show in `git log --oneline -- <path>`. |
+
+### Final disposition
+
+- **SC-001 (PS reduction ≥ 88%)**: 87.4% — 0.6pt under target. Justified by the constitutional snapshot fix in `10fd70d`. Spec author may accept or require further squeeze in a follow-up.
+- **SC-002 (commands ≤ 3)**: 3 ✓
+- **SC-003 (tests ≤ 3)**: 3 ✓
+- **SC-004 (orchestration through native skills)**: ✓ structurally (bridge SKILL.md describes the 8-step orchestration calling native Superpowers skills only).
+- **SC-005 (cross-agent demonstrable)**: ⏳ deferred to user.
+- **SC-006 (specs/001–005 byte-identical)**: ✓
+- **SC-007 (version 0.3.0)**: ✓
+- **SC-008 (CHANGELOG names ≥ 5 removed)**: ≥30 ✓
+- **SC-009 (≥ 3 commits)**: 9 ✓
+- **SC-010 (bilingual README parity)**: ✓
+
+The trim is structurally complete. The only outstanding items are:
+1. User-side T043 cross-agent walkthrough (recommended before tagging release).
+2. Optional SC-001 reconciliation: either accept 87.4% as constitutionally compliant, or amend the spec to set the target at ≥ 87%.
