@@ -139,6 +139,10 @@ sudo dnf install bash jq      # Fedora
 | `/speckit-speckit-superpowers-bridge-handoff` | `$speckit-speckit-superpowers-bridge-handoff` | 创建或更新 Superpowers handoff 状态 |
 | `/speckit-speckit-superpowers-bridge-guard` | `$speckit-speckit-superpowers-bridge-guard` | 检查请求的命令是否被当前 handoff 状态允许 |
 
+fresh marketplace 安装会从 execute 命令的 alias 生成 `$speckit-superpowers-bridge` / `/speckit-superpowers-bridge`。官方 canonical 回退入口仍是 `$speckit-speckit-superpowers-bridge-execute` / `/speckit-speckit-superpowers-bridge-execute`。handoff 和 guard 有意保留 canonical 长命令，因为它们是高级/内部命令。
+
+如果你看到 `.agents/skills/speckit-speckit-superpowers-bridge-*` 或 `.claude/skills/speckit-speckit-superpowers-bridge-*`，这是正常现象：Spec Kit 会根据 extension commands 自动生成这些 skills。源码仓库里也有 `.agents/skills/speckit-superpowers-bridge/` 和 `.claude/skills/speckit-superpowers-bridge/` 这两个短名本地镜像；不要期待它们被 extension ZIP 原样复制到新项目。
+
 v0.2.x 中存在的 6 个元命令（`audit`、`validate`、`parity`、`recommend-route`、`submission-checklist`、`cleanup-audit`）**已在 0.3.0 移除**。它们要么重复了原生 Superpowers 已经提供的纪律，要么属于超出薄桥范围的自定义功能。详见 `CHANGELOG.md`。
 
 ## configuration
@@ -163,6 +167,8 @@ v0.2.x 中存在的 6 个元命令（`audit`、`validate`、`parity`、`recommen
 |---|---|---|
 | `handoff stuck in executing` | 上一次桥执行在转 `complete`/`blocked` 之前被中断 | 检查 `superpowers-handoff.json`；若工作确实做完了，运行 `update-handoff.ps1 -Status complete`；若被放弃，`-Status blocked -Reason "abandoned"` |
 | `missing per-agent peer skill` | 一边的 `.X/skills/<id>` 存在但另一边不存在 | 把存在那一侧的 SKILL.md 镜像过去；或删掉孤立项 |
+| 只看到长的 `speckit-speckit-superpowers-bridge-*` skills | 安装的是 `v0.4.0-rc.1` 或更旧包，当时还没有 execute alias | 升级到 `v0.4.0-rc.2` 或更新版本；短执行入口是 `$speckit-superpowers-bridge` / `/speckit-superpowers-bridge` |
+| Windows 下 `specify extension info` 抛 `UnicodeEncodeError` | 旧 GBK 控制台无法渲染 Rich 的 bullet 字符 | 运行 `chcp 65001` 或把 PowerShell 输出设为 UTF-8。这是 Spec Kit CLI 显示问题，不是桥安装失败 |
 | guard 拒绝了一个你没预期的命令 | `guard-command.ps1` 里 5 条硬编码规则之一触发了 | 阅读 guard 打印的拒绝原因；规则集很小、可读 |
 | 老安装写的 handoff JSON 含 v3 字段 | 0.3.0 前的 handoff 里有 `autonomous_mode` / `resume_context` / `archive_history` | 无需操作。0.3.0 桥会容忍读、下次写入时静默丢弃。 |
 
@@ -181,7 +187,7 @@ v0.2.x 中存在的 6 个元命令（`audit`、`validate`、`parity`、`recommen
 
 - **Spec Kit 拥有 WHAT。** Constitution、spec、clarify、plan、tasks、checklists、analysis 都是 `.specify/` 与 `specs/` 下的耐久设计 artifact。
 - **Superpowers 拥有 HOW。** TDD、debugging、executing-plans、requesting-code-review、verification-before-completion、finishing-a-development-branch，是在生命周期阶段调用的实现纪律技能。
-- **桥编排原生技能，不提供自定义纪律。** 它只贡献：每个 Agent 一份描述编排顺序的 SKILL.md、三个小 PowerShell 脚本（`update-handoff.ps1`、`guard-command.ps1`、`auto-archive-handoff.ps1`）用于状态管理、5 条硬编码边界规则。没有 matrix、没有 audit、没有 validation pass、没有 parity check。
+- **桥编排原生技能，不提供自定义纪律。** 它只贡献：Spec Kit 生成的 extension command skills、PowerShell 和 bash 两种 flavor 的四个小状态脚本（`update-handoff`、`guard-command`、`auto-archive-handoff`、`common-actor-resolution`），以及 5 条硬编码边界规则。没有 matrix、没有 audit、没有 validation pass、没有 parity check。
 
 ### how the bridge differs from peer extensions
 

@@ -18,10 +18,15 @@ Cross-platform compatibility release. The bridge now ships one ZIP that contains
 
 ### Changed
 
+- The execute command now declares the short alias `speckit.superpowers-bridge`, so fresh marketplace installs generate `$speckit-superpowers-bridge` / `/speckit-superpowers-bridge` in addition to the canonical fallback.
 - `scripts/release/build-extension-zip.ps1` now packages `scripts/bash/` beside `scripts/powershell/`.
 - `scripts/release/validate-release-readiness.ps1` now checks bash/PowerShell script parity and the `.gitattributes` shell-script LF rule.
 - The retained smoke tests now auto-detect available script flavors and exercise both `ps` and `bash` when present.
 - README prerequisites now document Linux/macOS runtime requirements and clarify that `pwsh` is only needed for contributors running the smoke tests.
+
+### Fixed
+
+- Fresh marketplace installs no longer leave users with only the long generated `$speckit-speckit-superpowers-bridge-execute` / `/speckit-speckit-superpowers-bridge-execute` entrypoint.
 
 ### Compatibility
 

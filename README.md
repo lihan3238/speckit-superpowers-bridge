@@ -139,6 +139,10 @@ The bridge no longer recommends this routing automatically (the previous `recomm
 | `/speckit-speckit-superpowers-bridge-handoff` | `$speckit-speckit-superpowers-bridge-handoff` | Create or update the Superpowers handoff state |
 | `/speckit-speckit-superpowers-bridge-guard` | `$speckit-speckit-superpowers-bridge-guard` | Check whether a requested command is allowed under the current handoff state |
 
+Fresh marketplace installs generate `$speckit-superpowers-bridge` / `/speckit-superpowers-bridge` from the execute command alias. The canonical fallback remains `$speckit-speckit-superpowers-bridge-execute` / `/speckit-speckit-superpowers-bridge-execute`. Handoff and guard intentionally keep their canonical long names because they are advanced/internal commands.
+
+If you see `.agents/skills/speckit-speckit-superpowers-bridge-*` or `.claude/skills/speckit-speckit-superpowers-bridge-*`, that is normal: Spec Kit generated those skills from extension commands. The source repository also contains short local bridge skill mirrors under `.agents/skills/speckit-superpowers-bridge/` and `.claude/skills/speckit-superpowers-bridge/`; do not expect those development mirrors to be copied directly from the extension ZIP.
+
 The 6 meta-commands that existed in v0.2.x (`audit`, `validate`, `parity`, `recommend-route`, `submission-checklist`, `cleanup-audit`) were **removed in 0.3.0**. They duplicated discipline that native Superpowers already provides, or codified custom features beyond the thin-bridge scope. See `CHANGELOG.md`.
 
 ## configuration
@@ -163,6 +167,8 @@ See `AGENTS.md` for the master cross-agent protocol; `CLAUDE.md` for Claude-spec
 |---|---|---|
 | `handoff stuck in executing` | Previous bridge run was interrupted before transitioning to `complete` or `blocked` | Inspect `superpowers-handoff.json`; if work is genuinely done, run `update-handoff.ps1 -Status complete` or `update-handoff.sh --status complete`; if abandoned, set `blocked` with a reason |
 | `missing per-agent peer skill` | One agent's `.X/skills/<id>` exists but the other agent's does not | Mirror the SKILL.md from the agent that has it; or remove the orphan |
+| only long `speckit-speckit-superpowers-bridge-*` skills appear | Installed `v0.4.0-rc.1` or an older package before the execute alias existed | Upgrade to `v0.4.0-rc.2` or newer; the short execute alias is `$speckit-superpowers-bridge` / `/speckit-superpowers-bridge` |
+| `specify extension info` throws `UnicodeEncodeError` on Windows | Legacy GBK console cannot render Rich's bullet character | Run `chcp 65001` or set PowerShell output to UTF-8. This is a Spec Kit CLI display issue, not a bridge install failure |
 | guard denies an unexpected action | One of the 5 hardcoded rules in `guard-command.ps1` is firing | Read the deny reason printed by the guard; the rule set is small and inspectable |
 | handoff JSON from an older install has v3 fields | Pre-0.3.0 handoff with `autonomous_mode`/`resume_context`/`archive_history` | No action needed. The 0.3.0 bridge reads these tolerantly and silently drops them on the next write. |
 
@@ -181,7 +187,7 @@ Version compatibility is now verified by human inspection at release time (the p
 
 - **Spec Kit owns WHAT.** Constitution, spec, clarify, plan, tasks, checklists, analysis. These are durable design artifacts under `.specify/` and `specs/`.
 - **Superpowers owns HOW.** TDD, debugging, executing-plans, requesting-code-review, verification-before-completion, finishing-a-development-branch. These are implementation discipline skills invoked at lifecycle phases.
-- **The bridge orchestrates native skills and does not provide custom discipline.** It contributes only: a per-agent SKILL.md describing the orchestration sequence, four small state scripts in PowerShell and bash flavors (`update-handoff`, `guard-command`, `auto-archive-handoff`, `common-actor-resolution`), and 5 hardcoded boundary rules. No matrix, no audits, no validation pass, no parity check.
+- **The bridge orchestrates native skills and does not provide custom discipline.** It contributes only: generated extension command skills, four small state scripts in PowerShell and bash flavors (`update-handoff`, `guard-command`, `auto-archive-handoff`, `common-actor-resolution`), and 5 hardcoded boundary rules. No matrix, no audits, no validation pass, no parity check.
 
 ### how the bridge differs from peer extensions
 

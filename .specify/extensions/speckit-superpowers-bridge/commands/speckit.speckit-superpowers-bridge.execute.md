@@ -16,13 +16,22 @@ Execute the active Spec Kit feature through Superpowers without running `speckit
 
 ## Execution
 
-Use this generated command/skill as the marketplace-installed implementation driver.
-In this source repository, the same protocol is mirrored in the project-local bridge skills:
+Use the short marketplace alias as the normal implementation driver:
+
+- Codex: `$speckit-superpowers-bridge`
+- Claude Code: `/speckit-superpowers-bridge`
+
+The canonical extension command remains available as a fallback:
+
+- Codex: `$speckit-speckit-superpowers-bridge-execute`
+- Claude Code: `/speckit-speckit-superpowers-bridge-execute`
+
+In this source repository, the same protocol is mirrored in project-local bridge skill files:
 
 - Codex: `.agents/skills/speckit-superpowers-bridge/SKILL.md`
 - Claude Code: `.claude/skills/speckit-superpowers-bridge/SKILL.md`
 
-If those local bridge skill files are not present after marketplace installation, this command is authoritative.
+Fresh marketplace installs do not copy those source-repository mirrors directly. Instead, Spec Kit generates skills from extension commands, including `.agents/skills/speckit-speckit-superpowers-bridge-*` / `.claude/skills/speckit-speckit-superpowers-bridge-*`; those generated directories are expected and authoritative.
 
 Before implementation begins, run the platform flavor selected by `.specify/init-options.json.script`.
 

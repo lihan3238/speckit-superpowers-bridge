@@ -38,6 +38,8 @@ provides:
     - name: speckit.speckit-superpowers-bridge.execute
       file: commands/speckit.speckit-superpowers-bridge.execute.md
       description: "Execute Spec Kit tasks.md through the Superpowers bridge"
+      aliases:
+        - speckit.superpowers-bridge
 
 hooks:
   before_clarify:

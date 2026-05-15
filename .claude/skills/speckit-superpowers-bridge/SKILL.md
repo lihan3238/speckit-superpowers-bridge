@@ -14,7 +14,7 @@ This skill is the **thin orchestrator** between Spec Kit (design) and Superpower
 ## When to use
 
 - A feature has `spec.md`, `plan.md`, and `tasks.md` in its `specs/<NNN>-…/` directory.
-- The user invoked `/speckit-superpowers-bridge` (or the marketplace-installed `/speckit-speckit-superpowers-bridge-execute`).
+- The user invoked `/speckit-superpowers-bridge` (recommended marketplace alias) or `/speckit-speckit-superpowers-bridge-execute` (canonical fallback).
 - `.specify/superpowers-handoff.json` exists and points at the feature.
 
 ## What this skill does
