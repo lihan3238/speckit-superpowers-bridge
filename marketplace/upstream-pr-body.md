@@ -37,9 +37,9 @@ and to keep the two agents' state files in sync across Codex and Claude Code:
   (`before_clarify`, `before_plan`, `before_tasks`, `before_implement`,
   `after_tasks`).
 
-## What changed since v0.2.0
+## What changed since v0.1.1
 
-v0.3.0 is a **deliberate drastic trim** (≥ 87% PowerShell line reduction)
+v0.3.0 is a **deliberate drastic trim** (~87% PowerShell line reduction)
 that removes every custom feature beyond the thin-bridge scope:
 matrix-driven dispositions, install audits, parity checks, end-to-end
 validation passes, marketplace submission checklists, cleanup audits,
@@ -55,9 +55,11 @@ guide](https://github.com/github/spec-kit/blob/main/extensions/EXTENSION-PUBLISH
 checklist:
 
 - [x] Public GitHub repository at `https://github.com/lihan3238/speckit-superpowers-bridge`.
-- [x] Tagged semantic release `v0.3.0`; download URL is the GitHub-auto-generated archive: `https://github.com/lihan3238/speckit-superpowers-bridge/archive/refs/tags/v0.3.0.zip`.
+- [x] Tagged semantic release `v0.3.0` with `download_url` reachable (HTTP 200):
+      `https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.3.0/speckit-superpowers-bridge-v0.3.0.zip`
+      SHA256: `f15dc73b741959d37fd641b13c82612ab0a0fab0c94ad0769a647a267567f3c9`
 - [x] `extension.yml` declares every required field and conforms to schema version `"1.0"`. `id` is lowercase-with-hyphens; `version` is semver; `description` is 91 characters.
-- [x] `LICENSE` (MIT), `README.md`, `README.zh-CN.md`, `CHANGELOG.md`, `.gitignore`, `commands/` directory all present.
+- [x] `LICENSE` (MIT), `README.md`, `README.zh-CN.md`, `CHANGELOG.md`, `.gitignore`, `commands/` directory all present at ZIP root (same shape as `agent-governance` already in the catalog).
 - [x] Three retained smoke tests green:
       `tests/test-claude-codex-skill-parity.ps1`,
       `tests/test-handoff-shape.ps1`,

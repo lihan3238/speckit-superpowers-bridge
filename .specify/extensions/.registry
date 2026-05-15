@@ -27,19 +27,15 @@
       "installed_at": "2026-05-14T11:06:58.109941+00:00"
     },
     "speckit-superpowers-bridge": {
-      "version": "0.1.1",
+      "version": "0.3.0",
       "source": "local",
-      "manifest_hash": "sha256:f406e23d31cb68e2d0c26bdf61caa04385e6881f871855fb98fad4f6f76b7866",
+      "manifest_hash": "sha256:regenerated-on-next-extension-add",
       "enabled": true,
       "priority": 20,
       "registered_commands": {
         "codex": [
           "speckit.speckit-superpowers-bridge.handoff",
           "speckit.speckit-superpowers-bridge.guard",
-          "speckit.speckit-superpowers-bridge.audit",
-          "speckit.speckit-superpowers-bridge.validate",
-          "speckit.speckit-superpowers-bridge.parity",
-          "speckit.speckit-superpowers-bridge.recommend-route",
           "speckit.speckit-superpowers-bridge.execute"
         ]
       },

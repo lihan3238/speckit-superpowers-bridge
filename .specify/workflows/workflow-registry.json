@@ -11,11 +11,11 @@
     },
     "speckit-superpowers": {
       "name": "Spec Kit Design + Superpowers Implementation",
-      "version": "0.1.1",
+      "version": "0.3.0",
       "description": "Runs specify -> clarify -> plan -> tasks -> analyze -> Superpowers handoff without speckit.implement",
       "source": "local",
       "installed_at": "2026-05-14T11:45:06.5085972Z",
-      "updated_at": "2026-05-14T11:45:06.5085972Z"
+      "updated_at": "2026-05-15T12:00:00.0000000Z"
     }
   }
 }

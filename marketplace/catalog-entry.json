@@ -9,7 +9,7 @@
   "homepage": "https://github.com/lihan3238/speckit-superpowers-bridge",
   "documentation": "https://github.com/lihan3238/speckit-superpowers-bridge#readme",
   "changelog": "https://github.com/lihan3238/speckit-superpowers-bridge/blob/main/CHANGELOG.md",
-  "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/archive/refs/tags/v0.3.0.zip",
+  "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.3.0/speckit-superpowers-bridge-v0.3.0.zip",
   "requires": {
     "speckit_version": ">=0.8.10",
     "tools": [
