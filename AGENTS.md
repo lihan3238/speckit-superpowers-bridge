@@ -76,4 +76,4 @@ Adding a new rule is a one-line edit to the script. There is no external data fi
 
 The v1 schema (post-0.3.0) is documented in `specs/006-trim-to-thin-bridge/contracts/handoff.v1.schema.json`. New writes emit only v1 fields. Reads tolerate older v2/v3 documents (unknown fields are silently ignored).
 
-As of v0.4.0, the bridge ships both `scripts/powershell/` and `scripts/bash/` flavors. The protocol, handoff schema, guard rules, and actor semantics are identical; `.specify/init-options.json.script` (`ps` or `sh`) chooses the runtime flavor.
+As of v0.4.1, the bridge ships both `scripts/powershell/` and `scripts/bash/` flavors. The protocol, handoff schema, guard rules, and actor semantics are identical; `.specify/init-options.json.script` (`ps` or `sh`) chooses the runtime flavor.

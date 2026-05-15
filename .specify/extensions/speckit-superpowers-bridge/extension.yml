@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: speckit-superpowers-bridge
   name: "Superpowers Implementation Bridge"
-  version: "0.4.0"
+  version: "0.4.1"
   description: "Thin orchestrator between Spec Kit (design) and Superpowers (implementation). Cross-agent."
   author: "lihan3238"
   repository: "https://github.com/lihan3238/speckit-superpowers-bridge"
@@ -16,16 +16,20 @@ requires:
   tools:
     - name: "powershell"
       version: ">=5.1"
-      required: true
+      required: false
+      description: "Windows runtime flavor"
     - name: "bash"
       version: ">=4.0"
       required: false
+      description: "Linux/macOS runtime flavor"
     - name: "jq"
       version: ">=1.6"
       required: false
+      description: "Required by the bash runtime flavor"
     - name: "git"
       version: ">=2.30"
       required: false
+      description: "Recommended for branch/worktree discipline"
 
 provides:
   commands:
@@ -67,6 +71,5 @@ tags:
   - bridge
   - superpowers
   - cross-agent
-  - governance
   - tdd
   - workflow

@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Extract version from tag
         id: ver
@@ -89,6 +89,6 @@ jobs:
 
           ### Next manual step (cross-repo)
 
-          Update the catalog-submission issue at github/spec-kit (issue 2575 or successor) with the new version metadata. Body template lives at marketplace/upstream-pr-body.md.
+          Open a clean Extension Submission issue at github/spec-kit with the new version metadata. Body template lives at marketplace/extension-submission-body.md.
           "@
           $summary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8

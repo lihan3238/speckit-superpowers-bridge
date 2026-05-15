@@ -7,13 +7,13 @@ user-invocable: true
 disable-model-invocation: false
 ---
 
-# Spec Kit ↔ Superpowers Bridge (Claude Code peer)
+# Spec Kit <-> Superpowers Bridge (Claude Code peer)
 
-This skill is the **thin orchestrator** between Spec Kit (design) and Superpowers (implementation). It does not implement TDD, debugging, verification, code review, or branch finishing itself — those are native Superpowers skills. The bridge's only job is to invoke them in order against the Spec Kit `tasks.md`.
+This skill is the **thin orchestrator** between Spec Kit (design) and Superpowers (implementation). It does not implement TDD, debugging, verification, code review, or branch finishing itself - those are native Superpowers skills. The bridge's only job is to invoke them in order against the Spec Kit `tasks.md`.
 
 ## When to use
 
-- A feature has `spec.md`, `plan.md`, and `tasks.md` in its `specs/<NNN>-…/` directory.
+- A feature has `spec.md`, `plan.md`, and `tasks.md` in its `specs/<NNN>-.../` directory.
 - The user invoked `/speckit-superpowers-bridge` (recommended marketplace alias) or `/speckit-speckit-superpowers-bridge-execute` (canonical fallback).
 - `.specify/superpowers-handoff.json` exists and points at the feature.
 
@@ -46,12 +46,12 @@ The hardcoded guard at `.specify/extensions/speckit-superpowers-bridge/scripts/p
 
 - Do not run `speckit.implement` while a handoff is `executing`.
 - Do not invoke `superpowers:writing-plans` or `superpowers:brainstorming` when an active Spec Kit feature has `spec.md` and `plan.md`.
-- Do not edit `.specify/memory/constitution.md` while a handoff is `executing` — set the handoff to `blocked` first.
+- Do not edit `.specify/memory/constitution.md` while a handoff is `executing` - set the handoff to `blocked` first.
 - Do not add requirements beyond what `spec.md`, `plan.md`, and `tasks.md` already define.
 
 ## Cross-agent notes
 
-This skill has an identical-content peer at `.agents/skills/speckit-superpowers-bridge/SKILL.md` for Codex. To hand off mid-feature, the next agent simply re-invokes `/speckit-superpowers-bridge` (Claude Code) or `$speckit-superpowers-bridge` (Codex) on the same repo — the handoff JSON tells it where to pick up. `AGENTS.md` is the master cross-agent protocol; consult it for the language-routing and ownership rules.
+This skill has an identical-content peer at `.agents/skills/speckit-superpowers-bridge/SKILL.md` for Codex. To hand off mid-feature, the next agent simply re-invokes `/speckit-superpowers-bridge` (Claude Code) or `$speckit-superpowers-bridge` (Codex) on the same repo - the handoff JSON tells it where to pick up. `AGENTS.md` is the master cross-agent protocol; consult it for the language-routing and ownership rules.
 
 ## When something goes wrong
 

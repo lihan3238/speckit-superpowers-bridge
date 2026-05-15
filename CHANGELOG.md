@@ -6,6 +6,22 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 > **AI-assistance disclosure**: This extension is developed with AI coding assistants (Claude Code for design + planning, Codex for implementation passes, Claude Code for the v0.3.0 trim), per the AI-disclosure requirement in [Spec Kit CONTRIBUTING.md](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md). Every artifact passes human review before commit. As of v0.3.0 the verification surface is three retained smoke tests under `tests/`.
 
+## [0.4.1] - 2026-05-16
+
+Marketplace alignment patch. No bridge runtime behavior changed.
+
+### Changed
+
+- `extension.yml`, `marketplace/catalog-entry.json`, and install docs now target v0.4.1.
+- Catalog tags reduced from six to the five-tag set required by the Extension Submission template: `bridge`, `superpowers`, `cross-agent`, `tdd`, `workflow`.
+- Tool metadata now distinguishes the Windows PowerShell flavor from the Linux/macOS bash + jq flavor.
+- GitHub Actions release workflow now uses `actions/checkout@v6`.
+- Marketplace submission materials were rewritten around the bridge philosophy: Spec Kit owns WHAT, Superpowers owns HOW, and the bridge only orchestrates native capabilities.
+
+### Compatibility
+
+Existing v0.4.0 installs can upgrade directly. The handoff schema, commands, hooks, guard rules, and script behavior are unchanged.
+
 ## [0.4.0] - 2026-05-15
 
 Cross-platform compatibility release. The bridge now ships one ZIP that contains both Windows PowerShell scripts and Linux/macOS bash scripts.
@@ -238,7 +254,8 @@ Hooks in `.specify/extensions.yml`:
 - AGENTS.md as the master cross-agent protocol; CLAUDE.md as the Claude-specific supplement.
 - Constitution (`.specify/memory/constitution.md`) ratifying 5 principles: lightweight & repo-local, design/implementation separation, agent-neutral protocol, smooth bidirectional handoff, vendor-managed boundaries.
 
-[Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.1
 [0.4.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.0
 [0.3.1]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.3.1
 [0.3.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.3.0

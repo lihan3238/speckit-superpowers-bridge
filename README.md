@@ -46,7 +46,7 @@ Spec Kit must be installed first. Then pick one of the three install paths below
 ```powershell
 specify init my-project --integration codex
 cd my-project
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.0/speckit-superpowers-bridge-v0.4.0.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.1/speckit-superpowers-bridge-v0.4.1.zip
 ```
 
 No Claude Code dependency. The bridge runs entirely through Codex's `$speckit-*` invocation surface.
@@ -56,7 +56,7 @@ No Claude Code dependency. The bridge runs entirely through Codex's `$speckit-*`
 ```powershell
 specify init my-project --integration claude
 cd my-project
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.0/speckit-superpowers-bridge-v0.4.0.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.1/speckit-superpowers-bridge-v0.4.1.zip
 ```
 
 No Codex dependency. The bridge runs through Claude Code's `/speckit-*` slash commands.
@@ -66,8 +66,8 @@ No Codex dependency. The bridge runs through Claude Code's `/speckit-*` slash co
 ```powershell
 specify init my-project --integration claude         # or --integration codex
 cd my-project
-specify integration add codex                         # or 'claude' if you started with codex
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.0/speckit-superpowers-bridge-v0.4.0.zip
+specify integration install codex                     # or 'claude' if you started with codex
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.1/speckit-superpowers-bridge-v0.4.1.zip
 ```
 
 Both `.agents/skills/` (Codex) and `.claude/skills/` (Claude Code) receive the bridge skill peer files. You can design in one agent and implement in another by simply switching tabs.
@@ -167,7 +167,7 @@ See `AGENTS.md` for the master cross-agent protocol; `CLAUDE.md` for Claude-spec
 |---|---|---|
 | `handoff stuck in executing` | Previous bridge run was interrupted before transitioning to `complete` or `blocked` | Inspect `superpowers-handoff.json`; if work is genuinely done, run `update-handoff.ps1 -Status complete` or `update-handoff.sh --status complete`; if abandoned, set `blocked` with a reason |
 | `missing per-agent peer skill` | One agent's `.X/skills/<id>` exists but the other agent's does not | Mirror the SKILL.md from the agent that has it; or remove the orphan |
-| only long `speckit-speckit-superpowers-bridge-*` skills appear | Installed `v0.4.0-rc.1` or an older package before the execute alias existed | Upgrade to `v0.4.0` or newer; the short execute alias is `$speckit-superpowers-bridge` / `/speckit-superpowers-bridge` |
+| only long `speckit-speckit-superpowers-bridge-*` skills appear | Installed `v0.4.0-rc.1` or an older package before the execute alias existed | Upgrade to `v0.4.1` or newer; the short execute alias is `$speckit-superpowers-bridge` / `/speckit-superpowers-bridge` |
 | `specify extension info` throws `UnicodeEncodeError` on Windows | Legacy GBK console cannot render Rich's bullet character | Run `chcp 65001` or set PowerShell output to UTF-8. This is a Spec Kit CLI display issue, not a bridge install failure |
 | guard denies an unexpected action | One of the 5 hardcoded rules in `guard-command.ps1` is firing | Read the deny reason printed by the guard; the rule set is small and inspectable |
 | handoff JSON from an older install has v3 fields | Pre-0.3.0 handoff with `autonomous_mode`/`resume_context`/`archive_history` | No action needed. The 0.3.0 bridge reads these tolerantly and silently drops them on the next write. |
@@ -177,7 +177,7 @@ See `AGENTS.md` for the master cross-agent protocol; `CLAUDE.md` for Claude-spec
 This release is verified against:
 
 - **Spec Kit** `0.8.10`
-- **Superpowers** skill pack `5.x`
+- **Superpowers** skill pack `v5.1.0`
 
 Version compatibility is now verified by human inspection at release time (the previous automated `verified-versions.json` and `parity-check.ps1` were removed in 0.3.0). When upstream tools ship a new release that breaks the bridge, we either patch the 3 retained scripts or pin the documented compatible versions in `CHANGELOG.md`.
 
