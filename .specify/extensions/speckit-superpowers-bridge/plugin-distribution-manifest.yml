@@ -24,6 +24,11 @@ excludes:
     reason: feature design artifacts are local to the source project
   - path: tests/**
     reason: repository development tests are not installed into host projects
+  - path: marketplace/**
+    reason: upstream-PR artifacts are source-repo-only and not relevant to host projects
+  - path: docs/release-runbook.md
+    reason: maintainer-only release procedure; not part of host runtime
 notes:
   - AGENTS.md and CLAUDE.md installation is conditional; merge bridge sections instead of overwriting host project instructions.
   - Official generated Spec Kit skills are not plugin assets and remain managed by specify integration commands.
+  - The marketplace/ directory holds upstream-PR drafts (catalog entry, README row, PR body); these describe the bridge to the upstream Spec Kit maintainers and are never installed into host projects.

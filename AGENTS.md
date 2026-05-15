@@ -21,6 +21,22 @@ bridge therefore uses **explicit** invocation of Superpowers skills at named
 phases (codified by feature 002's disposition matrix and feature 004's FR-009
 / FR-010).
 
+## User-Facing Language Routing
+
+- Detect the user's dominant language from the latest user message.
+- Translate user intent to English internally before planning, tool use,
+  subagent prompts, delegated agent instructions, and implementation reasoning.
+- Keep internal prompts, delegated agent instructions, code comments unless
+  otherwise appropriate, commit messages, command IDs, paths, schema fields,
+  and logs in English.
+- Translate user-facing assistant messages back to the detected user language.
+- If the user explicitly requests a response language, that explicit request
+  overrides automatic detection.
+- Preserve literal code, commands, filenames, JSON/YAML keys, quoted source
+  text, and API names without translation.
+- For mixed Chinese/English messages, respond in the language used for the main
+  request; if unclear, prefer the user's last sentence language.
+
 ## Spec Kit + Superpowers Bridge
 
 - Spec Kit owns design-time artifacts: `.specify/memory/constitution.md`, `specs/<feature>/spec.md`, `specs/<feature>/plan.md`, `specs/<feature>/tasks.md`, checklists, and analysis.
@@ -58,6 +74,7 @@ phases (codified by feature 002's disposition matrix and feature 004's FR-009
 - Verified upstream versions live in `.specify/extensions/speckit-superpowers-bridge/verified-versions.json`. The bridge parity check (`.specify/extensions/speckit-superpowers-bridge/scripts/powershell/parity-check.ps1`) reports drift, missing dispositions, missing per-agent skill mirrors, and doc-matrix inconsistencies.
 - Run the parity check on demand via `/speckit-speckit-superpowers-bridge-parity` (Claude) or `$speckit-speckit-superpowers-bridge-parity` (Codex); exit code 0 = clean, 1 = P0 finding, 2 = P1 finding.
 - Feature 004 adds bridge meta-commands under `speckit.speckit-superpowers-bridge.*`: `audit` for install-state diagnostics, `validate` for end-to-end validation, and `recommend-route` for advisory light/heavy workflow routing.
+- Feature 005 adds two more bridge meta-commands for the marketplace pipeline: `submission-checklist` (local mirror of upstream catalog verification — checks LICENSE/CHANGELOG/extension.yml fields/tags/description length/catalog-entry validity/download_url HTTP 200/AI-disclosure) and `cleanup-audit` (source-repo cleanup audit — backup files, unreferenced docs, abandoned scripts, .gitignore gaps, manifest consistency). Run `submission-checklist` before opening the upstream catalog PR; run `cleanup-audit` before tagging a release.
 - `skill_invocation` is a bridge event type for explicit Superpowers skill calls. Required fields include `skill_id`, `phase`, `task_id` when applicable, and `actor`.
 
 ## Format note: matrix files are JSON

@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: speckit-superpowers-bridge
   name: "Superpowers Implementation Bridge"
-  version: "0.1.1"
+  version: "0.2.0"
   description: "Spec Kit stays source of truth while Superpowers executes implementation tasks"
   author: "lihan3238"
   repository: "https://github.com/lihan3238/speckit-superpowers-bridge"
@@ -37,6 +37,12 @@ provides:
     - name: speckit.speckit-superpowers-bridge.execute
       file: commands/speckit.speckit-superpowers-bridge.execute.md
       description: "Execute Spec Kit tasks.md through the Superpowers bridge"
+    - name: speckit.speckit-superpowers-bridge.submission-checklist
+      file: commands/speckit.speckit-superpowers-bridge.submission-checklist.md
+      description: "Local mirror of upstream Spec Kit catalog submission verification"
+    - name: speckit.speckit-superpowers-bridge.cleanup-audit
+      file: commands/speckit.speckit-superpowers-bridge.cleanup-audit.md
+      description: "Pre-release source-repo cleanup audit (backup files, unreferenced docs, manifest consistency)"
 
 hooks:
   before_specify:
@@ -65,7 +71,9 @@ hooks:
     description: "Create the Superpowers handoff after Spec Kit task generation"
 
 tags:
-  - superpowers
-  - implementation
-  - handoff
   - bridge
+  - superpowers
+  - cross-agent
+  - governance
+  - tdd
+  - workflow

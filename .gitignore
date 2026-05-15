@@ -1,8 +1,38 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# OS junk
+# ─────────────────────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
-*.bak-parity-drift
+desktop.ini
 
-# Spec Kit + Superpowers Bridge runtime state
+# ─────────────────────────────────────────────────────────────────────────────
+# Backup patterns (cleanup-audit detects these as `backup_file_present`)
+# ─────────────────────────────────────────────────────────────────────────────
+*.bak
+*.bak-*
+*.orig
+*.tmp
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Editor scratch
+# ─────────────────────────────────────────────────────────────────────────────
+*.swp
+*.swo
+.idea/
+.vscode/settings.local.json
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Build artifacts (none currently produced; placeholder for future)
+# ─────────────────────────────────────────────────────────────────────────────
+dist/
+build/
+out/
+node_modules/
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Spec Kit + Superpowers Bridge per-developer runtime state
+# (each developer has their own; never committed)
+# ─────────────────────────────────────────────────────────────────────────────
 .specify/bridge-events.jsonl
 .specify/bridge-snapshots/
 .specify/superpowers-handoff.json

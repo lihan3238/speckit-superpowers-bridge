@@ -153,6 +153,20 @@
       "verified_against": "bridge@0.1.1"
     },
     {
+      "id": "speckit.speckit-superpowers-bridge.submission-checklist",
+      "kind": "bridge_meta_command",
+      "disposition": "COMBINE",
+      "rationale": "Local mirror of upstream Spec Kit maintainer submission verification; read-only audit, always available.",
+      "verified_against": "bridge@0.2.0"
+    },
+    {
+      "id": "speckit.speckit-superpowers-bridge.cleanup-audit",
+      "kind": "bridge_meta_command",
+      "disposition": "COMBINE",
+      "rationale": "Pre-release source-repo cleanup audit (backup files, unreferenced docs, manifest consistency); always available.",
+      "verified_against": "bridge@0.2.0"
+    },
+    {
       "id": "superpowers:brainstorming",
       "kind": "superpowers_skill",
       "disposition": "FORBID-UNDER-HANDOFF",

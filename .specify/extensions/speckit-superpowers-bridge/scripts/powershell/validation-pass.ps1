@@ -57,7 +57,7 @@ function Append-CompatibilityGap {
     $next = 1
     $ids = [regex]::Matches($content, 'CG-(\d{3})') | ForEach-Object { [int]$_.Groups[1].Value }
     if ($ids) { $next = ($ids | Measure-Object -Maximum).Maximum + 1 }
-    $id = "CG-{0:D3}" -f $next
+    $id = "CG-" + ([string]$next).PadLeft(3, '0')
     $row = "`n## $id - $($Finding.code)`n`n- Status: OPEN`n- Severity: $($Finding.severity)`n- Target: $($Finding.target)`n- Signature: $signature`n- Observed: $($Finding.message)`n- Proposed fix: $($Finding.suggested_fix)`n"
     Add-Content -LiteralPath $gapPath -Encoding UTF8 -Value $row
 }

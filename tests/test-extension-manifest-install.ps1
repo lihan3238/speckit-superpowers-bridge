@@ -39,9 +39,9 @@ with TemporaryDirectory() as tmp:
         register_commands=False,
     )
     assert manifest.id == "speckit-superpowers-bridge", manifest.id
-    assert manifest.version == "0.1.1", manifest.version
+    assert manifest.version == "0.2.0", manifest.version
     commands = [cmd["name"] for cmd in manifest.commands]
-    assert len(commands) == 7, commands
+    assert len(commands) == 9, commands
     assert all(name.startswith("speckit.speckit-superpowers-bridge.") for name in commands), commands
 "@
 
