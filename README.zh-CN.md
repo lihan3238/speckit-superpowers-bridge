@@ -46,9 +46,10 @@ specify integration use codex
 
 ### 2. Create the Spec Kit artifacts
 
-用选定的 writer 跑标准 Spec Kit 设计流程：
+当项目治理是新的或需要变更时，先运行 constitution；然后用选定的 writer 跑标准 Spec Kit 设计流程：
 
 ```text
+$speckit-constitution
 $speckit-specify "描述要构建的功能"
 $speckit-clarify
 $speckit-checklist
@@ -126,6 +127,8 @@ bridge 会读取 `constitution.md`、`spec.md`、`plan.md` 和 `tasks.md`，然�
 - `autonomous_mode`: 默认 `false`
 - `resume_context`: 当前任务、skill、阶段和下一步动作
 - `artifact_owner`: 唯一允许写 Spec Kit 控制产物的 agent
+
+详细脚本参数和 handoff 字段行为见 `.specify/extensions/speckit-superpowers-bridge/docs/parameter-reference.md`。
 
 环境变量：
 

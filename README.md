@@ -46,9 +46,10 @@ Only one agent should write Spec Kit control artifacts for a feature. The other 
 
 ### 2. Create the Spec Kit artifacts
 
-Run the normal Spec Kit design flow with the selected writer:
+Run constitution once when project governance is new or changing, then run the normal Spec Kit design flow with the selected writer:
 
 ```text
+$speckit-constitution
 $speckit-specify "Describe the feature to build"
 $speckit-clarify
 $speckit-checklist
@@ -126,6 +127,8 @@ Key fields:
 - `autonomous_mode`: default `false`
 - `resume_context`: current task, skill, phase, and next expected action
 - `artifact_owner`: the single agent allowed to write Spec Kit control artifacts
+
+Detailed script parameters and handoff field behavior are documented in `.specify/extensions/speckit-superpowers-bridge/docs/parameter-reference.md`.
 
 Environment variables:
 

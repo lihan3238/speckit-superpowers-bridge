@@ -29,6 +29,7 @@ Use this flow when you are using the bridge for real feature development. The la
 3. Produce the Spec Kit design artifacts:
 
    ```text
+   $speckit-constitution
    $speckit-specify "Describe the feature"
    $speckit-clarify
    $speckit-checklist
