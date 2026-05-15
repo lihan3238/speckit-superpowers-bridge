@@ -167,7 +167,7 @@ v0.2.x 中存在的 6 个元命令（`audit`、`validate`、`parity`、`recommen
 |---|---|---|
 | `handoff stuck in executing` | 上一次桥执行在转 `complete`/`blocked` 之前被中断 | 检查 `superpowers-handoff.json`；若工作确实做完了，运行 `update-handoff.ps1 -Status complete`；若被放弃，`-Status blocked -Reason "abandoned"` |
 | `missing per-agent peer skill` | 一边的 `.X/skills/<id>` 存在但另一边不存在 | 把存在那一侧的 SKILL.md 镜像过去；或删掉孤立项 |
-| 只看到长的 `speckit-speckit-superpowers-bridge-*` skills | 安装的是 `v0.4.0-rc.1` 或更旧包，当时还没有 execute alias | 升级到 `v0.4.0-rc.2` 或更新版本；短执行入口是 `$speckit-superpowers-bridge` / `/speckit-superpowers-bridge` |
+| 只看到长的 `speckit-speckit-superpowers-bridge-*` skills | 安装的是 `v0.4.0-rc.1` 或更旧包，当时还没有 execute alias | 升级到 `v0.4.0` 或更新版本；短执行入口是 `$speckit-superpowers-bridge` / `/speckit-superpowers-bridge` |
 | Windows 下 `specify extension info` 抛 `UnicodeEncodeError` | 旧 GBK 控制台无法渲染 Rich 的 bullet 字符 | 运行 `chcp 65001` 或把 PowerShell 输出设为 UTF-8。这是 Spec Kit CLI 显示问题，不是桥安装失败 |
 | guard 拒绝了一个你没预期的命令 | `guard-command.ps1` 里 5 条硬编码规则之一触发了 | 阅读 guard 打印的拒绝原因；规则集很小、可读 |
 | 老安装写的 handoff JSON 含 v3 字段 | 0.3.0 前的 handoff 里有 `autonomous_mode` / `resume_context` / `archive_history` | 无需操作。0.3.0 桥会容忍读、下次写入时静默丢弃。 |
