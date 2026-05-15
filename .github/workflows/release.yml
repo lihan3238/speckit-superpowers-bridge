@@ -1,0 +1,93 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build + publish release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: ver
+        run: |
+          v="${GITHUB_REF_NAME#v}"
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          echo "Version: $v"
+
+      - name: Validate release readiness
+        shell: pwsh
+        run: ./scripts/release/validate-release-readiness.ps1 -Version '${{ steps.ver.outputs.version }}'
+
+      - name: Run bridge smoke tests
+        shell: pwsh
+        run: |
+          $failures = 0
+          foreach ($t in (Get-ChildItem tests/*.ps1)) {
+            Write-Output "--- $($t.Name) ---"
+            & pwsh -NoProfile -File $t.FullName
+            if ($LASTEXITCODE -ne 0) { $failures++ }
+          }
+          if ($failures -gt 0) {
+            Write-Output "::error::$failures test(s) failed"
+            exit 1
+          }
+
+      - name: Run release-tooling self-tests
+        shell: pwsh
+        run: ./scripts/release/test-validate-release-readiness.ps1
+
+      - name: Build extension ZIP
+        shell: pwsh
+        run: ./scripts/release/build-extension-zip.ps1 -Version '${{ steps.ver.outputs.version }}'
+
+      - name: Extract release notes from CHANGELOG
+        shell: pwsh
+        run: |
+          $v = '${{ steps.ver.outputs.version }}'
+          $body = Get-Content CHANGELOG.md -Raw
+          $pattern = "(?ms)^##\s*\[$([regex]::Escape($v))\][^\r\n]*\r?\n(.*?)(?=^##\s*\[|\Z)"
+          $m = [regex]::Match($body, $pattern)
+          if (-not $m.Success) {
+            Write-Output "::error::No '## [$v]' section in CHANGELOG.md"
+            exit 1
+          }
+          $notes = $m.Groups[1].Value.Trim()
+          Set-Content -LiteralPath release-notes.md -Value $notes -Encoding UTF8
+          Write-Output "Notes (first 300 chars):"
+          Write-Output ($notes.Substring(0, [Math]::Min(300, $notes.Length)))
+
+      - name: Create GitHub release with ZIP asset
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file release-notes.md \
+            "dist/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip"
+
+      - name: Summary
+        shell: pwsh
+        run: |
+          $sha = (Get-FileHash -LiteralPath "dist/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip" -Algorithm SHA256).Hash.ToLower()
+          $url = "https://github.com/${{ github.repository }}/releases/download/$env:GITHUB_REF_NAME/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip"
+          $summary = @"
+          ## Release published
+
+          - Tag: $env:GITHUB_REF_NAME
+          - Asset URL: $url
+          - SHA256: $sha
+
+          ### Next manual step (cross-repo)
+
+          Update the catalog-submission issue at github/spec-kit (issue 2575 or successor) with the new version metadata. Body template lives at marketplace/upstream-pr-body.md.
+          "@
+          $summary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8

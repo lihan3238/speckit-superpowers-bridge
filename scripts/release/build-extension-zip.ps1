@@ -11,7 +11,7 @@ if ($Version -notmatch '^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$') {
 
 $repoRoot = (& git rev-parse --show-toplevel).Trim()
 $bridgeDir = Join-Path $repoRoot ".specify/extensions/speckit-superpowers-bridge"
-$stageRoot = Join-Path $env:TEMP "speckit-superpowers-bridge-build-$Version"
+$stageRoot = Join-Path ([System.IO.Path]::GetTempPath()) "speckit-superpowers-bridge-build-$Version"
 $archiveTopDir = "speckit-superpowers-bridge-$Version"
 $stageDir = Join-Path $stageRoot $archiveTopDir
 $distDir = Join-Path $repoRoot "dist"

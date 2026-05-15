@@ -12,35 +12,50 @@ Contents:
 
 These files are **source-repo only** — they describe the extension to the upstream maintainer, and they are NOT installed into host projects when a user adds this extension.
 
-## Workflow (Spec Kit-aligned)
+## Release workflow (automated via `.github/workflows/release.yml`)
 
-Per the upstream [EXTENSION-PUBLISHING-GUIDE](https://github.com/github/spec-kit/blob/main/extensions/EXTENSION-PUBLISHING-GUIDE.md), community-extension submissions go **through an issue template**, not a fork+PR:
+Per the upstream [EXTENSION-PUBLISHING-GUIDE](https://github.com/github/spec-kit/blob/main/extensions/EXTENSION-PUBLISHING-GUIDE.md), community-extension submissions go **through an issue template**, not a fork+PR. The release-asset build + publish flow is automated; the cross-repo issue comment stays manual.
 
-1. Bump `extension.yml.extension.version`; write the `CHANGELOG.md` section.
-2. Build the release ZIP locally (see `scripts/release/build-extension-zip.ps1`):
-   ```powershell
-   pwsh scripts/release/build-extension-zip.ps1 -Version 0.4.0
-   ```
-   This stages `extension.yml`, `commands/`, `scripts/powershell/`, plus repo-root `README*.md`, `LICENSE`, `CHANGELOG.md`, `.gitignore` into a `speckit-superpowers-bridge-X.Y.Z/` tree and zips it. Same internal layout as `agent-governance` in the canonical catalog.
-3. Tag and push:
-   ```powershell
-   git tag -a v0.4.0 -m "v0.4.0 — …"
-   git push origin v0.4.0
-   ```
-4. Create the GitHub release and attach the ZIP:
-   ```powershell
-   gh release create v0.4.0 --notes-file <changelog-section>
-   gh release upload v0.4.0 dist/speckit-superpowers-bridge-v0.4.0.zip
-   ```
-   Record the SHA256 from the build script's output (or `Get-FileHash dist/...zip -Algorithm SHA256`) **before any rebuild** — `Compress-Archive` is not byte-deterministic, so each build produces a different SHA256. The hash you record must match the asset GitHub now serves.
-5. Update `marketplace/catalog-entry.json` `version` + `download_url` to the new release asset URL.
-6. Open or update the catalog submission issue via the **[Extension Submission template](https://github.com/github/spec-kit/issues/new?template=extension_submission.yml)**. Paste the contents of `catalog-entry.json` into the "Proposed Catalog Entry" section, and the contents of `upstream-pr-body.md` into the "Additional Context" section (preserving the AI-disclosure paragraph verbatim).
-7. The Spec Kit maintainer reviews and updates `catalog.community.json` directly. **Do NOT open a PR against `catalog.community.json`** — the upstream guide explicitly forbids that.
+**Manual pre-tag steps (do these all in one commit on `main`):**
 
-For an in-flight submission, comment on the existing issue with version updates rather than opening a new one — this preserves the maintainer's queue position.
+1. Bump `.specify/extensions/speckit-superpowers-bridge/extension.yml` → `extension.version: "X.Y.Z"`.
+2. Bump `marketplace/catalog-entry.json` → `"version": "X.Y.Z"` and `"download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/vX.Y.Z/speckit-superpowers-bridge-vX.Y.Z.zip"`.
+3. Add a `## [X.Y.Z] - <date>` section to `CHANGELOG.md` (this becomes the GitHub release notes).
+4. Commit + push to `main`.
+5. Verify locally before tagging:
+   ```powershell
+   pwsh scripts/release/validate-release-readiness.ps1 -Version X.Y.Z
+   ```
+   The validator checks all four cross-references (extension.yml, catalog-entry.json version, catalog-entry.json download_url, CHANGELOG section). Exit 0 = ready.
+
+**Tag the release:**
+
+```powershell
+git tag -a vX.Y.Z -m "vX.Y.Z — <one-line description>"
+git push origin vX.Y.Z
+```
+
+**Automated on tag push** (`.github/workflows/release.yml`):
+
+1. Validate release readiness (same 4 checks as the local validator).
+2. Run all 3 bridge smoke tests (`tests/test-*.ps1`).
+3. Run release-tooling self-tests (`scripts/release/test-*.ps1`).
+4. Build the ZIP via `scripts/release/build-extension-zip.ps1`.
+5. Extract `[X.Y.Z]` section from `CHANGELOG.md` as release notes.
+6. `gh release create` with notes + ZIP attached.
+7. Print SHA256 + asset URL in the workflow's GitHub Step Summary.
+
+The workflow is sequential — any failure stops the release before the asset is published. Local dry-run is supported: each script can be invoked manually with the same arguments the workflow uses.
+
+**Manual post-release step (cross-repo, intentionally not automated):**
+
+8. Open or update the catalog-submission issue at github/spec-kit via the **[Extension Submission template](https://github.com/github/spec-kit/issues/new?template=extension_submission.yml)**. Paste `catalog-entry.json` into the "Proposed Catalog Entry" section, and `marketplace/upstream-pr-body.md` (with the new SHA256 from the workflow summary) into the "Additional Context" section. For an in-flight submission, comment on the existing issue rather than opening a new one — preserves the maintainer's queue position.
+9. The Spec Kit maintainer reviews and updates `catalog.community.json` directly. **Do NOT open a PR against `catalog.community.json`** — the upstream guide explicitly forbids that.
 
 ### Why hand-built ZIP (not auto-archive)?
 
 Some canonical catalog entries (`agent-assign`, `agent-governance`) use the GitHub auto-generated archive at `archive/refs/tags/vX.Y.Z.zip`. Those repos place `extension.yml` at the repo root. **Our repo doesn't**: the bridge content lives under `.specify/extensions/speckit-superpowers-bridge/` because the repo is also a Spec Kit dev environment used to dogfood the bridge on itself. The hand-built ZIP from `scripts/release/build-extension-zip.ps1` produces an `agent-governance`-shaped tree (extension.yml at top, plus commands/, scripts/, LICENSE, README) so the catalog install path works without restructuring the source repo.
 
-When future cross-platform support lands (feature 003 stub: Bash port for Linux/macOS), the build script will gain one line: `Copy-Item scripts/bash` alongside `scripts/powershell`. Same release flow.
+### Future Linux/macOS port (feature 003 stub)
+
+When `.specify/extensions/.../scripts/bash/` lands, add one `Copy-Item scripts/bash` line to `build-extension-zip.ps1`. Same release workflow; the ZIP just carries both script dirs.
