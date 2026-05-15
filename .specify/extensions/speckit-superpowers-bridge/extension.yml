@@ -4,7 +4,7 @@ extension:
   id: speckit-superpowers-bridge
   name: "Superpowers Implementation Bridge"
   version: "0.3.0"
-  description: "A thin orchestrating bridge between Spec Kit (design) and Superpowers (implementation). Cross-agent (Codex + Claude Code). Native skills only — no custom discipline."
+  description: "Thin orchestrator between Spec Kit (design) and Superpowers (implementation). Cross-agent."
   author: "lihan3238"
   repository: "https://github.com/lihan3238/speckit-superpowers-bridge"
   homepage: "https://github.com/lihan3238/speckit-superpowers-bridge"

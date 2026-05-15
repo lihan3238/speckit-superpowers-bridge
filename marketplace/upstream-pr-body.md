@@ -1,11 +1,10 @@
 # Add `speckit-superpowers-bridge` to the community catalog
 
-> **Paste this content into the PR description** when submitting the upstream PR
-> against `github/spec-kit`.
+> **Paste this content into the "Additional Context" section** of the [Extension Submission issue](https://github.com/github/spec-kit/issues/new?template=extension_submission.yml). For an in-flight submission (e.g., the existing issue #2575), comment with the v0.3.0 update instead of opening a new issue.
 
 ## Summary
 
-This PR adds **speckit-superpowers-bridge** (v0.3.0) to the community catalog.
+This submission updates **speckit-superpowers-bridge** to **v0.3.0** in the community catalog. The currently-tagged catalog entry is v0.1.1 (the intermediate v0.2.0 was never tagged or released; CHANGELOG retains it as a planning marker). v0.3.0 is the first publicly-tagged release since v0.1.1.
 
 The bridge is a **thin orchestrating layer** between Spec Kit (design) and
 [Superpowers](https://github.com/obra/superpowers) (implementation). It exists
@@ -56,12 +55,9 @@ guide](https://github.com/github/spec-kit/blob/main/extensions/EXTENSION-PUBLISH
 checklist:
 
 - [x] Public GitHub repository at `https://github.com/lihan3238/speckit-superpowers-bridge`.
-- [x] Tagged semantic release `v0.3.0` with downloadable ZIP at the URL in
-      `download_url`.
-- [x] `extension.yml` declares every required field and conforms to schema
-      version `"1.0"`.
-- [x] `LICENSE` (MIT), `README.md`, `README.zh-CN.md`, `CHANGELOG.md`,
-      `.gitignore`, `commands/` directory all present.
+- [x] Tagged semantic release `v0.3.0`; download URL is the GitHub-auto-generated archive: `https://github.com/lihan3238/speckit-superpowers-bridge/archive/refs/tags/v0.3.0.zip`.
+- [x] `extension.yml` declares every required field and conforms to schema version `"1.0"`. `id` is lowercase-with-hyphens; `version` is semver; `description` is 91 characters.
+- [x] `LICENSE` (MIT), `README.md`, `README.zh-CN.md`, `CHANGELOG.md`, `.gitignore`, `commands/` directory all present.
 - [x] Three retained smoke tests green:
       `tests/test-claude-codex-skill-parity.ps1`,
       `tests/test-handoff-shape.ps1`,
