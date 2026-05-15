@@ -56,6 +56,43 @@ if (-not (Test-Path -LiteralPath $changelog)) {
     }
 }
 
+# 5. Bash / PowerShell script parity when bash flavor exists
+$bridgeScripts = Join-Path $RepoRoot ".specify/extensions/speckit-superpowers-bridge/scripts"
+$psDir = Join-Path $bridgeScripts "powershell"
+$bashDir = Join-Path $bridgeScripts "bash"
+if (Test-Path -LiteralPath $bashDir) {
+    if (-not (Test-Path -LiteralPath $psDir)) {
+        $problems.Add("scripts/powershell missing while scripts/bash exists; file-count parity cannot be checked")
+    } else {
+        $psFiles = @(Get-ChildItem -LiteralPath $psDir -Filter "*.ps1" -File | Sort-Object Name)
+        $bashFiles = @(Get-ChildItem -LiteralPath $bashDir -Filter "*.sh" -File | Sort-Object Name)
+        if ($psFiles.Count -ne $bashFiles.Count) {
+            $problems.Add("scripts file-count parity failed: $($psFiles.Count) .ps1 file(s) vs $($bashFiles.Count) .sh file(s)")
+        }
+        $psStems = @($psFiles | ForEach-Object { $_.BaseName })
+        $bashStems = @($bashFiles | ForEach-Object { $_.BaseName })
+        $missingBash = @($psStems | Where-Object { -not ($bashStems -contains $_) })
+        $missingPs = @($bashStems | Where-Object { -not ($psStems -contains $_) })
+        if ($missingBash.Count -gt 0 -or $missingPs.Count -gt 0) {
+            $detail = @()
+            if ($missingBash.Count -gt 0) { $detail += "missing .sh for: $($missingBash -join ', ')" }
+            if ($missingPs.Count -gt 0) { $detail += "missing .ps1 for: $($missingPs -join ', ')" }
+            $problems.Add("scripts filename parity failed: $($detail -join '; ')")
+        }
+    }
+}
+
+# 6. .gitattributes pins shell scripts to LF line endings
+$gitAttributes = Join-Path $RepoRoot ".gitattributes"
+if (-not (Test-Path -LiteralPath $gitAttributes)) {
+    $problems.Add(".gitattributes not found at $gitAttributes")
+} else {
+    $gitAttributesBody = Get-Content -LiteralPath $gitAttributes -Raw
+    if ($gitAttributesBody -notmatch '(?m)^\*\.sh\s+text\s+eol=lf\b') {
+        $problems.Add(".gitattributes: missing '*.sh text eol=lf' rule")
+    }
+}
+
 if ($problems.Count -gt 0) {
     Write-Output "Release readiness FAILED for version $Version :"
     foreach ($p in $problems) { Write-Output "  - $p" }

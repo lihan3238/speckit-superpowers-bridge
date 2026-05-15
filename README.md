@@ -46,7 +46,7 @@ Spec Kit must be installed first. Then pick one of the three install paths below
 ```powershell
 specify init my-project --integration codex
 cd my-project
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.3.0/speckit-superpowers-bridge-v0.3.0.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.0/speckit-superpowers-bridge-v0.4.0.zip
 ```
 
 No Claude Code dependency. The bridge runs entirely through Codex's `$speckit-*` invocation surface.
@@ -56,7 +56,7 @@ No Claude Code dependency. The bridge runs entirely through Codex's `$speckit-*`
 ```powershell
 specify init my-project --integration claude
 cd my-project
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.3.0/speckit-superpowers-bridge-v0.3.0.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.0/speckit-superpowers-bridge-v0.4.0.zip
 ```
 
 No Codex dependency. The bridge runs through Claude Code's `/speckit-*` slash commands.
@@ -67,7 +67,7 @@ No Codex dependency. The bridge runs through Claude Code's `/speckit-*` slash co
 specify init my-project --integration claude         # or --integration codex
 cd my-project
 specify integration add codex                         # or 'claude' if you started with codex
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.3.0/speckit-superpowers-bridge-v0.3.0.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.0/speckit-superpowers-bridge-v0.4.0.zip
 ```
 
 Both `.agents/skills/` (Codex) and `.claude/skills/` (Claude Code) receive the bridge skill peer files. You can design in one agent and implement in another by simply switching tabs.
@@ -79,6 +79,23 @@ For working on the bridge itself:
 ```powershell
 specify extension add --dev .\.specify\extensions\speckit-superpowers-bridge
 ```
+
+## prerequisites
+
+Windows users need PowerShell 5.1+ (preinstalled on supported Windows releases). Linux and macOS users run the same extension ZIP through the bash flavor and need:
+
+- `bash >= 4.0`
+- `jq >= 1.6`
+
+Install examples:
+
+```bash
+sudo apt install bash jq      # Ubuntu / Debian
+brew install bash jq          # macOS
+sudo dnf install bash jq      # Fedora
+```
+
+Contributors who run the repository smoke tests on any OS also need PowerShell Core (`pwsh`) 7.x. End users on Linux/macOS do not need `pwsh` for normal bridge execution.
 
 ## your first feature in 10 minutes
 
@@ -136,7 +153,7 @@ When a bridge script needs to know which agent invoked it (`-Actor`), it resolve
 2. `SPECKIT_BRIDGE_ACTOR` environment variable.
 3. Literal `"unknown"`.
 
-Per-agent bridge `SKILL.md` files hardcode `-Actor` to their own agent — so in normal dialog use, you never need to set the env var. The chain matters for CI or manual script invocation.
+Per-agent bridge `SKILL.md` files hardcode `-Actor` / `--actor` to their own agent — so in normal dialog use, you never need to set the env var. The chain matters for CI or manual script invocation.
 
 See `AGENTS.md` for the master cross-agent protocol; `CLAUDE.md` for Claude-specific supplements.
 
@@ -144,7 +161,7 @@ See `AGENTS.md` for the master cross-agent protocol; `CLAUDE.md` for Claude-spec
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| `handoff stuck in executing` | Previous bridge run was interrupted before transitioning to `complete` or `blocked` | Inspect `superpowers-handoff.json`; if work is genuinely done, run `update-handoff.ps1 -Status complete`; if abandoned, `-Status blocked -Reason "abandoned"` |
+| `handoff stuck in executing` | Previous bridge run was interrupted before transitioning to `complete` or `blocked` | Inspect `superpowers-handoff.json`; if work is genuinely done, run `update-handoff.ps1 -Status complete` or `update-handoff.sh --status complete`; if abandoned, set `blocked` with a reason |
 | `missing per-agent peer skill` | One agent's `.X/skills/<id>` exists but the other agent's does not | Mirror the SKILL.md from the agent that has it; or remove the orphan |
 | guard denies an unexpected action | One of the 5 hardcoded rules in `guard-command.ps1` is firing | Read the deny reason printed by the guard; the rule set is small and inspectable |
 | handoff JSON from an older install has v3 fields | Pre-0.3.0 handoff with `autonomous_mode`/`resume_context`/`archive_history` | No action needed. The 0.3.0 bridge reads these tolerantly and silently drops them on the next write. |
@@ -164,7 +181,7 @@ Version compatibility is now verified by human inspection at release time (the p
 
 - **Spec Kit owns WHAT.** Constitution, spec, clarify, plan, tasks, checklists, analysis. These are durable design artifacts under `.specify/` and `specs/`.
 - **Superpowers owns HOW.** TDD, debugging, executing-plans, requesting-code-review, verification-before-completion, finishing-a-development-branch. These are implementation discipline skills invoked at lifecycle phases.
-- **The bridge orchestrates native skills and does not provide custom discipline.** It contributes only: a per-agent SKILL.md describing the orchestration sequence, three small PowerShell scripts (`update-handoff.ps1`, `guard-command.ps1`, `auto-archive-handoff.ps1`) for state management, and 5 hardcoded boundary rules. No matrix, no audits, no validation pass, no parity check.
+- **The bridge orchestrates native skills and does not provide custom discipline.** It contributes only: a per-agent SKILL.md describing the orchestration sequence, four small state scripts in PowerShell and bash flavors (`update-handoff`, `guard-command`, `auto-archive-handoff`, `common-actor-resolution`), and 5 hardcoded boundary rules. No matrix, no audits, no validation pass, no parity check.
 
 ### how the bridge differs from peer extensions
 

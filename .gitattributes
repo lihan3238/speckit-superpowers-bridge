@@ -1,0 +1,13 @@
+# Bash scripts must keep LF line endings even on Windows clones.
+*.sh text eol=lf
+
+# PowerShell scripts use CRLF on Windows; pwsh on Linux/macOS reads both fine.
+*.ps1 text eol=crlf
+
+# Markdown is text; let git autodetect line endings per platform default.
+*.md text
+
+# JSON / YAML are text.
+*.json text
+*.yml text
+*.yaml text

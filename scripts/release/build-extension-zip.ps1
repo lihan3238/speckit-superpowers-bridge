@@ -27,10 +27,10 @@ Copy-Item -LiteralPath (Join-Path $bridgeDir "extension.yml") -Destination $stag
 Copy-Item -Recurse -LiteralPath (Join-Path $bridgeDir "commands") -Destination $stageDir
 New-Item -ItemType Directory -Force -Path (Join-Path $stageDir "scripts") | Out-Null
 Copy-Item -Recurse -LiteralPath (Join-Path $bridgeDir "scripts/powershell") -Destination (Join-Path $stageDir "scripts/powershell")
-# Future: when scripts/bash/ lands (feature 003), add a Copy-Item line here.
+Copy-Item -Recurse -LiteralPath (Join-Path $bridgeDir "scripts/bash") -Destination (Join-Path $stageDir "scripts/bash") -ErrorAction SilentlyContinue
 
-# Repo-root marketplace docs: README, README.zh-CN, LICENSE, CHANGELOG, .gitignore
-foreach ($name in @("README.md", "README.zh-CN.md", "LICENSE", "CHANGELOG.md", ".gitignore")) {
+# Repo-root marketplace docs: README, README.zh-CN, LICENSE, CHANGELOG, .gitignore, .gitattributes
+foreach ($name in @("README.md", "README.zh-CN.md", "LICENSE", "CHANGELOG.md", ".gitignore", ".gitattributes")) {
     $src = Join-Path $repoRoot $name
     if (Test-Path -LiteralPath $src) {
         Copy-Item -LiteralPath $src -Destination $stageDir

@@ -45,9 +45,9 @@ phases, dispatched by each agent's bridge `SKILL.md`.
 - If implementation reveals missing or wrong requirements, stop implementation, mark the handoff `blocked`, and return to Spec Kit to update `spec.md`, `plan.md`, or `tasks.md`.
 - When an active Spec Kit feature has `spec.md`, `plan.md`, and `tasks.md`, Superpowers `brainstorming` and `writing-plans` are disabled for that feature unless the user explicitly says to discard or replace the Spec Kit artifacts.
 - Superpowers `subagent-driven-development` and `executing-plans` may run only through `speckit-superpowers-bridge` and must use Spec Kit `tasks.md` as the plan.
-- Before crossing these boundaries, run `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/guard-command.ps1`; every allow/deny decision is logged in `.specify/bridge-events.jsonl`.
-- Pass `-Actor codex` from Codex and `-Actor claude` from Claude Code when invoking bridge guard or handoff scripts.
-- If `-Actor` is omitted, bridge scripts resolve actor in three steps: explicit `-Actor` → `SPECKIT_BRIDGE_ACTOR` env var → `"unknown"`.
+- Before crossing these boundaries, run the platform-selected bridge guard (`scripts/powershell/guard-command.ps1` for `ps`, `scripts/bash/guard-command.sh` for `sh`); every allow/deny decision is logged in `.specify/bridge-events.jsonl`.
+- Pass `-Actor codex` / `--actor codex` from Codex and `-Actor claude` / `--actor claude` from Claude Code when invoking bridge guard or handoff scripts.
+- If actor is omitted, bridge scripts resolve actor in three steps: explicit actor argument → `SPECKIT_BRIDGE_ACTOR` env var → `"unknown"`.
 - Command IDs and agent invocations are different: internal Spec Kit command IDs use dots such as `speckit.plan`; Codex uses `$speckit-plan`; Claude Code uses slash commands generated from skill names such as `/speckit-plan`. Bridge extension commands use the namespace `speckit.speckit-superpowers-bridge.*` (three retained: `execute`, `handoff`, `guard`).
 - `AGENTS.md` is the master bridge protocol. `CLAUDE.md` may add Claude-specific notes, but it must defer to `AGENTS.md` on conflicts.
 - Do not hand-edit official generated `.agents/skills/speckit-*` or `.claude/skills/speckit-*`; put bridge-specific behavior in separate `speckit-superpowers-bridge` skills.
@@ -57,12 +57,12 @@ phases, dispatched by each agent's bridge `SKILL.md`.
 
 - `.specify/superpowers-handoff.json` is repo-scoped: at most one active handoff at a time. When a feature finishes, its terminal `complete` status remains in the file until a new feature starts.
 - A `complete` handoff for a prior feature must NOT block contract changes on a different, new feature. The bridge guard treats `complete` as terminal-not-active; cross-feature requests are allowed.
-- Use `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/auto-archive-handoff.ps1 -Actor <codex|claude>` to archive a `complete` handoff. The helper is idempotent: when status is not `complete`, it is a no-op success exit.
+- Use the platform-selected auto-archive helper (`auto-archive-handoff.ps1 -Actor <codex|claude>` or `auto-archive-handoff.sh --actor <codex|claude>`) to archive a `complete` handoff. The helper is idempotent: when status is not `complete`, it is a no-op success exit.
 - Auto-archive snapshots the prior feature's Spec Kit artifacts under `.specify/bridge-snapshots/<snapshot-id>/`, clears `feature_directory`, and appends an `archive` event to `.specify/bridge-events.jsonl`. (The pre-0.3.0 `auto_archive` event type, `archive_history` field, and matrix-driven dispositions are no longer used.)
 
 ## Guard rules
 
-The bridge guard at `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/guard-command.ps1` enforces 5 hardcoded rules (no matrix lookup):
+The bridge guard at `.specify/extensions/speckit-superpowers-bridge/scripts/{powershell,bash}/guard-command.*` enforces 5 hardcoded rules (no matrix lookup):
 
 1. Deny `speckit.implement` when handoff status is `executing`.
 2. Deny `superpowers:writing-plans` or `:brainstorming` when active feature has both `spec.md` and `plan.md`.
@@ -75,3 +75,5 @@ Adding a new rule is a one-line edit to the script. There is no external data fi
 ## Handoff schema
 
 The v1 schema (post-0.3.0) is documented in `specs/006-trim-to-thin-bridge/contracts/handoff.v1.schema.json`. New writes emit only v1 fields. Reads tolerate older v2/v3 documents (unknown fields are silently ignored).
+
+As of v0.4.0, the bridge ships both `scripts/powershell/` and `scripts/bash/` flavors. The protocol, handoff schema, guard rules, and actor semantics are identical; `.specify/init-options.json.script` (`ps` or `sh`) chooses the runtime flavor.

@@ -6,7 +6,7 @@ description: "Guard Spec Kit and Superpowers commands from crossing bridge owner
 
 Block commands that would overlap Spec Kit / Superpowers responsibilities. The guard reads `.specify/superpowers-handoff.json` and (when needed) the active feature directory, then evaluates a small fixed rule set.
 
-## Rules (hardcoded; see `scripts/powershell/guard-command.ps1`)
+## Rules (hardcoded; see `scripts/powershell/guard-command.ps1` and `scripts/bash/guard-command.sh`)
 
 The guard evaluates these 5 rules in order; the first match wins:
 
@@ -20,10 +20,14 @@ There is no disposition matrix and no JSON config; adding a rule is a one-line `
 
 ## Execution
 
-Map the triggering hook or requested skill to an action and run:
+Map the triggering hook or requested skill to an action and run the platform flavor selected by `.specify/init-options.json.script`.
 
 ```powershell
 .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\guard-command.ps1 -Action <action> -Actor <codex|claude|unknown>
+```
+
+```bash
+bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/guard-command.sh --action <action> --actor <codex|claude|unknown>
 ```
 
 Exit codes: `0` = allow, non-zero = deny (the reason is printed to stdout and recorded in `bridge-events.jsonl`).

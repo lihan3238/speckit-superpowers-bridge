@@ -46,7 +46,7 @@
 ```powershell
 specify init my-project --integration codex
 cd my-project
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.3.0/speckit-superpowers-bridge-v0.3.0.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.0/speckit-superpowers-bridge-v0.4.0.zip
 ```
 
 无 Claude Code 依赖。桥完全跑在 Codex 的 `$speckit-*` 调用面上。
@@ -56,7 +56,7 @@ specify extension add speckit-superpowers-bridge --from https://github.com/lihan
 ```powershell
 specify init my-project --integration claude
 cd my-project
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.3.0/speckit-superpowers-bridge-v0.3.0.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.0/speckit-superpowers-bridge-v0.4.0.zip
 ```
 
 无 Codex 依赖。桥跑在 Claude Code 的 `/speckit-*` 斜杠命令上。
@@ -67,7 +67,7 @@ specify extension add speckit-superpowers-bridge --from https://github.com/lihan
 specify init my-project --integration claude         # 或 --integration codex
 cd my-project
 specify integration add codex                         # 反之 'claude'
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.3.0/speckit-superpowers-bridge-v0.3.0.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.0/speckit-superpowers-bridge-v0.4.0.zip
 ```
 
 `.agents/skills/`（Codex）与 `.claude/skills/`（Claude Code）都会拿到桥的同名 skill 文件。一边设计、一边实现，只需切换 Tab。
@@ -79,6 +79,23 @@ specify extension add speckit-superpowers-bridge --from https://github.com/lihan
 ```powershell
 specify extension add --dev .\.specify\extensions\speckit-superpowers-bridge
 ```
+
+## prerequisites
+
+Windows 用户需要 PowerShell 5.1+（受支持的 Windows 版本自带）。Linux 和 macOS 用户使用同一个扩展 ZIP，但运行 bash flavor，需要：
+
+- `bash >= 4.0`
+- `jq >= 1.6`
+
+安装示例：
+
+```bash
+sudo apt install bash jq      # Ubuntu / Debian
+brew install bash jq          # macOS
+sudo dnf install bash jq      # Fedora
+```
+
+需要运行仓库 smoke tests 的贡献者还需要 PowerShell Core (`pwsh`) 7.x。Linux/macOS 终端用户正常执行 bridge 不需要 `pwsh`。
 
 ## your first feature in 10 minutes
 

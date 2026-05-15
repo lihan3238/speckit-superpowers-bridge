@@ -3,17 +3,19 @@
   "name": "Superpowers Implementation Bridge",
   "description": "Thin orchestrator between Spec Kit (design) and Superpowers (implementation). Cross-agent.",
   "author": "lihan3238",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "license": "MIT",
   "repository": "https://github.com/lihan3238/speckit-superpowers-bridge",
   "homepage": "https://github.com/lihan3238/speckit-superpowers-bridge",
   "documentation": "https://github.com/lihan3238/speckit-superpowers-bridge#readme",
   "changelog": "https://github.com/lihan3238/speckit-superpowers-bridge/blob/main/CHANGELOG.md",
-  "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.3.1/speckit-superpowers-bridge-v0.3.1.zip",
+  "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.0/speckit-superpowers-bridge-v0.4.0.zip",
   "requires": {
     "speckit_version": ">=0.8.10",
     "tools": [
       { "name": "powershell", "version": ">=5.1", "required": true },
+      { "name": "bash", "version": ">=4.0", "required": false },
+      { "name": "jq", "version": ">=1.6", "required": false },
       { "name": "git", "version": ">=2.30", "required": false }
     ]
   },

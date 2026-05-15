@@ -6,6 +6,34 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 > **AI-assistance disclosure**: This extension is developed with AI coding assistants (Claude Code for design + planning, Codex for implementation passes, Claude Code for the v0.3.0 trim), per the AI-disclosure requirement in [Spec Kit CONTRIBUTING.md](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md). Every artifact passes human review before commit. As of v0.3.0 the verification surface is three retained smoke tests under `tests/`.
 
+## [0.4.0] - 2026-05-15
+
+Cross-platform compatibility release. The bridge now ships one ZIP that contains both Windows PowerShell scripts and Linux/macOS bash scripts.
+
+### Added
+
+- Four bash runtime scripts under `.specify/extensions/speckit-superpowers-bridge/scripts/bash/`: `common-actor-resolution.sh`, `update-handoff.sh`, `guard-command.sh`, and `auto-archive-handoff.sh`.
+- `.gitattributes` with `*.sh text eol=lf` so shell scripts keep LF line endings on Windows clones.
+- `bash >= 4.0` and `jq >= 1.6` tool metadata in `extension.yml` and `marketplace/catalog-entry.json`.
+
+### Changed
+
+- `scripts/release/build-extension-zip.ps1` now packages `scripts/bash/` beside `scripts/powershell/`.
+- `scripts/release/validate-release-readiness.ps1` now checks bash/PowerShell script parity and the `.gitattributes` shell-script LF rule.
+- The retained smoke tests now auto-detect available script flavors and exercise both `ps` and `bash` when present.
+- README prerequisites now document Linux/macOS runtime requirements and clarify that `pwsh` is only needed for contributors running the smoke tests.
+
+### Compatibility
+
+Existing Windows installs continue using the PowerShell flavor. Linux/macOS installs use the bash flavor through Spec Kit's existing `init-options.json.script` setting. No handoff migration is required; both flavors read older v2/v3 handoff documents tolerantly and write the v1 shape.
+
+### Validation
+
+- `tests/test-handoff-shape.ps1` green with `(ps, bash)`.
+- `tests/test-guard-hardcoded-rules.ps1` green with `(ps, bash)`.
+- `tests/test-claude-codex-skill-parity.ps1` green.
+- `scripts/release/test-validate-release-readiness.ps1` green with 7/7 cases.
+
 ## [0.3.1] - 2026-05-15
 
 Tooling + alignment patch. No behavior changes in the bridge itself; this release ships the release-automation infrastructure that v0.3.0 didn't have, and aligns several stale references that were missed during the v0.3.0 cut.
@@ -204,7 +232,8 @@ Hooks in `.specify/extensions.yml`:
 - AGENTS.md as the master cross-agent protocol; CLAUDE.md as the Claude-specific supplement.
 - Constitution (`.specify/memory/constitution.md`) ratifying 5 principles: lightweight & repo-local, design/implementation separation, agent-neutral protocol, smooth bidirectional handoff, vendor-managed boundaries.
 
-[Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.0
 [0.3.1]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.3.1
 [0.3.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.3.0
 [0.2.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.2.0

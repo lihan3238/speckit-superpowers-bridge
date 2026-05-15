@@ -8,7 +8,7 @@ Execute the active Spec Kit feature through Superpowers without running `speckit
 
 ## Behavior
 
-1. Read `.specify/superpowers-handoff.json`; if it is missing or stale, create a ready handoff with `update-handoff.ps1`.
+1. Read `.specify/superpowers-handoff.json`; if it is missing or stale, create a ready handoff with the platform-selected `update-handoff` script.
 2. Read `.specify/memory/constitution.md`, `spec.md`, `plan.md`, and `tasks.md` before touching implementation files.
 3. Run the bridge guard for `superpowers.executing-plans`.
 4. Execute `tasks.md` with Superpowers implementation discipline: TDD, systematic debugging, review, verification, and branch finishing.
@@ -24,11 +24,16 @@ In this source repository, the same protocol is mirrored in the project-local br
 
 If those local bridge skill files are not present after marketplace installation, this command is authoritative.
 
-Before implementation begins, run:
+Before implementation begins, run the platform flavor selected by `.specify/init-options.json.script`.
 
 ```powershell
 .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -Actor <codex|claude>
 .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\guard-command.ps1 -Action "superpowers:executing-plans" -Actor <codex|claude>
+```
+
+```bash
+bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/update-handoff.sh --status executing --actor <codex|claude>
+bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/guard-command.sh --action "superpowers:executing-plans" --actor <codex|claude>
 ```
 
 Do not invoke Superpowers `brainstorming` or `writing-plans` for this active feature. Spec Kit artifacts are the only design and execution contract.
@@ -43,7 +48,7 @@ Use Superpowers execution skills only against Spec Kit `tasks.md`:
 - `superpowers:requesting-code-review` before final completion.
 - `superpowers:finishing-a-development-branch` before handing off merge, PR, or branch cleanup decisions.
 
-Before each required Superpowers skill invocation, the agent simply calls the skill — no extra logging or resume-context plumbing is needed. The bridge's only state is `superpowers-handoff.json`, updated at lifecycle boundaries (start / block / complete) via `update-handoff.ps1`. See the bridge `SKILL.md` (linked above) for the authoritative 8-step orchestration sequence.
+Before each required Superpowers skill invocation, the agent simply calls the skill — no extra logging or resume-context plumbing is needed. The bridge's only state is `superpowers-handoff.json`, updated at lifecycle boundaries (start / block / complete) via `update-handoff.ps1` or `update-handoff.sh`. See the bridge `SKILL.md` (linked above) for the authoritative 8-step orchestration sequence.
 
 For delegated implementation prompts, include:
 
@@ -59,8 +64,16 @@ Set the handoff to `blocked` if the Spec Kit contract is missing or wrong:
 .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status blocked -Reason "Describe the Spec Kit artifact gap" -Actor <codex|claude>
 ```
 
+```bash
+bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/update-handoff.sh --status blocked --reason "Describe the Spec Kit artifact gap" --actor <codex|claude>
+```
+
 Set the handoff to `complete` only after all required task checkboxes are complete, code review has been requested, verification has fresh passing evidence, and branch finishing has run:
 
 ```powershell
 .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status complete -Actor <codex|claude>
+```
+
+```bash
+bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/update-handoff.sh --status complete --actor <codex|claude>
 ```

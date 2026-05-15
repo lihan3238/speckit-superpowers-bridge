@@ -16,24 +16,30 @@ This skill is the **thin orchestrator** between Spec Kit (design) and Superpower
 
 ## What this skill does
 
-1. Read `.specify/superpowers-handoff.json` to find `feature_directory`. If status is `complete`, run `auto-archive-handoff.ps1 -Actor codex` first so the new feature begins from `ready`.
+1. Read `.specify/superpowers-handoff.json` to find `feature_directory`. If status is `complete`, run the platform-selected auto-archive script first so the new feature begins from `ready`.
 2. Read `<feature_directory>/spec.md`, `plan.md`, `tasks.md`, and `.specify/memory/constitution.md`.
-3. Transition handoff to `executing`:
+3. Transition handoff to `executing` using `.specify/init-options.json.script` (`ps` => PowerShell, `sh` => bash):
    ```powershell
    .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -FeatureDirectory <project-relative-path> -ArtifactOwner codex -Actor codex
+   ```
+   ```bash
+   bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/update-handoff.sh --status executing --feature-directory <project-relative-path> --artifact-owner codex --actor codex
    ```
 4. Invoke `superpowers:executing-plans` against `tasks.md`. That skill drives the per-task loop and dispatches `superpowers:test-driven-development` and `superpowers:systematic-debugging` as needed.
 5. At completion of all tasks, invoke `superpowers:verification-before-completion`.
 6. Invoke `superpowers:requesting-code-review`.
 7. Invoke `superpowers:finishing-a-development-branch`.
-8. Transition handoff to `complete`:
+8. Transition handoff to `complete` with the same platform flavor:
    ```powershell
    .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status complete -Actor codex
+   ```
+   ```bash
+   bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/update-handoff.sh --status complete --actor codex
    ```
 
 ## Boundary rules (denied operations)
 
-The hardcoded guard at `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/guard-command.ps1` enforces, and this skill MUST respect:
+The hardcoded guard at `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/guard-command.ps1` and `.specify/extensions/speckit-superpowers-bridge/scripts/bash/guard-command.sh` enforces, and this skill MUST respect:
 
 - Do not run `speckit.implement` while a handoff is `executing`.
 - Do not invoke `superpowers:writing-plans` or `superpowers:brainstorming` when an active Spec Kit feature has `spec.md` and `plan.md`.
@@ -50,6 +56,10 @@ If implementation surfaces a missing or wrong requirement, stop and mark the han
 
 ```powershell
 .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status blocked -Reason "<describe the spec/plan/tasks gap>" -Actor codex
+```
+
+```bash
+bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/update-handoff.sh --status blocked --reason "<describe the spec/plan/tasks gap>" --actor codex
 ```
 
 Then return control to the user / Spec Kit. After `$speckit-clarify` or `$speckit-tasks` regenerates the artifacts, re-invoke this skill to resume.

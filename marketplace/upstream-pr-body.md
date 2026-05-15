@@ -1,10 +1,10 @@
 # Add `speckit-superpowers-bridge` to the community catalog
 
-> **Paste this content into the "Additional Context" section** of the [Extension Submission issue](https://github.com/github/spec-kit/issues/new?template=extension_submission.yml). For an in-flight submission (e.g., the existing issue #2575), comment with the v0.3.0 update instead of opening a new issue.
+> **Paste this content into the "Additional Context" section** of the [Extension Submission issue](https://github.com/github/spec-kit/issues/new?template=extension_submission.yml). For an in-flight submission (e.g., the existing issue #2575), comment with the v0.4.0 update instead of opening a new issue.
 
 ## Summary
 
-This submission updates **speckit-superpowers-bridge** to **v0.3.0** in the community catalog. The currently-tagged catalog entry is v0.1.1 (the intermediate v0.2.0 was never tagged or released; CHANGELOG retains it as a planning marker). v0.3.0 is the first publicly-tagged release since v0.1.1.
+This submission updates **speckit-superpowers-bridge** to **v0.4.0** in the community catalog. v0.4.0 keeps the thin bridge architecture from v0.3.x and adds Linux/macOS compatibility through bash + jq scripts shipped in the same ZIP as the existing PowerShell scripts.
 
 The bridge is a **thin orchestrating layer** between Spec Kit (design) and
 [Superpowers](https://github.com/obra/superpowers) (implementation). It exists
@@ -16,9 +16,10 @@ and to keep the two agents' state files in sync across Codex and Claude Code:
 - **Superpowers owns HOW** — TDD, systematic debugging, executing-plans, code
   review, verification, finishing-a-development-branch. These are the native
   implementation discipline.
-- The bridge contributes a small **orchestration script** (`update-handoff.ps1`,
-  `guard-command.ps1`, `auto-archive-handoff.ps1`) and a per-agent SKILL.md
-  peer. It implements no custom discipline. The dev.to comparison article
+- The bridge contributes small **orchestration scripts** in both PowerShell and
+  bash flavors (`update-handoff`, `guard-command`, `auto-archive-handoff`,
+  `common-actor-resolution`) and a per-agent SKILL.md peer. It implements no
+  custom discipline. The dev.to comparison article
   ["Spec Kit vs Superpowers"](https://dev.to/truongpx396/spec-kit-vs-superpowers-a-comprehensive-comparison-practical-guide-to-combining-both-52jj)
   is the design north star.
 
@@ -39,14 +40,16 @@ and to keep the two agents' state files in sync across Codex and Claude Code:
 
 ## What changed since v0.1.1
 
-v0.3.0 is a **deliberate drastic trim** (~87% PowerShell line reduction)
+v0.4.0 keeps the v0.3.x **deliberate drastic trim** (~87% PowerShell line reduction)
 that removes every custom feature beyond the thin-bridge scope:
 matrix-driven dispositions, install audits, parity checks, end-to-end
 validation passes, marketplace submission checklists, cleanup audits,
 routing recommender, resume-context plumbing, skill-invocation event
 emitters, bilingual-parity script, plugin distribution manifest. The
-bridge now exposes only the orchestration surface. See `CHANGELOG.md`'s
-`[0.3.0]` section for the full list of removed files.
+bridge now exposes only the orchestration surface. v0.4.0 adds the bash
+runtime flavor and release ZIP packaging needed for Linux/macOS without
+expanding that surface. See `CHANGELOG.md`'s `[0.3.0]` and `[0.4.0]`
+sections for details.
 
 ## Validation
 
@@ -55,15 +58,16 @@ guide](https://github.com/github/spec-kit/blob/main/extensions/EXTENSION-PUBLISH
 checklist:
 
 - [x] Public GitHub repository at `https://github.com/lihan3238/speckit-superpowers-bridge`.
-- [x] Tagged semantic release `v0.3.0` with `download_url` reachable (HTTP 200):
-      `https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.3.0/speckit-superpowers-bridge-v0.3.0.zip`
-      SHA256: `f15dc73b741959d37fd641b13c82612ab0a0fab0c94ad0769a647a267567f3c9`
+- [ ] Tagged semantic release `v0.4.0` with `download_url` reachable (HTTP 200):
+      `https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.0/speckit-superpowers-bridge-v0.4.0.zip`
+      SHA256: `<fill after release workflow>`
 - [x] `extension.yml` declares every required field and conforms to schema version `"1.0"`. `id` is lowercase-with-hyphens; `version` is semver; `description` is 91 characters.
 - [x] `LICENSE` (MIT), `README.md`, `README.zh-CN.md`, `CHANGELOG.md`, `.gitignore`, `commands/` directory all present at ZIP root (same shape as `agent-governance` already in the catalog).
 - [x] Three retained smoke tests green:
       `tests/test-claude-codex-skill-parity.ps1`,
       `tests/test-handoff-shape.ps1`,
       `tests/test-guard-hardcoded-rules.ps1`.
+- [x] v0.4.0 ZIP layout contains `scripts/powershell/` and `scripts/bash/` with 4 files each; validator enforces file-count and filename parity.
 
 ## AI-assistance disclosure
 

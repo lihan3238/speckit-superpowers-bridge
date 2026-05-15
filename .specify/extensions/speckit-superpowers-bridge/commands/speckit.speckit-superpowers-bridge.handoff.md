@@ -25,15 +25,19 @@ Create `.specify/superpowers-handoff.json` so Spec Kit artifacts explicitly hand
 
 ## Execution
 
-Run this from the repository root:
+Run this from the repository root. Use `.specify/init-options.json.script` to choose the flavor (`ps` => PowerShell, `sh` => bash).
 
 ```powershell
 .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status ready
 ```
 
+```bash
+bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/update-handoff.sh --status ready
+```
+
 Actor resolution order is:
 
-1. Explicit `-Actor <codex|claude|unknown>`
+1. Explicit `-Actor <codex|claude|unknown>` / `--actor <codex|claude|unknown>`
 2. Environment variable `SPECKIT_BRIDGE_ACTOR`
 3. Deterministic fallback `unknown`
 
