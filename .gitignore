@@ -46,3 +46,12 @@ specs/*/checklists/protocol-quality.md
 # Kept on the maintainer's local disk; not shipped in the repo.
 # ─────────────────────────────────────────────────────────────────────────────
 docs/
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Spec Kit install-time generated state (003 v0.4.2 FR-006). Each developer's
+# install creates these locally via `specify extension add`/`extension list`;
+# the source repo should not pin a version. Removed from index in v0.4.2.
+# ─────────────────────────────────────────────────────────────────────────────
+.specify/workflows/workflow-registry.json
+.specify/workflows/*/workflow.yml
+.specify/extensions/.registry

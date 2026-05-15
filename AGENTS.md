@@ -78,6 +78,10 @@ The v1 schema (post-0.3.0) is documented in `specs/006-trim-to-thin-bridge/contr
 
 As of v0.4.1, the bridge ships both `scripts/powershell/` and `scripts/bash/` flavors. The protocol, handoff schema, guard rules, and actor semantics are identical; `.specify/init-options.json.script` (`ps` or `sh`) chooses the runtime flavor.
 
+## Install-time registries are local state, not tracked
+
+`.specify/workflows/workflow-registry.json`, `.specify/workflows/*/workflow.yml`, and `.specify/extensions/.registry` are install-time generated state — each developer's `specify extension add` / `specify extension list` recreates them locally. As of v0.4.2 (003-bridge-cross-platform-scripts cleanup tail) they are gitignored and removed from the index; contributors who clone the repo will not see them on disk until first install, which is the intended workflow. Do not `git add -f` these files into the index.
+
 ## End-user verification sandbox
 
 `..\test_specify_superpower` (sibling directory to this source repo) is the canonical end-user simulation sandbox per constitution §"End-User Verification Sandbox" (v1.2.0+). Every feature that ships a release artifact MUST be verified there before its handoff transitions to `complete`: install the bridge via the published release URL (not local `--dev`), drive one full bridge cycle per supported platform (Windows PowerShell + Linux/macOS bash), and record outcomes in the feature's `quickstart.md` or `verification.md`. The sandbox catches install-time and cross-platform issues that in-repo smoke tests cannot — the same class of issues v0.4.0 hit during its three RC iterations.
