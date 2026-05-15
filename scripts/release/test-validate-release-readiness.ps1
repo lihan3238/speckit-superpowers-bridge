@@ -94,3 +94,4 @@ if ($failed -gt 0) {
 }
 Write-Output ""
 Write-Output "validate-release-readiness-tests-ok"
+exit 0
