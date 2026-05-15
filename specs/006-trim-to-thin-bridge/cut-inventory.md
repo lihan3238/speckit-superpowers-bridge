@@ -93,7 +93,8 @@ This inventory enumerates every path removed or modified by feature 006, grouped
 
 | Path | Type | Before lines | After lines | Reason |
 |------|------|--------------|-------------|--------|
-|      |      |              |             |        |
+| `.claude/skills/speckit-superpowers-bridge/SKILL.md` | skill (modified) | 149 | 62 | Per FR-004 + R4: 7-section thin-orchestrator outline (purpose / when to use / 8-step orchestration / boundary rules / cross-agent notes / on failure / logs+snapshots). Removed all references to disposition-matrix, verified-versions, parity-check, validation-pass, recommend-route, emit-skill-invocation, emit-resume-signal, restore-snapshot, distribution-manifest, submission-checklist, cleanup-audit. |
+| `.agents/skills/speckit-superpowers-bridge/SKILL.md` | skill (modified) | 146 | 59 | Identical-content peer (only minor diff: `$speckit-...` vs `/speckit-...` invocation syntax, `Actor codex` vs `Actor claude`). |
 
 ---
 

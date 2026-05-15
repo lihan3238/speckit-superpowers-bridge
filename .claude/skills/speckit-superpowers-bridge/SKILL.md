@@ -1,149 +1,62 @@
 ---
 name: "speckit-superpowers-bridge"
-description: "Execute Spec Kit tasks.md with Superpowers implementation discipline while preserving Spec Kit as the source of truth. Use when .specify/superpowers-handoff.json exists or when asked to bridge Spec Kit tasks to Superpowers."
+description: "Orchestrate native Superpowers skills against a Spec Kit tasks.md. Invoke when .specify/superpowers-handoff.json exists or when the user asks to bridge Spec Kit design artifacts into Superpowers implementation."
 compatibility: "Requires a Spec Kit project with .specify/ and Superpowers skills available in Claude Code."
 argument-hint: "Optional execution guidance"
 user-invocable: true
 disable-model-invocation: false
 ---
 
-# Spec Kit + Superpowers Bridge
+# Spec Kit ↔ Superpowers Bridge (Claude Code peer)
 
-Use `/speckit-speckit-superpowers-bridge-execute` when Spec Kit has produced implementation artifacts and Superpowers should execute them. In this source repository, this local skill mirrors the same protocol for direct development and testing.
+This skill is the **thin orchestrator** between Spec Kit (design) and Superpowers (implementation). It does not implement TDD, debugging, verification, code review, or branch finishing itself — those are native Superpowers skills. The bridge's only job is to invoke them in order against the Spec Kit `tasks.md`.
 
-This is the Claude Code bridge skill at `.claude/skills/speckit-superpowers-bridge/SKILL.md`. Codex uses the sibling bridge skill at `.agents/skills/speckit-superpowers-bridge/SKILL.md`.
+## When to use
 
-Marketplace installs expose the official execute command as `/speckit-speckit-superpowers-bridge-execute` on Claude Code. That generated command is self-contained; this project-local bridge skill mirrors the same protocol for source-repo development.
+- A feature has `spec.md`, `plan.md`, and `tasks.md` in its `specs/<NNN>-…/` directory.
+- The user invoked `/speckit-superpowers-bridge` (or the marketplace-installed `/speckit-speckit-superpowers-bridge-execute`).
+- `.specify/superpowers-handoff.json` exists and points at the feature.
 
-## Ownership Boundary
+## What this skill does
 
-- Spec Kit owns `constitution.md`, `spec.md`, `plan.md`, `tasks.md`, checklists, and analysis.
-- Superpowers owns implementation execution: worktree isolation, TDD, debugging, inline execution, review, verification, and branch finishing.
-- `tasks.md` is the implementation contract. Do not call `speckit.implement`.
-- Do not invoke Superpowers `writing-plans` when Spec Kit `plan.md` and `tasks.md` already exist.
-- Do not invoke Superpowers `brainstorming` for an active Spec Kit feature with `spec.md`, `plan.md`, and `tasks.md`, unless the user explicitly discards those Spec Kit artifacts.
-- Use Superpowers execution skills only as executors of Spec Kit `tasks.md`, not as planners.
-
-## Handoff Loading
-
-1. Read `.specify/superpowers-handoff.json`.
-2. If it is missing or stale, run:
+1. Read `.specify/superpowers-handoff.json` to find `feature_directory`. If status is `complete`, run `auto-archive-handoff.ps1 -Actor claude` first so the new feature begins from `ready`.
+2. Read `<feature_directory>/spec.md`, `plan.md`, `tasks.md`, and `.specify/memory/constitution.md`.
+3. Transition handoff to `executing`:
    ```powershell
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status ready -Actor claude
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -FeatureDirectory <project-relative-path> -ArtifactOwner claude -Actor claude
    ```
-3. Resolve `feature_directory` from the handoff. If it is empty, read `.specify/feature.json`.
-4. Read these files before implementation:
-   - `.specify/memory/constitution.md`
-   - `<feature_directory>/spec.md`
-   - `<feature_directory>/plan.md`
-   - `<feature_directory>/tasks.md`
+4. Invoke `superpowers:executing-plans` against `tasks.md`. That skill drives the per-task loop and dispatches `superpowers:test-driven-development` and `superpowers:systematic-debugging` as needed.
+5. At completion of all tasks, invoke `superpowers:verification-before-completion`.
+6. Invoke `superpowers:requesting-code-review`.
+7. Invoke `superpowers:finishing-a-development-branch`.
+8. Transition handoff to `complete`:
+   ```powershell
+   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status complete -Actor claude
+   ```
 
-If any required feature artifact is missing, set the handoff status to `blocked` and return to Spec Kit.
+## Boundary rules (denied operations)
 
-## Resume Signal
+The hardcoded guard at `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/guard-command.ps1` enforces, and this skill MUST respect:
 
-On session resume, before any other non-tool output, run:
+- Do not run `speckit.implement` while a handoff is `executing`.
+- Do not invoke `superpowers:writing-plans` or `superpowers:brainstorming` when an active Spec Kit feature has `spec.md` and `plan.md`.
+- Do not edit `.specify/memory/constitution.md` while a handoff is `executing` — set the handoff to `blocked` first.
+- Do not add requirements beyond what `spec.md`, `plan.md`, and `tasks.md` already define.
+
+## Cross-agent notes
+
+This skill has an identical-content peer at `.agents/skills/speckit-superpowers-bridge/SKILL.md` for Codex. To hand off mid-feature, the next agent simply re-invokes `/speckit-superpowers-bridge` (Claude Code) or `$speckit-superpowers-bridge` (Codex) on the same repo — the handoff JSON tells it where to pick up. `AGENTS.md` is the master cross-agent protocol; consult it for the language-routing and ownership rules.
+
+## When something goes wrong
+
+If implementation surfaces a missing or wrong requirement, stop and mark the handoff blocked so Spec Kit can repair the design artifacts:
 
 ```powershell
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-resume-signal.ps1
+.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status blocked -Reason "<describe the spec/plan/tasks gap>" -Actor claude
 ```
 
-If `.specify/superpowers-handoff.json.resume_context` is non-null, print that one-line signal first. It names the active task, active Superpowers skill, phase, and next expected action.
+Then return control to the user / Spec Kit. After `/speckit-clarify` or `/speckit-tasks` regenerates the artifacts, re-invoke this skill to resume.
 
-## Autonomous Mode
+## Logs and snapshots
 
-`autonomous_mode` defaults to `false`. When it is `true`, or when `SPECKIT_BRIDGE_AUTONOMOUS=1`, continue across implementation task boundaries without asking for confirmation. Still pause at the named review checkpoints: `superpowers:verification-before-completion`, `superpowers:requesting-code-review`, and `superpowers:finishing-a-development-branch`.
-
-## Execution Rules
-
-1. Set handoff status to `executing` before making implementation changes:
-   ```powershell
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -Actor claude
-   ```
-2. Run the guard before using any potentially overlapping command:
-   ```powershell
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\guard-command.ps1 -Action superpowers.executing-plans -Actor claude
-   ```
-3. Execute `tasks.md` phase by phase and keep checkboxes updated.
-4. Preserve this denylist:
-   - Deny `speckit.implement`
-   - Deny `superpowers:brainstorming`
-   - Deny `superpowers:writing-plans`
-   - Do not add requirements outside Spec Kit artifacts
-5. Before each code-modifying task, persist resume context, record the invocation, and call the Skill tool with `skill: "superpowers:test-driven-development"`:
-   ```powershell
-   $resume = @{ current_task_id = "<T###>"; current_skill = "superpowers:test-driven-development"; current_phase = "before-implementation-task"; next_expected_action = "Start implementation task <T###>" } | ConvertTo-Json -Compress
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor claude
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:test-driven-development -Phase before-implementation-task -TaskId <T###> -Actor claude -Decision invoked -Reason "Start implementation task"
-   ```
-6. On any failure or unexpected behavior, persist resume context, record the invocation, and call the Skill tool with `skill: "superpowers:systematic-debugging"`:
-   ```powershell
-   $resume = @{ current_task_id = "<T###>"; current_skill = "superpowers:systematic-debugging"; current_phase = "on-failure"; next_expected_action = "Investigate failure for <T###>" } | ConvertTo-Json -Compress
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor claude
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:systematic-debugging -Phase on-failure -TaskId <T###> -Actor claude -Decision invoked -Reason "Investigate failure"
-   ```
-7. Before marking a phase complete, persist resume context, record the invocation, and call the Skill tool with `skill: "superpowers:verification-before-completion"`:
-   ```powershell
-   $resume = @{ current_task_id = $null; current_skill = "superpowers:verification-before-completion"; current_phase = "before-phase-completion"; next_expected_action = "Run phase verification" } | ConvertTo-Json -Compress
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor claude
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:verification-before-completion -Phase before-phase-completion -Actor claude -Decision invoked -Reason "Verify phase"
-   ```
-8. Before marking the feature complete, persist resume context before each completion skill, record both completion invocations, and call the Skill tool with `skill: "superpowers:requesting-code-review"`, then `skill: "superpowers:finishing-a-development-branch"`:
-   ```powershell
-   $resume = @{ current_task_id = $null; current_skill = "superpowers:requesting-code-review"; current_phase = "before-feature-completion"; next_expected_action = "Request code review" } | ConvertTo-Json -Compress
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor claude
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:requesting-code-review -Phase before-feature-completion -Actor claude -Decision invoked -Reason "Request review"
-   $resume = @{ current_task_id = $null; current_skill = "superpowers:finishing-a-development-branch"; current_phase = "before-feature-completion"; next_expected_action = "Finish development branch" } | ConvertTo-Json -Compress
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -ResumeContext $resume -Actor claude
-   .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\emit-skill-invocation.ps1 -SkillId superpowers:finishing-a-development-branch -Phase before-feature-completion -Actor claude -Decision invoked -Reason "Finish branch"
-   ```
-9. Do not add requirements beyond `spec.md`, `plan.md`, and `tasks.md`.
-10. If the task list is wrong or incomplete, stop implementation and set:
-    ```powershell
-    .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status blocked -Reason "Describe the Spec Kit artifact gap" -Actor claude
-    ```
-
-## Logs and Rollback
-
-- Handoff updates, snapshots, guard decisions, and rollbacks append events to `.specify/bridge-events.jsonl`.
-- Handoff updates snapshot Spec Kit control artifacts under `.specify/bridge-snapshots/<snapshot-id>/`.
-- Restore a snapshot with:
-  ```powershell
-  .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\restore-snapshot.ps1 -SnapshotId <snapshot-id>
-  ```
-
-## Completion Rules
-
-Only set the handoff to `complete` after all required task checkboxes are complete and fresh verification has passed:
-
-```powershell
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status complete -Actor claude
-```
-
-Report the verification commands and results with the final implementation summary.
-
-## Auto-archive between features
-
-A `complete` handoff for one feature must NOT block contract changes on the next feature. When starting a new feature:
-
-```powershell
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\auto-archive-handoff.ps1 -Actor claude
-```
-
-The helper is idempotent: if the current status is not `complete`, it exits success without changes. When it does fire, it snapshots the prior feature's artifacts, appends an entry to `archive_history` in `superpowers-handoff.json`, clears `feature_directory`/`artifact_owner`/`review_only_agents`, and appends an `auto_archive` event.
-
-When invoking the guard from a known feature context, pass `-TargetFeatureDirectory <project-relative-path>` so the guard can distinguish same-feature requests (still denied when status is `complete`) from cross-feature requests (allowed).
-
-## Parity Check
-
-For non-overlap policy audits, use:
-
-```powershell
-.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\parity-check.ps1 -Json -Actor claude
-```
-
-The check inspects the disposition matrix (`.specify/extensions/speckit-superpowers-bridge/disposition-matrix.json`), verified-versions pin (`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`), per-agent skill parity, and doc-matrix consistency. Exit code 0 = clean; 1 = P0 finding; 2 = P1 finding. See `specs/002-complete-bridge-protocol/contracts/parity-check-contract.md` for the full contract.
-
-## Disposition Matrix
-
-The bridge guard consults `disposition-matrix.json` for every command/skill before falling back to legacy rules. Keep the matrix as the source of truth; do not duplicate policy in the guard or in agent skill files. Adding a new Spec Kit command or Superpowers skill requires an explicit matrix entry — the parity check fails until one is added.
+Every handoff transition and guard decision appends one line to `.specify/bridge-events.jsonl` (append-only). Each handoff write also snapshots Spec Kit artifacts under `.specify/bridge-snapshots/<id>/` (rollback is manual: `cp -r .specify/bridge-snapshots/<id>/* <destination>`).
