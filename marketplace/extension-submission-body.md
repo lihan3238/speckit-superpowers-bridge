@@ -107,8 +107,8 @@ Tested on:
 Release validation:
 
 - `specify --version` -> `specify 0.8.10`
-- Release workflow: https://github.com/lihan3238/speckit-superpowers-bridge/actions/runs/25934883753
-- Release ZIP SHA256: `<filled after v0.4.3 release>`
+- Release workflow: https://github.com/lihan3238/speckit-superpowers-bridge/actions/runs/25955825963
+- Release ZIP SHA256: `d3da5b971b39590c66a21b2a76ab5e9c683528b812dd1ab3a71c8b31d959af01`
 - `scripts/release/validate-release-readiness.ps1 -Version 0.4.3`
 - `tests/test-handoff-shape.ps1`
 - `tests/test-guard-hardcoded-rules.ps1`
@@ -118,8 +118,8 @@ Release validation:
 
 Fresh install smoke:
 
-- Windows + Codex: installed from the v0.4.3 release ZIP; verified short alias, canonical fallbacks, PowerShell handoff, and guard allow/deny decisions.
-- WSL/Linux + Claude: installed from the v0.4.3 release ZIP; verified short alias, canonical fallbacks, bash handoff, and guard allow/deny decisions.
+- Windows + Codex: installed from the v0.4.3 latest alias ZIP; verified short alias, canonical fallbacks, PowerShell handoff, and guard allow/deny decisions.
+- WSL/Linux + Claude: installed from the v0.4.3 latest alias ZIP; verified short alias, canonical fallbacks, bash handoff, and guard allow/deny decisions.
 - ZIP structure: `extension.yml` at archive root; `commands/`, `scripts/powershell/`, and `scripts/bash/` use portable `/` separators.
 
 ### Example Usage
@@ -186,7 +186,7 @@ Claude Code users run the same flow with slash commands:
 
 ### Additional Context
 
-This is the v0.4.3 update for the already accepted `speckit-superpowers-bridge` community catalog entry. The initial listing was accepted via issue #2581 and PR #2586. This update keeps runtime behavior unchanged and makes the official catalog install path the primary user-facing path.
+This is the v0.4.3 update for the already accepted `speckit-superpowers-bridge` community catalog entry. The initial listing was accepted via issue #2581 and PR #2586. This update keeps runtime behavior unchanged, documents the official catalog as the discovery/trust surface, and adds a stable latest-release ZIP alias for the primary user-facing install path.
 
 The bridge combines Spec Kit and Superpowers by keeping their responsibilities separate:
 
