@@ -39,14 +39,18 @@
 
 ## installation
 
-先装 Spec Kit。然后任选下列三种路径之一。
+先装 Spec Kit。本插件已收录到官方 Spec Kit community catalog，catalog 用于发现和审阅：
+
+官方收录页：[docs/community/extensions.md](https://github.com/github/spec-kit/blob/main/docs/community/extensions.md)（通过 [issue #2581](https://github.com/github/spec-kit/issues/2581) 和 [PR #2586](https://github.com/github/spec-kit/pull/2586) 接受）。
+
+community catalog 默认是 discovery-only，所以正常安装使用稳定的 latest-release ZIP：
 
 ### 纯 Codex
 
 ```powershell
 specify init my-project --integration codex
 cd my-project
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.1/speckit-superpowers-bridge-v0.4.1.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip
 ```
 
 无 Claude Code 依赖。桥完全跑在 Codex 的 `$speckit-*` 调用面上。
@@ -56,7 +60,7 @@ specify extension add speckit-superpowers-bridge --from https://github.com/lihan
 ```powershell
 specify init my-project --integration claude
 cd my-project
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.1/speckit-superpowers-bridge-v0.4.1.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip
 ```
 
 无 Codex 依赖。桥跑在 Claude Code 的 `/speckit-*` 斜杠命令上。
@@ -67,7 +71,7 @@ specify extension add speckit-superpowers-bridge --from https://github.com/lihan
 specify init my-project --integration claude         # 或 --integration codex
 cd my-project
 specify integration install codex                     # 反之 'claude'
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.1/speckit-superpowers-bridge-v0.4.1.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip
 ```
 
 `.agents/skills/`（Codex）与 `.claude/skills/`（Claude Code）都会拿到桥的同名 skill 文件。一边设计、一边实现，只需切换 Tab。
@@ -78,6 +82,14 @@ specify extension add speckit-superpowers-bridge --from https://github.com/lihan
 
 ```powershell
 specify extension add --dev .\.specify\extensions\speckit-superpowers-bridge
+```
+
+### 固定版本安装
+
+如果你需要可复现地安装某个精确版本，使用固定 ZIP：
+
+```powershell
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.3/speckit-superpowers-bridge-v0.4.3.zip
 ```
 
 ## prerequisites
@@ -167,7 +179,7 @@ v0.2.x 中存在的 6 个元命令（`audit`、`validate`、`parity`、`recommen
 |---|---|---|
 | `handoff stuck in executing` | 上一次桥执行在转 `complete`/`blocked` 之前被中断 | 检查 `superpowers-handoff.json`；若工作确实做完了，运行 `update-handoff.ps1 -Status complete`；若被放弃，`-Status blocked -Reason "abandoned"` |
 | `missing per-agent peer skill` | 一边的 `.X/skills/<id>` 存在但另一边不存在 | 把存在那一侧的 SKILL.md 镜像过去；或删掉孤立项 |
-| 只看到长的 `speckit-speckit-superpowers-bridge-*` skills | 安装的是 `v0.4.0-rc.1` 或更旧包，当时还没有 execute alias | 升级到 `v0.4.1` 或更新版本；短执行入口是 `$speckit-superpowers-bridge` / `/speckit-superpowers-bridge` |
+| 只看到长的 `speckit-speckit-superpowers-bridge-*` skills | 安装的是 `v0.4.0-rc.1` 或更旧包，当时还没有 execute alias | 使用上面的 latest-release ZIP 命令升级；短执行入口是 `$speckit-superpowers-bridge` / `/speckit-superpowers-bridge` |
 | Windows 下 `specify extension info` 抛 `UnicodeEncodeError` | 旧 GBK 控制台无法渲染 Rich 的 bullet 字符 | 运行 `chcp 65001` 或把 PowerShell 输出设为 UTF-8。这是 Spec Kit CLI 显示问题，不是桥安装失败 |
 | guard 拒绝了一个你没预期的命令 | `guard-command.ps1` 里 5 条硬编码规则之一触发了 | 阅读 guard 打印的拒绝原因；规则集很小、可读 |
 | 老安装写的 handoff JSON 含 v3 字段 | 0.3.0 前的 handoff 里有 `autonomous_mode` / `resume_context` / `archive_history` | 无需操作。0.3.0 桥会容忍读、下次写入时静默丢弃。 |

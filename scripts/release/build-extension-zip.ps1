@@ -15,6 +15,7 @@ $stageRoot = Join-Path ([System.IO.Path]::GetTempPath()) "speckit-superpowers-br
 $stageDir = $stageRoot
 $distDir = Join-Path $repoRoot "dist"
 $outZip = Join-Path $distDir "speckit-superpowers-bridge-v$Version.zip"
+$latestZip = Join-Path $distDir "speckit-superpowers-bridge.zip"
 if (-not (Test-Path -LiteralPath $distDir)) { New-Item -ItemType Directory -Force -Path $distDir | Out-Null }
 
 # Clean stage
@@ -46,6 +47,7 @@ if ($manifest -notmatch "version:\s*[`"']?$([regex]::Escape($Version))[`"']?\b")
 # even when this script runs on Windows; Linux/macOS installers require real
 # directory entries, not filenames containing backslashes.
 if (Test-Path -LiteralPath $outZip) { Remove-Item -Force -LiteralPath $outZip }
+if (Test-Path -LiteralPath $latestZip) { Remove-Item -Force -LiteralPath $latestZip }
 Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $zip = [System.IO.Compression.ZipFile]::Open($outZip, [System.IO.Compression.ZipArchiveMode]::Create)
@@ -97,7 +99,9 @@ try {
 # Report
 $sha = (Get-FileHash -LiteralPath $outZip -Algorithm SHA256).Hash.ToLower()
 $size = [Math]::Round((Get-Item -LiteralPath $outZip).Length / 1KB, 1)
+Copy-Item -LiteralPath $outZip -Destination $latestZip
 Write-Output "Built: $outZip"
+Write-Output "Alias: $latestZip"
 Write-Output "Size:  $size KB"
 Write-Output "SHA256: $sha"
 

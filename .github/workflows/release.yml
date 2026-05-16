@@ -73,18 +73,21 @@ jobs:
           gh release create "$GITHUB_REF_NAME" \
             --title "$GITHUB_REF_NAME" \
             --notes-file release-notes.md \
-            "dist/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip"
+            "dist/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip" \
+            "dist/speckit-superpowers-bridge.zip"
 
       - name: Summary
         shell: pwsh
         run: |
           $sha = (Get-FileHash -LiteralPath "dist/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip" -Algorithm SHA256).Hash.ToLower()
           $url = "https://github.com/${{ github.repository }}/releases/download/$env:GITHUB_REF_NAME/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip"
+          $latestUrl = "https://github.com/${{ github.repository }}/releases/latest/download/speckit-superpowers-bridge.zip"
           $summary = @"
           ## Release published
 
           - Tag: $env:GITHUB_REF_NAME
           - Asset URL: $url
+          - Latest alias URL: $latestUrl
           - SHA256: $sha
 
           ### Next manual step (cross-repo)

@@ -10,7 +10,7 @@ Superpowers Implementation Bridge
 
 ### Version
 
-0.4.2
+0.4.3
 
 ### Description
 
@@ -26,7 +26,11 @@ https://github.com/lihan3238/speckit-superpowers-bridge
 
 ### Download URL
 
-https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.2/speckit-superpowers-bridge-v0.4.2.zip
+https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.3/speckit-superpowers-bridge-v0.4.3.zip
+
+Stable latest alias:
+
+https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip
 
 ### License
 
@@ -104,8 +108,8 @@ Release validation:
 
 - `specify --version` -> `specify 0.8.10`
 - Release workflow: https://github.com/lihan3238/speckit-superpowers-bridge/actions/runs/25934883753
-- Release ZIP SHA256: `1758f75296f2de7ce1399bd91765c719d50a99700ce852a621a59cb6704e7cf2`
-- `scripts/release/validate-release-readiness.ps1 -Version 0.4.2`
+- Release ZIP SHA256: `<filled after v0.4.3 release>`
+- `scripts/release/validate-release-readiness.ps1 -Version 0.4.3`
 - `tests/test-handoff-shape.ps1`
 - `tests/test-guard-hardcoded-rules.ps1`
 - `tests/test-claude-codex-skill-parity.ps1`
@@ -114,8 +118,8 @@ Release validation:
 
 Fresh install smoke:
 
-- Windows + Codex: installed from the v0.4.2 release ZIP; verified short alias, canonical fallbacks, PowerShell handoff, and guard allow/deny decisions.
-- WSL/Linux + Claude: installed from the v0.4.2 release ZIP; verified short alias, canonical fallbacks, bash handoff, and guard allow/deny decisions.
+- Windows + Codex: installed from the v0.4.3 release ZIP; verified short alias, canonical fallbacks, PowerShell handoff, and guard allow/deny decisions.
+- WSL/Linux + Claude: installed from the v0.4.3 release ZIP; verified short alias, canonical fallbacks, bash handoff, and guard allow/deny decisions.
 - ZIP structure: `extension.yml` at archive root; `commands/`, `scripts/powershell/`, and `scripts/bash/` use portable `/` separators.
 
 ### Example Usage
@@ -123,7 +127,7 @@ Fresh install smoke:
 ```powershell
 specify init my-project --integration codex
 cd my-project
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.2/speckit-superpowers-bridge-v0.4.2.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip
 
 $speckit-specify
 $speckit-clarify
@@ -151,20 +155,19 @@ Claude Code users run the same flow with slash commands:
     "name": "Superpowers Implementation Bridge",
     "description": "Thin orchestrator between Spec Kit (design) and Superpowers (implementation). Cross-agent.",
     "author": "lihan3238",
-    "version": "0.4.2",
+    "version": "0.4.3",
     "license": "MIT",
     "repository": "https://github.com/lihan3238/speckit-superpowers-bridge",
     "homepage": "https://github.com/lihan3238/speckit-superpowers-bridge",
     "documentation": "https://github.com/lihan3238/speckit-superpowers-bridge#readme",
     "changelog": "https://github.com/lihan3238/speckit-superpowers-bridge/blob/main/CHANGELOG.md",
-    "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.2/speckit-superpowers-bridge-v0.4.2.zip",
+    "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.3/speckit-superpowers-bridge-v0.4.3.zip",
     "requires": {
       "speckit_version": ">=0.8.10",
       "tools": [
-        { "name": "powershell", "version": ">=5.1", "required": false, "description": "Windows runtime flavor" },
-        { "name": "bash", "version": ">=4.0", "required": false, "description": "Linux/macOS runtime flavor" },
-        { "name": "jq", "version": ">=1.6", "required": false, "description": "Required by the bash runtime flavor" },
-        { "name": "git", "version": ">=2.30", "required": false, "description": "Recommended for branch/worktree discipline" }
+        { "name": "powershell", "version": ">=5.1", "required": false },
+        { "name": "bash", "version": ">=4.0", "required": false },
+        { "name": "jq", "version": ">=1.6", "required": false }
       ]
     },
     "provides": {
@@ -183,7 +186,7 @@ Claude Code users run the same flow with slash commands:
 
 ### Additional Context
 
-This is the clean v0.4.2 submission for `speckit-superpowers-bridge`. It supersedes the older exploratory issue #2575, whose body and comments describe earlier pre-trim releases.
+This is the v0.4.3 update for the already accepted `speckit-superpowers-bridge` community catalog entry. The initial listing was accepted via issue #2581 and PR #2586. This update keeps runtime behavior unchanged and makes the official catalog install path the primary user-facing path.
 
 The bridge combines Spec Kit and Superpowers by keeping their responsibilities separate:
 

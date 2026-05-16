@@ -6,6 +6,23 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 > **AI-assistance disclosure**: This extension is developed with AI coding assistants (Claude Code for design + planning, Codex for implementation passes, Claude Code for the v0.3.0 trim), per the AI-disclosure requirement in [Spec Kit CONTRIBUTING.md](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md). Every artifact passes human review before commit. As of v0.3.0 the verification surface is three retained smoke tests under `tests/`.
 
+## [0.4.3] - 2026-05-16
+
+Official catalog distribution polish. No bridge runtime behavior changed.
+
+### Changed
+
+- README install instructions now present the official Spec Kit community catalog as the discovery/trust surface, while using the stable latest-release ZIP URL for default installs because the community catalog is discovery-only by default.
+- Release automation now uploads both the versioned ZIP and a stable `speckit-superpowers-bridge.zip` alias, enabling `https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip`.
+- Version-pinned ZIP installation remains documented for reproducible installs.
+- Marketplace materials were updated for the accepted official listing flow: initial listing accepted in github/spec-kit issue #2581 and PR #2586, future updates go through a new Extension Submission issue as an existing-entry update.
+- `marketplace/extensions-readme-row.md` now matches the current upstream `docs/community/extensions.md` table shape: Name, Description, Category, Permissions, Repository.
+- Tool metadata was slimmed to the official accepted catalog shape: optional PowerShell, bash, and jq only. Git remains recommended workflow discipline but is not declared as an extension runtime tool.
+
+### Compatibility
+
+Functionally identical to v0.4.2. Users on v0.4.1 or v0.4.2 may upgrade directly; no migration required.
+
 ## [0.4.2] - 2026-05-16
 
 Patch / cleanup release with no new bridge capability. This release closes the v0.4.0 → v0.4.1 cleanup tail by addressing **B1**, **B2**, **C1**, **C4**, and **US4** — the five items left open after v0.4.1's marketplace alignment. The bridge runtime (handoff, guard, auto-archive, actor resolution) is byte-frozen aside from one surgical SKILL.md edit (B1).
@@ -287,7 +304,8 @@ Hooks in `.specify/extensions.yml`:
 - AGENTS.md as the master cross-agent protocol; CLAUDE.md as the Claude-specific supplement.
 - Constitution (`.specify/memory/constitution.md`) ratifying 5 principles: lightweight & repo-local, design/implementation separation, agent-neutral protocol, smooth bidirectional handoff, vendor-managed boundaries.
 
-[Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v0.4.3...HEAD
+[0.4.3]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.3
 [0.4.2]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.2
 [0.4.1]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.1
 [0.4.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.0

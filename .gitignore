@@ -55,3 +55,4 @@ docs/
 .specify/workflows/workflow-registry.json
 .specify/workflows/*/workflow.yml
 .specify/extensions/.registry
+.specify/extensions/.cache/

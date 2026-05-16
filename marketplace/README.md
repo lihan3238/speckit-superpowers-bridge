@@ -1,20 +1,20 @@
 # marketplace/
 
-This directory holds the **submission-ready artifacts** for listing this extension in the [Spec Kit community catalog](https://github.com/github/spec-kit/blob/main/extensions/catalog.community.json).
+This directory holds the **submission-ready artifacts** for listing and updating this extension in the [Spec Kit community catalog](https://github.com/github/spec-kit/blob/main/extensions/catalog.community.json).
 
 Contents:
 
 | File | Purpose |
 |---|---|
-| `catalog-entry.json` | The JSON object pasted into upstream `extensions/catalog.community.json` by the Spec Kit maintainer. |
-| `extensions-readme-row.md` | The Markdown table row pasted into upstream `extensions/README.md` by the maintainer. |
-| `extension-submission-body.md` | Clean final Extension Submission issue body. It leads with the bridge philosophy and contains the mandated AI-assistance disclosure paragraph per Spec Kit CONTRIBUTING.md. |
+| `catalog-entry.json` | The JSON object proposed for upstream `extensions/catalog.community.json`. |
+| `extensions-readme-row.md` | The Markdown table row proposed for upstream `docs/community/extensions.md`. |
+| `extension-submission-body.md` | Extension Submission issue body for a new listing or existing-entry update. It leads with the bridge philosophy and contains the mandated AI-assistance disclosure paragraph per Spec Kit CONTRIBUTING.md. |
 
 These files are **source-repo only** - they describe the extension to the upstream maintainer, and they are NOT installed into host projects when a user adds this extension.
 
 ## Release workflow (automated via `.github/workflows/release.yml`)
 
-Per the upstream [EXTENSION-PUBLISHING-GUIDE](https://github.com/github/spec-kit/blob/main/extensions/EXTENSION-PUBLISHING-GUIDE.md), community-extension submissions go **through an issue template**, not a fork+PR. The release-asset build + publish flow is automated; the cross-repo issue comment stays manual.
+Per the upstream [EXTENSION-PUBLISHING-GUIDE](https://github.com/github/spec-kit/blob/main/extensions/EXTENSION-PUBLISHING-GUIDE.md), community-extension submissions and updates go **through an issue template**, not a fork+PR. The release-asset build + publish flow is automated; the cross-repo issue stays manual.
 
 **Manual pre-tag steps (do these all in one commit on `main`):**
 
@@ -42,16 +42,16 @@ git push origin vX.Y.Z
 3. Run release-tooling self-tests (`scripts/release/test-*.ps1`).
 4. Build the ZIP via `scripts/release/build-extension-zip.ps1`.
 5. Extract `[X.Y.Z]` section from `CHANGELOG.md` as release notes.
-6. `gh release create` with notes + ZIP attached.
-7. Print SHA256 + asset URL in the workflow's GitHub Step Summary.
+6. `gh release create` with notes, the versioned ZIP, and the stable `speckit-superpowers-bridge.zip` alias attached.
+7. Print SHA256, versioned asset URL, and latest-alias URL in the workflow's GitHub Step Summary.
 
 The workflow is sequential - any failure stops the release before the asset is published. Local dry-run is supported: each script can be invoked manually with the same arguments the workflow uses.
 
 **Manual post-release step (cross-repo, intentionally not automated):**
 
-8. Open a clean catalog-submission issue at github/spec-kit via the **[Extension Submission template](https://github.com/github/spec-kit/issues/new?template=extension_submission.yml)**. Use `marketplace/extension-submission-body.md` as the issue body, paste `catalog-entry.json` into the "Proposed Catalog Entry" section, and copy the vX.Y.Z ZIP SHA256 from the GitHub release asset into the testing details.
-9. Close any stale superseded submission issue with a short pointer to the clean issue. Do not delete history.
-10. The Spec Kit maintainer reviews and updates `catalog.community.json` directly. **Do NOT open a PR against `catalog.community.json`** - the upstream guide explicitly forbids that.
+8. Open a catalog-submission issue at github/spec-kit via the **[Extension Submission template](https://github.com/github/spec-kit/issues/new?template=extension_submission.yml)**. If the extension is already listed, state that this is an **existing-entry update** and include the current accepted issue/PR links for traceability.
+9. Use `marketplace/extension-submission-body.md` as the issue body, paste `catalog-entry.json` into the "Proposed Catalog Entry" section, and copy the vX.Y.Z ZIP SHA256 from the GitHub release asset into the testing details.
+10. The Spec Kit maintainer reviews and updates `catalog.community.json` directly. **Do NOT open a PR against `catalog.community.json`** - the upstream guide explicitly requires issue-based submissions.
 
 ### Why hand-built ZIP (not auto-archive)?
 
