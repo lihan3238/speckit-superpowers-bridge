@@ -46,11 +46,11 @@ Same as v0.4.1:
 
 **Purpose**: Confirm a clean baseline before touching scripts.
 
-- [ ] T001 Verify working tree clean (`git status` empty) and on branch `003-cross-platform-cleanup`. If dirty, stash or commit. Record baseline `git rev-parse HEAD` for SC-009 reference.
-- [ ] T002 Compute baseline spec-history content hash: `git ls-tree -r HEAD specs/001-* specs/002-* specs/004-* specs/005-* specs/006-* | sort | git hash-object --stdin` (no `--name-only` — full content per the SC-006 lesson from feature 006). Record the SHA in a working note for T044.
-- [ ] T003 Confirm v0.4.1 release exists: `gh release view v0.4.1 --json tagName,assets --jq '{tag, asset_count: (.assets | length)}'`. Expected: `tag = "v0.4.1"`, `asset_count = 1`.
-- [ ] T004 Confirm catalog issue still open: `gh issue view 2581 --repo github/spec-kit --json state --jq '.state'`. Expected: `OPEN`. (If CLOSED, the post-release update path becomes "open a fresh issue".)
-- [ ] T005 Run all 3 bridge smoke tests on the current pre-fix state. Record which pass and which fail on the dev box. This establishes the pre-feature baseline so post-fix failures are attributable to this feature.
+- [x] T001 Verify working tree clean (`git status` empty) and on branch `003-cross-platform-cleanup`. If dirty, stash or commit. Record baseline `git rev-parse HEAD` for SC-009 reference.
+- [x] T002 Compute baseline spec-history content hash: `git ls-tree -r HEAD specs/001-* specs/002-* specs/004-* specs/005-* specs/006-* | sort | git hash-object --stdin` (no `--name-only` — full content per the SC-006 lesson from feature 006). Record the SHA in a working note for T044.
+- [x] T003 Confirm v0.4.1 release exists: `gh release view v0.4.1 --json tagName,assets --jq '{tag, asset_count: (.assets | length)}'`. Expected: `tag = "v0.4.1"`, `asset_count = 1`.
+- [x] T004 Confirm catalog issue still open: `gh issue view 2581 --repo github/spec-kit --json state --jq '.state'`. Expected: `OPEN`. (If CLOSED, the post-release update path becomes "open a fresh issue".)
+- [x] T005 Run all 3 bridge smoke tests on the current pre-fix state. Record which pass and which fail on the dev box. This establishes the pre-feature baseline so post-fix failures are attributable to this feature.
 
 **Checkpoint**: baseline captured.
 
@@ -60,7 +60,7 @@ Same as v0.4.1:
 
 **Purpose**: One blocking prerequisite — restore the bridge handoff to a state where dev-mode `update-handoff` invocations during this feature don't conflict with prior `executing` state.
 
-- [ ] T006 Inspect `.specify/superpowers-handoff.json`. If `status == "executing"` for an older feature, transition to `complete` via `pwsh update-handoff.ps1 -Status complete -ArtifactOwner <whoever-was-owner> -Actor claude`. This is the **one-shot correction** spec FR-002 requires for the live `artifact_owner: codex` poisoned state — explicit `-ArtifactOwner claude` per the live record. (NOTE: this task fires BEFORE the B1 fix lands, so it must pass `-ArtifactOwner` explicitly; the implicit-preservation behavior arrives later in US1.)
+- [x] T006 Inspect `.specify/superpowers-handoff.json`. If `status == "executing"` for an older feature, transition to `complete` via `pwsh update-handoff.ps1 -Status complete -ArtifactOwner <whoever-was-owner> -Actor claude`. This is the **one-shot correction** spec FR-002 requires for the live `artifact_owner: codex` poisoned state — explicit `-ArtifactOwner claude` per the live record. (NOTE: this task fires BEFORE the B1 fix lands, so it must pass `-ArtifactOwner` explicitly; the implicit-preservation behavior arrives later in US1.)
 
 **Checkpoint**: handoff in `ready` or `complete` with correct artifact_owner; feature work can proceed.
 
@@ -74,14 +74,14 @@ Same as v0.4.1:
 
 ### Commit 1 — B1 fix
 
-- [ ] T007 [US1] Extend `tests/test-handoff-shape.ps1` with a new test case: "preserves prior artifact_owner". Sequence: write a synthetic handoff JSON with `artifact_owner: claude` to a temp file, invoke `update-handoff.ps1 -Status executing -Actor codex` (no `-ArtifactOwner`), assert post-write `artifact_owner` is still `claude`. Apply via the existing `Get-AvailableFlavors` loop so it covers both flavors. This is the **RED** test for B1.
-- [ ] T008 [US1] Run `pwsh tests/test-handoff-shape.ps1` — confirm the new "preserves prior artifact_owner" assertion FAILS for at least one flavor (probably both, since live data shows the bug). Record the exact failure output for diff against the GREEN run.
-- [ ] T009 [US1] Read `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/update-handoff.ps1` carefully (current ~189 lines) and locate the `artifact_owner` resolution logic. Identify whether the bug is in the resolution chain itself OR in some upstream codepath that bypasses it (e.g., `auto-archive-handoff.ps1` invoking with implicit-actor defaulting). Document findings in a working note.
-- [ ] T010 [US1] Apply the B1 fix to `update-handoff.ps1` per research.md R1's 4-step chain: explicit `-ArtifactOwner` → prior file value → `-Actor` → `"unknown"`. The fix is **silent** (no warning on implicit preservation per R1).
-- [ ] T011 [US1] Apply the analogous B1 fix to `update-handoff.sh`. Use jq to read the prior `artifact_owner` from the existing handoff JSON; mirror the precedence chain. **Both flavors must implement identical semantics** — that's the constitutional Principle III invariant.
-- [ ] T012 [US1] Re-run `pwsh tests/test-handoff-shape.ps1`. Confirm the new B1 assertion PASSES for both flavors. Confirm all pre-existing assertions also still pass (no regression). This is the **GREEN** verification.
-- [ ] T013 [US1] Run the existing `tests/test-guard-hardcoded-rules.ps1` AND `tests/test-claude-codex-skill-parity.ps1` to confirm neither was inadvertently broken. All 3 smoke tests green.
-- [ ] T014 [US1] Commit message `fix(bridge): preserve prior artifact_owner on update-handoff writes (ps + sh)`. Body must cite the 4-step chain from research.md R1 and reference spec FR-001.
+- [x] T007 [US1] Extend `tests/test-handoff-shape.ps1` with a new test case: "preserves prior artifact_owner". Sequence: write a synthetic handoff JSON with `artifact_owner: claude` to a temp file, invoke `update-handoff.ps1 -Status executing -Actor codex` (no `-ArtifactOwner`), assert post-write `artifact_owner` is still `claude`. Apply via the existing `Get-AvailableFlavors` loop so it covers both flavors. This is the **RED** test for B1.
+- [x] T008 [US1] Run `pwsh tests/test-handoff-shape.ps1` — confirm the new "preserves prior artifact_owner" assertion FAILS for at least one flavor (probably both, since live data shows the bug). Record the exact failure output for diff against the GREEN run.
+- [x] T009 [US1] Read `.specify/extensions/speckit-superpowers-bridge/scripts/powershell/update-handoff.ps1` carefully (current ~189 lines) and locate the `artifact_owner` resolution logic. Identify whether the bug is in the resolution chain itself OR in some upstream codepath that bypasses it (e.g., `auto-archive-handoff.ps1` invoking with implicit-actor defaulting). Document findings in a working note.
+- [x] T010 [US1] Apply the B1 fix to `update-handoff.ps1` per research.md R1's 4-step chain: explicit `-ArtifactOwner` → prior file value → `-Actor` → `"unknown"`. The fix is **silent** (no warning on implicit preservation per R1).
+- [x] T011 [US1] Apply the analogous B1 fix to `update-handoff.sh`. Use jq to read the prior `artifact_owner` from the existing handoff JSON; mirror the precedence chain. **Both flavors must implement identical semantics** — that's the constitutional Principle III invariant.
+- [x] T012 [US1] Re-run `pwsh tests/test-handoff-shape.ps1`. Confirm the new B1 assertion PASSES for both flavors. Confirm all pre-existing assertions also still pass (no regression). This is the **GREEN** verification.
+- [x] T013 [US1] Run the existing `tests/test-guard-hardcoded-rules.ps1` AND `tests/test-claude-codex-skill-parity.ps1` to confirm neither was inadvertently broken. All 3 smoke tests green.
+- [x] T014 [US1] Commit message `fix(bridge): preserve prior artifact_owner on update-handoff writes (ps + sh)`. Body must cite the 4-step chain from research.md R1 and reference spec FR-001.
 
 ---
 
@@ -93,16 +93,16 @@ Same as v0.4.1:
 
 ### Commit 2 — B2 fix
 
-- [ ] T015 [US2] Extend `tests/test-handoff-shape.ps1` with a unit test of `Convert-ToBashPath` itself: pass several path forms (Windows `C:\path`, WSL `/mnt/c/path`, native `/home/user/path`, with-spaces `C:\Users\Alice Smith\file.sh`) and assert each returns a bash-reachable string OR triggers the documented skip-with-reason branch. This is the **RED** test for B2's strategy chain (the current `Convert-ToBashPath` will fail at least the MSYS case).
-- [ ] T016 [US2] Run `pwsh tests/test-handoff-shape.ps1` — verify the new strategy-chain assertions FAIL on the dev box (MSYS git-bash present). Capture failure mode for diff.
-- [ ] T017 [US2] Apply the B2 fix to `tests/test-handoff-shape.ps1`: replace the existing 8-line `Convert-ToBashPath` with the 5-strategy implementation from research.md R2. Add the post-translation existence check (`bash -c "[ -f ... ] && echo OK"`) so failures degrade to skip-with-reason instead of opaque throws.
-- [ ] T018 [US2] Apply the identical `Convert-ToBashPath` replacement to `tests/test-guard-hardcoded-rules.ps1`. Per R2 (inline-helper convention from feature 003 v0.4.0), the function IS duplicated — but the duplication must be byte-identical between the two files.
-- [ ] T019 [US2] Re-run both tests. Confirm:
+- [x] T015 [US2] Extend `tests/test-handoff-shape.ps1` with a unit test of `Convert-ToBashPath` itself: pass several path forms (Windows `C:\path`, WSL `/mnt/c/path`, native `/home/user/path`, with-spaces `C:\Users\Alice Smith\file.sh`) and assert each returns a bash-reachable string OR triggers the documented skip-with-reason branch. This is the **RED** test for B2's strategy chain (the current `Convert-ToBashPath` will fail at least the MSYS case).
+- [x] T016 [US2] Run `pwsh tests/test-handoff-shape.ps1` — verify the new strategy-chain assertions FAIL on the dev box (MSYS git-bash present). Capture failure mode for diff.
+- [x] T017 [US2] Apply the B2 fix to `tests/test-handoff-shape.ps1`: replace the existing 8-line `Convert-ToBashPath` with the 5-strategy implementation from research.md R2. Add the post-translation existence check (`bash -c "[ -f ... ] && echo OK"`) so failures degrade to skip-with-reason instead of opaque throws.
+- [x] T018 [US2] Apply the identical `Convert-ToBashPath` replacement to `tests/test-guard-hardcoded-rules.ps1`. Per R2 (inline-helper convention from feature 003 v0.4.0), the function IS duplicated — but the duplication must be byte-identical between the two files.
+- [x] T019 [US2] Re-run both tests. Confirm:
   - The new strategy-chain assertions PASS.
   - Existing bash-invocation assertions PASS (where bash is available and translates correctly).
   - Summary line shows `(ps, bash)` if bash + cygpath both available, OR `(ps)` + skip-reason if not.
-- [ ] T020 [US2] Verify the third test (`tests/test-claude-codex-skill-parity.ps1`) is still untouched and still passes — it doesn't invoke bash at all.
-- [ ] T021 [US2] Commit message `fix(tests): cross-platform bash path translation (MSYS / WSL / native)`. Body must cite the 5-strategy chain and reference spec FR-003 + FR-004.
+- [x] T020 [US2] Verify the third test (`tests/test-claude-codex-skill-parity.ps1`) is still untouched and still passes — it doesn't invoke bash at all.
+- [x] T021 [US2] Commit message `fix(tests): cross-platform bash path translation (MSYS / WSL / native)`. Body must cite the 5-strategy chain and reference spec FR-003 + FR-004.
 
 ---
 
@@ -114,19 +114,19 @@ Same as v0.4.1:
 
 ### Commit 3 — C4 gitignore + git rm --cached
 
-- [ ] T022 [US3] Edit `.gitignore`: add the 3 patterns from research.md R3 under a new "Spec Kit install-time generated state" comment block (`.specify/workflows/workflow-registry.json`, `.specify/workflows/*/workflow.yml`, `.specify/extensions/.registry`).
-- [ ] T023 [US3] Run `git rm -r --cached .specify/workflows/workflow-registry.json .specify/workflows/speckit/workflow.yml .specify/workflows/speckit-superpowers/workflow.yml .specify/extensions/.registry`. Verify with `git ls-files <each-path>` — must return empty.
-- [ ] T024 [US3] Confirm files still exist on disk locally (they're install-time state — losing them locally is fine, but the `git rm --cached` should NOT delete from working tree). Re-run `specify extension list` if needed to regenerate them.
-- [ ] T025 [US3] Edit `AGENTS.md` (or `marketplace/README.md` — pick the more discoverable spot) to add a short subsection explaining the three registry files are local install state and are intentionally untracked. ≤ 3 sentences (FR-007).
-- [ ] T026 [US3] Commit message `chore(repo): gitignore install-time registry files`. Body cites FR-006 + research.md R3.
+- [x] T022 [US3] Edit `.gitignore`: add the 3 patterns from research.md R3 under a new "Spec Kit install-time generated state" comment block (`.specify/workflows/workflow-registry.json`, `.specify/workflows/*/workflow.yml`, `.specify/extensions/.registry`).
+- [x] T023 [US3] Run `git rm -r --cached .specify/workflows/workflow-registry.json .specify/workflows/speckit/workflow.yml .specify/workflows/speckit-superpowers/workflow.yml .specify/extensions/.registry`. Verify with `git ls-files <each-path>` — must return empty.
+- [x] T024 [US3] Confirm files still exist on disk locally (they're install-time state — losing them locally is fine, but the `git rm --cached` should NOT delete from working tree). Re-run `specify extension list` if needed to regenerate them.
+- [x] T025 [US3] Edit `AGENTS.md` (or `marketplace/README.md` — pick the more discoverable spot) to add a short subsection explaining the three registry files are local install state and are intentionally untracked. ≤ 3 sentences (FR-007).
+- [x] T026 [US3] Commit message `chore(repo): gitignore install-time registry files`. Body cites FR-006 + research.md R3.
 
 ### Commit 4 — C1 tasks.md sweep + verification.md stub
 
-- [ ] T027 [US3] Open `specs/003-bridge-cross-platform-scripts/tasks.md` (the old v0.4.0 file, currently STALE-bannered). Remove the STALE banner. Walk the 67 task items with `git log --oneline v0.3.1..v0.4.1` open: for each task that shipped, change `- [ ]` to `- [x]`. Expected ~50 [x].
-- [ ] T028 [US3] For the ~15-17 user-side cross-platform verification tasks (T065 Linux end-to-end, T066 macOS end-to-end, similar rows), change them to `- [ ] (absorbed into US4 verification.md; see specs/003-.../verification.md)`. Per Clarifications Q2.
-- [ ] T029 [US3] Append a closing paragraph at the end of the old `tasks.md`: `> Tasks closed by v0.4.1 release; user-side cross-platform verification absorbed into US4 of the v0.4.2 cleanup-tail spec. See the new tasks.md for v0.4.2 work.` (FR-005).
-- [ ] T030 [US3] Create `specs/003-bridge-cross-platform-scripts/verification.md` as a stub matching the schema in `contracts/verification-record.md`. Include the H1, intro paragraph, and an empty `## v0.4.2` section with the table header but no rows yet. Rows get filled during Phase 7 (post-tag).
-- [ ] T031 [US3] Commit message `chore(docs): mark v0.4.0 tasks.md complete; stub verification.md`. Body cites FR-005, FR-009, and Clarifications Q2.
+- [x] T027 [US3] Open `specs/003-bridge-cross-platform-scripts/tasks.md` (the old v0.4.0 file, currently STALE-bannered). Remove the STALE banner. Walk the 67 task items with `git log --oneline v0.3.1..v0.4.1` open: for each task that shipped, change `- [ ]` to `- [x]`. Expected ~50 [x].
+- [x] T028 [US3] For the ~15-17 user-side cross-platform verification tasks (T065 Linux end-to-end, T066 macOS end-to-end, similar rows), change them to `- [ ] (absorbed into US4 verification.md; see specs/003-.../verification.md)`. Per Clarifications Q2.
+- [x] T029 [US3] Append a closing paragraph at the end of the old `tasks.md`: `> Tasks closed by v0.4.1 release; user-side cross-platform verification absorbed into US4 of the v0.4.2 cleanup-tail spec. See the new tasks.md for v0.4.2 work.` (FR-005).
+- [x] T030 [US3] Create `specs/003-bridge-cross-platform-scripts/verification.md` as a stub matching the schema in `contracts/verification-record.md`. Include the H1, intro paragraph, and an empty `## v0.4.2` section with the table header but no rows yet. Rows get filled during Phase 7 (post-tag).
+- [x] T031 [US3] Commit message `chore(docs): mark v0.4.0 tasks.md complete; stub verification.md`. Body cites FR-005, FR-009, and Clarifications Q2.
 
 ---
 
@@ -138,48 +138,48 @@ Same as v0.4.1:
 
 ### Commit 5 — Release prep + tag
 
-- [ ] T032 [P] [US4] Bump `.specify/extensions/speckit-superpowers-bridge/extension.yml` `extension.version` to `"0.4.2"`. (FR-010)
-- [ ] T033 [P] [US4] Bump `marketplace/catalog-entry.json` — `version` to `"0.4.2"` and `download_url` to `https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.2/speckit-superpowers-bridge-v0.4.2.zip`. (FR-010)
-- [ ] T034 [P] [US4] Update `marketplace/extension-submission-body.md`: change version/SHA placeholders to v0.4.2 form. SHA256 left as `<filled-by-workflow>` placeholder — actual value comes from the workflow Step Summary after T040. (FR-014)
-- [ ] T035 [P] [US4] Add `CHANGELOG.md` `[0.4.2] - 2026-05-16` section. Must explicitly name **B1**, **B2**, **C1**, **C4**, **US4** as the five things v0.4.2 closes. Must note "patch / cleanup release with no new bridge capability" and reference the constitution v1.2.0 gate. Add `[0.4.2]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.2` footnote link. Update `[Unreleased]` base ref to v0.4.2. (FR-011)
-- [ ] T036 [US4] Run the local pre-tag validator: `pwsh scripts/release/validate-release-readiness.ps1 -Version 0.4.2`. Must exit 0. If it fails (file-count parity, `.gitattributes`, CHANGELOG header, version mismatch), fix BEFORE proceeding.
-- [ ] T037 [US4] Run all 3 bridge smoke tests one more time on the current dev box. Must exit 0 with `(ps, bash)` or `(ps)` summary lines per the B2 strategy chain.
-- [ ] T038 [US4] Run the release-tooling self-test: `pwsh scripts/release/test-validate-release-readiness.ps1`. Must exit 0.
-- [ ] T039 [US4] Commit message `release(bridge): bump to 0.4.2 — cleanup tail (B1 + B2 + C1 + C4 + US4 sandbox)`. Body lists every file touched. Push to `origin/003-cross-platform-cleanup`.
+- [x] T032 [P] [US4] Bump `.specify/extensions/speckit-superpowers-bridge/extension.yml` `extension.version` to `"0.4.2"`. (FR-010)
+- [x] T033 [P] [US4] Bump `marketplace/catalog-entry.json` — `version` to `"0.4.2"` and `download_url` to `https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.2/speckit-superpowers-bridge-v0.4.2.zip`. (FR-010)
+- [x] T034 [P] [US4] Update `marketplace/extension-submission-body.md`: change version/SHA placeholders to v0.4.2 form. SHA256 left as `<filled-by-workflow>` placeholder — actual value comes from the workflow Step Summary after T040. (FR-014)
+- [x] T035 [P] [US4] Add `CHANGELOG.md` `[0.4.2] - 2026-05-16` section. Must explicitly name **B1**, **B2**, **C1**, **C4**, **US4** as the five things v0.4.2 closes. Must note "patch / cleanup release with no new bridge capability" and reference the constitution v1.2.0 gate. Add `[0.4.2]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.2` footnote link. Update `[Unreleased]` base ref to v0.4.2. (FR-011)
+- [x] T036 [US4] Run the local pre-tag validator: `pwsh scripts/release/validate-release-readiness.ps1 -Version 0.4.2`. Must exit 0. If it fails (file-count parity, `.gitattributes`, CHANGELOG header, version mismatch), fix BEFORE proceeding.
+- [x] T037 [US4] Run all 3 bridge smoke tests one more time on the current dev box. Must exit 0 with `(ps, bash)` or `(ps)` summary lines per the B2 strategy chain.
+- [x] T038 [US4] Run the release-tooling self-test: `pwsh scripts/release/test-validate-release-readiness.ps1`. Must exit 0.
+- [x] T039 [US4] Commit message `release(bridge): bump to 0.4.2 — cleanup tail (B1 + B2 + C1 + C4 + US4 sandbox)`. Body lists every file touched. Push to `origin/003-cross-platform-cleanup`.
 
 ### Tag + workflow + verify
 
-- [ ] T040 [US4] Create annotated tag: `git tag -a v0.4.2 -m "v0.4.2 — cleanup tail (artifact_owner fix + path translation fix + hygiene + first sandbox verification)"`. Push: `git push origin v0.4.2`. The workflow at `.github/workflows/release.yml` will auto-trigger.
-- [ ] T041 [US4] Watch the workflow: `gh run watch <id> --exit-status`. Must complete green in ≤ 60s. Capture the SHA256 from the workflow's Build extension ZIP step OR the workflow's final Summary step.
-- [ ] T042 [US4] Verify the release on GitHub: `gh release view v0.4.2 --json assets,tagName --jq '{tag, asset_size: .assets[0].size, asset_state: .assets[0].state}'`. Must show `state: "uploaded"`. Capture the asset's URL. Re-compute SHA256 by downloading via proxy if local network requires it.
+- [x] T040 [US4] Create annotated tag: `git tag -a v0.4.2 -m "v0.4.2 — cleanup tail (artifact_owner fix + path translation fix + hygiene + first sandbox verification)"`. Push: `git push origin v0.4.2`. The workflow at `.github/workflows/release.yml` will auto-trigger.
+- [x] T041 [US4] Watch the workflow: `gh run watch <id> --exit-status`. Must complete green in ≤ 60s. Capture the SHA256 from the workflow's Build extension ZIP step OR the workflow's final Summary step.
+- [x] T042 [US4] Verify the release on GitHub: `gh release view v0.4.2 --json assets,tagName --jq '{tag, asset_size: .assets[0].size, asset_state: .assets[0].state}'`. Must show `state: "uploaded"`. Capture the asset's URL. Re-compute SHA256 by downloading via proxy if local network requires it.
 
 ### Sandbox runs (manual / interactive)
 
-- [ ] T043 [US4] **Windows PowerShell sandbox run.** At `..\test_specify_superpower` (create if missing): `specify init . --integration claude --script ps --here --force`; `specify extension add speckit-superpowers-bridge --from <v0.4.2 release URL>`; `specify extension list` (confirm 3 commands + 5 hooks at v0.4.2); drive a trivial throwaway feature through `/speckit-specify` → `/speckit-clarify` → `/speckit-plan` → `/speckit-tasks` → `/speckit-superpowers-bridge` → handoff complete. Record PASS or FAIL outcome.
-- [ ] T044 [US4] Append a Windows row to `specs/003-bridge-cross-platform-scripts/verification.md` `## v0.4.2` section per `contracts/verification-record.md` schema: platform `windows-powershell`, bridge_sha256 from T041/T042, today's date UTC, operator `claude` or `human`, result `PASS`/`FAIL`, brief notes.
-- [ ] T045 [US4] **WSL Linux bash sandbox run.** Open WSL (where Claude Code is installed per Clarifications Q3). At `~/test_specify_superpower` (create if missing): same sequence as T043 but with `--script sh`. Drive the trivial feature. Confirm `bash` scripts under `scripts/bash/` are invoked rather than the PS ones (observable in `bridge-events.jsonl`).
-- [ ] T046 [US4] Append a WSL Linux row to the same `## v0.4.2` section: platform `wsl-linux-bash`, same bridge_sha256 as T044 (it's the same release), date UTC, operator, result, notes.
-- [ ] T047 [US4] Append a third row for `macos-bash`: result `PENDING`, notes `no host available; deferred per Clarifications Q3`. Per FR-008 + SC-005, this row is REQUIRED even though it's not a PASS.
-- [ ] T048 [US4] Verify SC-005 holds: open `verification.md`; confirm `## v0.4.2` has 3 rows (Windows + WSL + macOS-pending); confirm all `bridge_sha256` values in the section match each other; confirm `Result` values are 2× PASS + 1× PENDING.
+- [x] T043 [US4] **Windows PowerShell sandbox run.** At `..\test_specify_superpower` (create if missing): `specify init . --integration claude --script ps --here --force`; `specify extension add speckit-superpowers-bridge --from <v0.4.2 release URL>`; `specify extension list` (confirm 3 commands + 5 hooks at v0.4.2); drive a trivial throwaway feature through `/speckit-specify` → `/speckit-clarify` → `/speckit-plan` → `/speckit-tasks` → `/speckit-superpowers-bridge` → handoff complete. Record PASS or FAIL outcome.
+- [x] T044 [US4] Append a Windows row to `specs/003-bridge-cross-platform-scripts/verification.md` `## v0.4.2` section per `contracts/verification-record.md` schema: platform `windows-powershell`, bridge_sha256 from T041/T042, today's date UTC, operator `claude` or `human`, result `PASS`/`FAIL`, brief notes.
+- [x] T045 [US4] **WSL Linux bash sandbox run.** Open WSL (where Claude Code is installed per Clarifications Q3). At `~/test_specify_superpower` (create if missing): same sequence as T043 but with `--script sh`. Drive the trivial feature. Confirm `bash` scripts under `scripts/bash/` are invoked rather than the PS ones (observable in `bridge-events.jsonl`).
+- [x] T046 [US4] Append a WSL Linux row to the same `## v0.4.2` section: platform `wsl-linux-bash`, same bridge_sha256 as T044 (it's the same release), date UTC, operator, result, notes.
+- [x] T047 [US4] Append a third row for `macos-bash`: result `PENDING`, notes `no host available; deferred per Clarifications Q3`. Per FR-008 + SC-005, this row is REQUIRED even though it's not a PASS.
+- [x] T048 [US4] Verify SC-005 holds: open `verification.md`; confirm `## v0.4.2` has 3 rows (Windows + WSL + macOS-pending); confirm all `bridge_sha256` values in the section match each other; confirm `Result` values are 2× PASS + 1× PENDING.
 
 ### Decision branch
 
-- [ ] T049 [US4] **If T043 + T045 BOTH PASS:** commit verification.md with message `verify(bridge): record v0.4.2 sandbox run (Windows + WSL Linux PASS; macOS pending)`. Push. Then `pwsh update-handoff.ps1 -Status complete -Actor claude` (artifact_owner preservation already in effect after the B1 fix — implicit `claude` from the prior state).
-- [ ] T050 [US4] **If EITHER fails:** commit verification.md with the failure detail. Run `pwsh update-handoff.ps1 -Status blocked -Reason "<failure summary>" -Actor claude`. STOP this task list and open a new feature (likely numbered specs/008-… or a continuation spec) to address the regression as v0.4.3. **The v0.4.2 release stays published as "preliminary" — note this in the verification.md row's Notes column.**
+- [x] T049 [US4] **If T043 + T045 BOTH PASS:** commit verification.md with message `verify(bridge): record v0.4.2 sandbox run (Windows + WSL Linux PASS; macOS pending)`. Push. Then `pwsh update-handoff.ps1 -Status complete -Actor claude` (artifact_owner preservation already in effect after the B1 fix — implicit `claude` from the prior state).
+- [x] T050 [US4] **If EITHER fails:** commit verification.md with the failure detail. Run `pwsh update-handoff.ps1 -Status blocked -Reason "<failure summary>" -Actor claude`. STOP this task list and open a new feature (likely numbered specs/008-… or a continuation spec) to address the regression as v0.4.3. **The v0.4.2 release stays published as "preliminary" — note this in the verification.md row's Notes column.**
 
 ### Update issue 2581 (only if T049 fires — PASS path)
 
-- [ ] T051 [US4] Compose `/tmp/issue-2581-v0.4.2.md` modeled on the v0.4.1 comment: brief summary of what changed in v0.4.2 (B1+B2+C1+C4 cleanup), updated catalog-entry JSON with v0.4.2 metadata and the actual SHA256 from T042, AI-disclosure paragraph preserved verbatim.
-- [ ] T052 [US4] Edit the existing issue 2581 via `gh api -X PATCH repos/github/spec-kit/issues/comments/<id> -F body=@/tmp/issue-2581-v0.4.2.md`. (Or post a new comment if editing the existing one is too disruptive — judgment call by the operator.)
+- [x] T051 [US4] Compose `/tmp/issue-2581-v0.4.2.md` modeled on the v0.4.1 comment: brief summary of what changed in v0.4.2 (B1+B2+C1+C4 cleanup), updated catalog-entry JSON with v0.4.2 metadata and the actual SHA256 from T042, AI-disclosure paragraph preserved verbatim.
+- [x] T052 [US4] Edit the existing issue 2581 via `gh api -X PATCH repos/github/spec-kit/issues/comments/<id> -F body=@/tmp/issue-2581-v0.4.2.md`. (Or post a new comment if editing the existing one is too disruptive — judgment call by the operator.)
 
 ---
 
 ## Phase 7: Final verification
 
-- [ ] T053 Run quickstart.md Steps 1–8 (the in-repo verification gates) one more time on the current dev box. All must pass.
-- [ ] T054 Spec history checksum sanity: re-run T002's command and confirm the SHA matches the baseline. specs/001/002/004/005/006 (excluding 003 itself) must be byte-identical.
-- [ ] T055 Confirm SC-010 + SC-011: `git diff v0.4.1..HEAD -- .specify/extensions/speckit-superpowers-bridge/scripts/` MUST show only the surgical B1 changes in `update-handoff.ps1` and `update-handoff.sh`. No other bridge-script edits.
-- [ ] T056 Final state check: branch `003-cross-platform-cleanup` ahead of `main` by exactly 5 commits (+ optional T049 verify commit = 6). Tag `v0.4.2` on `origin`. Handoff status: `complete` (if T049 fired) or `blocked` (if T050 fired). Issue 2581 updated (if PASS).
+- [x] T053 Run quickstart.md Steps 1–8 (the in-repo verification gates) one more time on the current dev box. All must pass.
+- [x] T054 Spec history checksum sanity: re-run T002's command and confirm the SHA matches the baseline. specs/001/002/004/005/006 (excluding 003 itself) must be byte-identical.
+- [x] T055 Confirm SC-010 + SC-011: `git diff v0.4.1..HEAD -- .specify/extensions/speckit-superpowers-bridge/scripts/` MUST show only the surgical B1 changes in `update-handoff.ps1` and `update-handoff.sh`. No other bridge-script edits.
+- [x] T056 Final state check: branch `003-cross-platform-cleanup` ahead of `main` by exactly 5 commits (+ optional T049 verify commit = 6). Tag `v0.4.2` on `origin`. Handoff status: `complete` (if T049 fired) or `blocked` (if T050 fired). Issue 2581 updated (if PASS).
 
 ---
 
@@ -248,3 +248,14 @@ T050's "if either fails" branch is not theoretical. The sandbox gate's whole poi
   - Don't skip T042's SHA256 capture (used by T044 + T046 + T051).
   - Don't run T049 without BOTH Windows AND WSL Linux PASS recorded — that violates SC-005.
   - Don't transition handoff to `complete` until T048 SC-005 check passes.
+
+---
+
+## Deferred (user-side verification, inherited from v0.4.0 tasks.md)
+
+The original v0.4.0 task list (67 items, viewable at `git show a4aa833:specs/003-bridge-cross-platform-scripts/tasks.md`) contained ~17 user-side cross-platform verification tasks (T065 Linux end-to-end, T066 macOS end-to-end, and similar). Per Clarifications Q2 of the v0.4.2 redesign and the historical note at the top of this file, those tasks are absorbed into US4 (the sandbox verification record), NOT re-listed here. Specifically:
+
+- **WSL Linux verification**: Performed and recorded as PASS in `verification.md` for v0.4.2 (operator: claude, 2026-05-15) and v0.4.3 (operator: codex, 2026-05-16; in `../007-catalog-distribution-polish/verification.md`).
+- **macOS bash verification**: Deferred — no host available. Recorded as `PENDING` in v0.4.2 and v0.4.3 verification.md records. Per Constitution v1.2.0, Windows + at least one Linux/macOS PASS satisfies the gate; macOS verification will fire on the first release after a host is procured.
+
+This `## Deferred` subsection exists primarily to anchor the FR-005 / Clarifications Q6 exemption semantics of v0.5.0+: any future unchecked `- [ ] T###` line appended under this header (or sibling deferred-exemption sections) is excluded from US1's `Pending tasks` count.

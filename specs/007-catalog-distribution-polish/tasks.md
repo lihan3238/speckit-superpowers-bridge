@@ -91,14 +91,17 @@ description: "Tasks for feature 007-catalog-distribution-polish — retrospectiv
 - [x] T019 [US4] Create `specs/007-catalog-distribution-polish/verification.md` by **moving** the `## v0.4.3` section verbatim from `specs/003-bridge-cross-platform-scripts/verification.md`. Schema follows `../003-bridge-cross-platform-scripts/contracts/verification-record.md`.
 - [x] T020 [US4] Remove the `## v0.4.3` section from `specs/003-bridge-cross-platform-scripts/verification.md`; confirm `grep -c '^## v' specs/003-*/verification.md` returns `1`.
 - [x] T021 [US4] Update `.specify/feature.json` `feature_directory` to `"specs/007-catalog-distribution-polish"`.
-- [ ] T022 [US4] Open 007 handoff: `update-handoff -Status ready -FeatureDirectory specs/007-catalog-distribution-polish -ArtifactOwner claude -Actor claude`. Confirm `.specify/superpowers-handoff.json` shows `feature_directory: specs/007-catalog-distribution-polish`, `status: ready`, `artifact_owner: claude`.
-- [ ] T023 [US4] Transition 007 to `executing`: `update-handoff -Status executing -FeatureDirectory specs/007-catalog-distribution-polish -Actor claude` (omit `-ArtifactOwner`; the script preserves prior `claude` per v0.4.2 B1 fix). Confirm `artifact_owner` still `claude`.
-- [ ] T024 [US4] SC-005 byte-freeze check: `git diff v0.4.2..HEAD -- .specify/extensions/speckit-superpowers-bridge/scripts/` MUST return empty.
-- [ ] T025 [US4] SC-006 spec-history checksum: `git ls-tree -r HEAD specs/001-* specs/002-* specs/004-* specs/005-* specs/006-* | sort | git hash-object --stdin` MUST equal the value at the `v0.4.1` tag.
-- [ ] T026 [US4] Commit the 4 new spec files + 003 verification edit + feature.json update. Suggested message: `spec(007 retrospective): record v0.4.3 catalog-distribution-polish + relocate verification`.
-- [ ] T027 [US4] Push to `origin/003-cross-platform-cleanup`.
-- [ ] T028 [US4] Transition 007 to `complete`: `update-handoff -Status complete -Actor claude`. Confirm SC-007 (status complete, feature_directory specs/007-*, artifact_owner claude).
-- [ ] T029 [US4] (Optional) Surface to the user the option to file an "existing-entry update" issue against `github/spec-kit` to bump the public catalog from v0.4.1 → v0.4.3. Per `marketplace/README.md`: issue-based submission, NOT a PR.
+- [x] T022 [US4] Open 007 handoff: `update-handoff -Status ready -FeatureDirectory specs/007-catalog-distribution-polish -ArtifactOwner claude -Actor claude`. Confirm `.specify/superpowers-handoff.json` shows `feature_directory: specs/007-catalog-distribution-polish`, `status: ready`, `artifact_owner: claude`. *(event log line 2026-05-16T07:35:28.0760288Z)*
+- [x] T023 [US4] Transition 007 to `executing`: `update-handoff -Status executing -FeatureDirectory specs/007-catalog-distribution-polish -Actor claude` (omit `-ArtifactOwner`; the script preserves prior `claude` per v0.4.2 B1 fix). Confirm `artifact_owner` still `claude`. *(event log line 2026-05-16T07:35:34.4480448Z)*
+- [x] T024 [US4] SC-005 byte-freeze check: `git diff v0.4.2..HEAD -- .specify/extensions/speckit-superpowers-bridge/scripts/` MUST return empty. *(verified during 008 T003: 0 lines diff; recorded in specs/007-catalog-distribution-polish/verification.md § Gate evidence)*
+- [x] T025 [US4] SC-006 spec-history checksum: `git ls-tree -r HEAD specs/001-* specs/002-* specs/004-* specs/005-* specs/006-* | sort | git hash-object --stdin` MUST equal the value at the `v0.4.1` tag. *(verified during 008 T003: `96e3dffe323546d0f0121c2a8e8f24718e0765de` at both HEAD and v0.4.1; recorded in 007 verification.md § Gate evidence)*
+- [x] T026 [US4] Commit the 4 new spec files + 003 verification edit + feature.json update. Suggested message: `spec(007 retrospective): record v0.4.3 catalog-distribution-polish + relocate verification`. *(commit `29235e2`)*
+- [x] T027 [US4] Push to `origin/003-cross-platform-cleanup`. *(pushed; observable via `git log origin/003-cross-platform-cleanup --oneline | grep 29235e2`)*
+- [x] T028 [US4] Transition 007 to `complete`: `update-handoff -Status complete -Actor claude`. Confirm SC-007 (status complete, feature_directory specs/007-*, artifact_owner claude). *(event log line 2026-05-16T07:36:44.9397916Z; snapshot 20260516T0736449207545Z-complete)*
+
+## Deferred (per 008 Clarifications Q5 = patch releases skip catalog issue)
+
+- [ ] T029 [US4] (Optional) Surface to the user the option to file an "existing-entry update" issue against `github/spec-kit` to bump the public catalog from v0.4.1 → v0.4.3. Per `marketplace/README.md`: issue-based submission, NOT a PR. *(Deferred: a v0.4.3 catalog issue WAS filed by the user outside the Spec Kit flow; it will be closed by 008/T045 in favor of the v0.5.0 issue per Q5=C "minor/major-only" policy. The next active catalog issue is for v0.5.0, filed in 008/T044.)*
 
 ---
 
