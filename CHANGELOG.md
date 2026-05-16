@@ -6,6 +6,48 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 > **AI-assistance disclosure**: This extension is developed with AI coding assistants (Claude Code for design + planning, Codex for implementation passes, Claude Code for the v0.3.0 trim), per the AI-disclosure requirement in [Spec Kit CONTRIBUTING.md](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md). Every artifact passes human review before commit. As of v0.3.0 the verification surface is three retained smoke tests under `tests/`.
 
+## [0.5.0] - 2026-05-16
+
+Bridge drift hardening + v0.5.0 cleanup release. The bridge now surfaces its own state on every script invocation and warns when a feature is marked `complete` while non-deferred tasks remain unchecked — the root-cause fix for the documentation-accuracy drift class of bug that surfaced in the v0.4.2 / v0.4.3 cycles. Resets the minimum direct-upgrade baseline to v0.4.2.
+
+### Added
+
+- **US1**: `bridge-state.{ps1,sh}` shared helper sourced by `update-handoff.{ps1,sh}` and `guard-command.{ps1,sh}`. Computes canonical `Pending tasks: N` count from `<feature_directory>/tasks.md` using the regex `^- \[ \] T\d+` (FR-001 / Clarifications Q4) and respects section-header deferred-exemption per FR-005 / Q6 (any task-ID line under `## Deferred|Optional|Out of Scope|Won't do|Future|Wontfix|Backlog` is excluded). Prints a `[bridge state]` block (Feature directory / Status / Artifact owner / Actor / Pending tasks) on every successful script invocation.
+- **US1**: `update-handoff` now logs `prior_actor` in every `bridge-events.jsonl` handoff entry. When a transition changes the actor (e.g., `claude → codex`), the `reason` field is augmented with `actor change <prior> → <new>` (operator-supplied `-Reason` text is preserved with a `;` separator, never overwritten).
+- **US1 / FR-003**: `update-handoff` emits `[bridge] WARNING: handoff is 'complete' but tasks.md has <N> unchecked tasks; review or move under a deferred section.` to stderr when transitioning to `complete` while non-deferred unchecked task-ID lines remain. Exit code stays 0 — the warning surfaces the drift; the operator decides how to resolve.
+- **US1**: `tests/test-bridge-state-summary.ps1` regression covering SC-001/SC-002/SC-003. PowerShell flavor verified GREEN; bash flavor gated on `jq` + `awk` prerequisites with skip-on-failure semantics (same v0.4.2 B2 strategy chain).
+- **US2**: `specs/007-catalog-distribution-polish/verification.md` gained a `## Gate evidence` subsection recording the SC-005 byte-freeze (`0 lines diff`) and SC-006 spec-history checksum (`96e3dffe…`, identical to v0.4.1 baseline) for the 007 cycle's complete point.
+- **US3**: `marketplace/README.md` gained a `## Catalog update policy` section citing the upstream-documented method (`extensions/EXTENSION-PUBLISHING-GUIDE.md` at commit `81e9ecd`, dated 2026-05-16) and our Q5=C policy (minor/major releases file an issue; patch releases skip and rely on the stable-alias URL).
+
+### Changed
+
+- **US2**: `specs/007-catalog-distribution-polish/tasks.md` T022-T028 now correctly marked `[x]` with evidence pointers; T029 (optional upstream catalog-update issue) moved under a `## Deferred (per 008 Clarifications Q5)` H2.
+- **US2**: `specs/003-bridge-cross-platform-scripts/tasks.md` all 56 v0.4.2-cleanup-tail task-ID checkboxes ticked `[x]`; new `## Deferred (user-side verification, inherited from v0.4.0 tasks.md)` subsection anchors the FR-005/Q6 exemption semantics for any future appended items.
+- **US3 / FR-009**: `marketplace/extensions-readme-row.md` column-header comment realigned to upstream's current `Extension | Purpose | Category | Effect | URL` shape (changed since PR #2586's `Name | Description | Category | Permissions | Repository`). Cell content unchanged.
+- **US3 / FR-011**: `marketplace/extension-submission-body.md` bumped to v0.5.0 with `<filled-by-workflow-on-tag>` placeholders for SHA256 and workflow URL. Fresh-install smoke notes mention the new `[bridge state]` block and FR-003 warning.
+- **US3 / FR-011**: `marketplace/catalog-entry.json` version 0.4.3 → 0.5.0; download_url to the v0.5.0 versioned ZIP.
+- **US4**: `extension.yml` `extension.version` 0.4.3 → 0.5.0.
+- **US4 / FR-015**: `AGENTS.md` pruned of pre-0.4.2 version references outside historical context; new "Compatibility baseline" pointer declares v0.4.2 as the minimum direct-upgrade source per CHANGELOG `[0.5.0] § Compatibility`.
+
+### Compatibility
+
+- **Minimum direct-upgrade baseline**: **v0.4.2**. Users on v0.4.2 or v0.4.3 upgrade to v0.5.0 with no migration — the handoff schema (`.specify/superpowers-handoff.json`) and event log shape (`.specify/bridge-events.jsonl`) remain byte-stable. The new `prior_actor` field on handoff events is purely additive; pre-v0.5.0 readers ignore it (JSON), post-v0.5.0 readers see `null` on legacy lines.
+- Users on **v0.4.0 / v0.4.1** should upgrade through v0.4.2 first OR re-install fresh via the stable-alias URL `releases/latest/download/speckit-superpowers-bridge.zip`. The v0.4.0 → v0.4.1 cycles are no longer called out in supporting docs (AGENTS.md, marketplace) outside historical / CHANGELOG context.
+- The previous "branch = release line" pattern (v0.4.0 → v0.4.3 all tagged on `003-cross-platform-cleanup`) is discontinued — v0.5.0+ releases tag on `main`. Long-running release branches are not used going forward.
+
+### Validation
+
+- All 3 pre-existing smoke tests pass (`tests/test-handoff-shape.ps1`, `tests/test-guard-hardcoded-rules.ps1`, `tests/test-claude-codex-skill-parity.ps1`) — no regression from US1 runtime changes.
+- New `tests/test-bridge-state-summary.ps1` passes (PowerShell flavor; bash flavor exercised in sandbox).
+- Validator self-test passes (`scripts/release/test-validate-release-readiness.ps1`).
+- Local pre-tag validator passes for version 0.5.0.
+- Constitution v1.2.0 sandbox gate exercised on Windows PowerShell + WSL Linux bash (PASS rows in `specs/008-bridge-hardening-0-5-0/verification.md`); macOS row PENDING with reason "no host available" per Clarifications Q1.
+
+### Compliance
+
+- SC-013 north-star: `git diff v0.4.3..v0.5.0 -- .specify/extensions/speckit-superpowers-bridge/` is confined to `scripts/{powershell,bash}/` (5 files modified, 2 new helpers) plus the bridge SKILL.md peers. No new Spec Kit commands, no new Superpowers skills, no new top-level directories.
+- AI-assistance disclosure: this release was designed and implemented with Claude Code (design + planning + Phase A-D implementation passes) and Codex (cross-flavor review). All artifacts passed human review before commit.
+
 ## [0.4.3] - 2026-05-16
 
 Official catalog distribution polish. No bridge runtime behavior changed.
@@ -305,6 +347,7 @@ Hooks in `.specify/extensions.yml`:
 - Constitution (`.specify/memory/constitution.md`) ratifying 5 principles: lightweight & repo-local, design/implementation separation, agent-neutral protocol, smooth bidirectional handoff, vendor-managed boundaries.
 
 [Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v0.4.3...HEAD
+[0.5.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.5.0
 [0.4.3]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.3
 [0.4.2]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.2
 [0.4.1]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.1
