@@ -1,7 +1,7 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan:
-`specs/008-bridge-hardening-0-5-0/plan.md`
+`specs/009-wsl-dev-env-alignment/plan.md`
 <!-- SPECKIT END -->
 
 ## Claude Code Supplement

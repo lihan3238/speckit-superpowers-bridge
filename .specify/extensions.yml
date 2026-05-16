@@ -1,4 +1,5 @@
 installed:
+- git
 - speckit-superpowers-bridge
 settings:
   auto_execute_hooks: true
@@ -20,13 +21,6 @@ hooks:
     description: Create feature branch before specification
     condition: null
   before_clarify:
-  - extension: git
-    command: speckit.git.commit
-    enabled: true
-    optional: true
-    prompt: Commit outstanding changes before clarification?
-    description: Auto-commit before spec clarification
-    condition: null
   - extension: speckit-superpowers-bridge
     command: speckit.speckit-superpowers-bridge.guard
     enabled: true
@@ -34,14 +28,14 @@ hooks:
     prompt: Check Superpowers bridge guard before clarification?
     description: Prevent Spec Kit contract edits while Superpowers owns execution
     condition: null
-  before_plan:
   - extension: git
     command: speckit.git.commit
     enabled: true
     optional: true
-    prompt: Commit outstanding changes before planning?
-    description: Auto-commit before implementation planning
+    prompt: Commit outstanding changes before clarification?
+    description: Auto-commit before spec clarification
     condition: null
+  before_plan:
   - extension: speckit-superpowers-bridge
     command: speckit.speckit-superpowers-bridge.guard
     enabled: true
@@ -49,14 +43,14 @@ hooks:
     prompt: Check Superpowers bridge guard before planning?
     description: Prevent Spec Kit contract edits while Superpowers owns execution
     condition: null
-  before_tasks:
   - extension: git
     command: speckit.git.commit
     enabled: true
     optional: true
-    prompt: Commit outstanding changes before task generation?
-    description: Auto-commit before task generation
+    prompt: Commit outstanding changes before planning?
+    description: Auto-commit before implementation planning
     condition: null
+  before_tasks:
   - extension: speckit-superpowers-bridge
     command: speckit.speckit-superpowers-bridge.guard
     enabled: true
@@ -64,20 +58,27 @@ hooks:
     prompt: Check Superpowers bridge guard before task generation?
     description: Prevent Spec Kit contract edits while Superpowers owns execution
     condition: null
-  before_implement:
   - extension: git
     command: speckit.git.commit
     enabled: true
     optional: true
-    prompt: Commit outstanding changes before implementation?
-    description: Auto-commit before implementation
+    prompt: Commit outstanding changes before task generation?
+    description: Auto-commit before task generation
     condition: null
+  before_implement:
   - extension: speckit-superpowers-bridge
     command: speckit.speckit-superpowers-bridge.guard
     enabled: true
     optional: false
     prompt: Block speckit.implement if Superpowers owns execution?
     description: Block speckit.implement for features handed off to Superpowers
+    condition: null
+  - extension: git
+    command: speckit.git.commit
+    enabled: true
+    optional: true
+    prompt: Commit outstanding changes before implementation?
+    description: Auto-commit before implementation
     condition: null
   before_checklist:
   - extension: git
@@ -136,19 +137,19 @@ hooks:
     description: Auto-commit after implementation planning
     condition: null
   after_tasks:
-  - extension: git
-    command: speckit.git.commit
-    enabled: true
-    optional: true
-    prompt: Commit task changes?
-    description: Auto-commit after task generation
-    condition: null
   - extension: speckit-superpowers-bridge
     command: speckit.speckit-superpowers-bridge.handoff
     enabled: true
     optional: false
     prompt: Create Superpowers implementation handoff?
     description: Create handoff state so Superpowers replaces speckit.implement
+    condition: null
+  - extension: git
+    command: speckit.git.commit
+    enabled: true
+    optional: true
+    prompt: Commit task changes?
+    description: Auto-commit after task generation
     condition: null
   after_implement:
   - extension: git
