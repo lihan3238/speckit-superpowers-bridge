@@ -38,7 +38,7 @@ git push origin vX.Y.Z
 **Automated on tag push** (`.github/workflows/release.yml`):
 
 1. Validate release readiness (same 4 checks as the local validator).
-2. Run all 3 bridge smoke tests (`tests/test-*.ps1`).
+2. Run all 4 bridge smoke tests (`tests/test-*.sh`).
 3. Run release-tooling self-tests (`scripts/release/test-*.ps1`).
 4. Build the ZIP via `scripts/release/build-extension-zip.ps1`.
 5. Extract `[X.Y.Z]` section from `CHANGELOG.md` as release notes.

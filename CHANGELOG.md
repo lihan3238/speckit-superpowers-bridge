@@ -6,6 +6,15 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 > **AI-assistance disclosure**: This extension is developed with AI coding assistants (Claude Code for design + planning, Codex for implementation passes, Claude Code for the v0.3.0 trim), per the AI-disclosure requirement in [Spec Kit CONTRIBUTING.md](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md). Every artifact passes human review before commit. As of v0.3.0 the verification surface is three retained smoke tests under `tests/`.
 
+## [Unreleased]
+
+### Changed
+
+- **009 (WSL dev env alignment)**: ported `tests/test-*.ps1` → `tests/test-*.sh` and deleted the PowerShell originals after the bash equivalents verified green on WSL bash (4 ports + a new `tests/run-all.sh` runner; full suite < 10 s on a typical WSL host). Smoke-test surface now bash-only, consistent with the project's primary dev environment moving to WSL.
+- **009**: untracked Spec Kit install-time state per `specs/009-wsl-dev-env-alignment/spec.md` Clarifications Q1+Q2 Policy — `.specify/scripts/`, `.specify/init-options.json`, `.specify/integration.json`, `.specify/integrations/*.manifest.json`, and the vendor-managed slash-command skill files under `.{claude,agents}/skills/speckit-{analyze,checklist,clarify,constitution,implement,plan,specify,tasks,taskstoissues,git-commit,git-feature,git-initialize,git-remote,git-validate}/`. The project-owned `.{claude,agents}/skills/speckit-superpowers-bridge/` remains tracked. Each developer regenerates the install-state locally via `specify init --here --script <ps|sh> --force`.
+- **009**: normalized `.gitattributes` + `.gitignore` to LF (FR-002 — corrects a phantom CRLF/LF mismatch surfaced on the maintainer's first WSL run).
+- **009**: marketplace docs updated to reference `tests/test-*.sh` (was `.ps1`).
+
 ## [0.5.0] - 2026-05-16
 
 Bridge drift hardening + v0.5.0 cleanup release. The bridge now surfaces its own state on every script invocation and warns when a feature is marked `complete` while non-deferred tasks remain unchecked — the root-cause fix for the documentation-accuracy drift class of bug that surfaced in the v0.4.2 / v0.4.3 cycles. Resets the minimum direct-upgrade baseline to v0.4.2.

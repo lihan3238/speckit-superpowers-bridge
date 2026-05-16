@@ -110,10 +110,10 @@ Release validation:
 - Release workflow: <filled-by-workflow-on-tag>
 - Release ZIP SHA256: `<filled-by-workflow-on-tag>`
 - `scripts/release/validate-release-readiness.ps1 -Version 0.5.0`
-- `tests/test-bridge-state-summary.ps1`
-- `tests/test-handoff-shape.ps1`
-- `tests/test-guard-hardcoded-rules.ps1`
-- `tests/test-claude-codex-skill-parity.ps1`
+- `tests/test-bridge-state-summary.sh`
+- `tests/test-handoff-shape.sh`
+- `tests/test-guard-hardcoded-rules.sh`
+- `tests/test-claude-codex-skill-parity.sh`
 - `scripts/release/test-validate-release-readiness.ps1`
 - `bash -n .specify/extensions/speckit-superpowers-bridge/scripts/bash/*.sh`
 
