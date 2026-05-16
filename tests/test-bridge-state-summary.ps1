@@ -54,6 +54,14 @@ function Test-BashPathReachable {
     return ($check -eq 'OK')
 }
 
+function Get-PsExecutable {
+    # Prefer pwsh (cross-platform PS 7+); fall back to Windows-only powershell.exe.
+    if (Get-Command pwsh -ErrorAction SilentlyContinue) { return 'pwsh' }
+    if (Get-Command powershell.exe -ErrorAction SilentlyContinue) { return 'powershell.exe' }
+    if (Get-Command powershell -ErrorAction SilentlyContinue) { return 'powershell' }
+    throw "No PowerShell executable found (looked for pwsh, powershell.exe, powershell)."
+}
+
 function Invoke-CapturedPs {
     param([string]$ScriptPath, [hashtable]$Params)
     $outFile = [System.IO.Path]::GetTempFileName()
@@ -64,7 +72,8 @@ function Invoke-CapturedPs {
             $argList += "-$k"
             $argList += [string]$Params[$k]
         }
-        $proc = Start-Process -FilePath 'powershell.exe' -ArgumentList $argList -RedirectStandardOutput $outFile -RedirectStandardError $errFile -NoNewWindow -Wait -PassThru
+        $exe = Get-PsExecutable
+        $proc = Start-Process -FilePath $exe -ArgumentList $argList -RedirectStandardOutput $outFile -RedirectStandardError $errFile -NoNewWindow -Wait -PassThru
         return [pscustomobject]@{
             ExitCode = $proc.ExitCode
             Stdout = (Get-Content -LiteralPath $outFile -Raw -ErrorAction SilentlyContinue)
