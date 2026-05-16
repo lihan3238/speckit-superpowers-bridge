@@ -22,6 +22,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 . (Join-Path $PSScriptRoot "common-actor-resolution.ps1")
+. (Join-Path $PSScriptRoot "bridge-state.ps1")
 
 function Convert-ToProjectPath {
     param([string]$RepoRoot, [string]$Path)
@@ -38,7 +39,7 @@ function Write-BridgeEvent {
     param(
         [string]$RepoRoot, [string]$Action, [string]$Status,
         [string]$FeatureDirectory, [string]$Decision, [string]$Reason,
-        [string]$SnapshotId, [string]$Actor
+        [string]$SnapshotId, [string]$Actor, [string]$PriorActor = $null
     )
     $event = [ordered]@{
         timestamp = (Get-Date).ToUniversalTime().ToString("o")
@@ -48,6 +49,7 @@ function Write-BridgeEvent {
         decision = $Decision
         reason = $Reason
         actor = $Actor
+        prior_actor = $PriorActor
         snapshot_id = $SnapshotId
     }
     $eventPath = Join-Path $RepoRoot ".specify\bridge-events.jsonl"
@@ -82,10 +84,24 @@ if (-not (Test-Path -LiteralPath $specifyDir)) { throw "Missing .specify directo
 $existingHandoffPath = Join-Path $specifyDir "superpowers-handoff.json"
 $priorFeatureDirectory = $null
 $priorArtifactOwner = $null
+$priorActor = $null
 if (Test-Path -LiteralPath $existingHandoffPath) {
     $existingHandoff = Get-Content -LiteralPath $existingHandoffPath -Raw | ConvertFrom-Json
     if ($existingHandoff.feature_directory) { $priorFeatureDirectory = [string]$existingHandoff.feature_directory }
     if ($existingHandoff.artifact_owner) { $priorArtifactOwner = [string]$existingHandoff.artifact_owner }
+    # prior_actor is NOT stored in the handoff JSON; the last-known actor is sourced from the
+    # most recent handoff event in bridge-events.jsonl. We compute it best-effort here so the
+    # state-summary + event-log emission can include it (per FR-004 + Clarifications Q3=C minimum).
+    $eventLogPath = Join-Path $specifyDir "bridge-events.jsonl"
+    if (Test-Path -LiteralPath $eventLogPath) {
+        $lastHandoffLine = Get-Content -LiteralPath $eventLogPath | Where-Object { $_ -match '"action":"handoff"' } | Select-Object -Last 1
+        if ($lastHandoffLine) {
+            try {
+                $lastEvent = $lastHandoffLine | ConvertFrom-Json
+                if ($lastEvent.actor) { $priorActor = [string]$lastEvent.actor }
+            } catch { $priorActor = $null }
+        }
+    }
 }
 
 # Resolve feature_directory: explicit > current handoff > .specify/feature.json
@@ -183,7 +199,25 @@ $handoff = [ordered]@{
 $handoffPath = Join-Path $specifyDir "superpowers-handoff.json"
 $handoff | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $handoffPath -Encoding UTF8
 
-Write-BridgeEvent -RepoRoot $repoRoot -Action "handoff" -Status $resolvedStatus -FeatureDirectory $featureDirectoryProjectPath -Decision "updated" -Reason $eventReason -SnapshotId $snapshotId -Actor $Actor
+# FR-004: augment event-log reason with actor-change note when applicable.
+# When prior_actor exists and differs from the new Actor, prepend the change note;
+# operator-supplied -Reason is preserved (appended after the note with `; ` separator).
+$eventReasonAugmented = $eventReason
+if ($priorActor -and $priorActor -ne $Actor) {
+    $changeNote = "actor change $priorActor → $Actor"
+    if ([string]::IsNullOrWhiteSpace($eventReasonAugmented)) {
+        $eventReasonAugmented = $changeNote
+    } else {
+        $eventReasonAugmented = "$changeNote; $eventReasonAugmented"
+    }
+}
+
+Write-BridgeEvent -RepoRoot $repoRoot -Action "handoff" -Status $resolvedStatus -FeatureDirectory $featureDirectoryProjectPath -Decision "updated" -Reason $eventReasonAugmented -SnapshotId $snapshotId -Actor $Actor -PriorActor $priorActor
 
 Write-Output "Wrote .specify/superpowers-handoff.json with status '$resolvedStatus'."
 if ($blockedReason) { Write-Output "Reason: $blockedReason" }
+
+# FR-001..FR-003: emit [bridge state] block. EmitCompleteWarning fires the FR-003 WARNING
+# to stderr when this call transitioned status to 'complete' and tasks.md has unchecked
+# task-ID lines outside any deferred-exemption section.
+Write-BridgeStateSummaryFull -HandoffPath $handoffPath -RepoRoot $repoRoot -Actor $Actor -PriorActor ($priorActor -as [string]) -EmitCompleteWarning
