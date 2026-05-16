@@ -85,6 +85,6 @@ As of v0.5.0, **v0.4.2** is the minimum supported direct-upgrade source. Users o
 
 Some canonical catalog entries use the GitHub auto-generated archive at `archive/refs/tags/vX.Y.Z.zip`. Those repos place `extension.yml` at the repo root. **Our repo doesn't**: the bridge content lives under `.specify/extensions/speckit-superpowers-bridge/` because the repo is also a Spec Kit dev environment used to dogfood the bridge on itself. The hand-built ZIP from `scripts/release/build-extension-zip.ps1` produces a standard extension ZIP tree (extension.yml at top, plus commands/, scripts/, LICENSE, README) so the catalog install path works without restructuring the source repo.
 
-### Cross-platform ZIP
+## Cross-platform ZIP
 
 The release ZIP carries both runtime flavors: `scripts/powershell/` for Windows and `scripts/bash/` for Linux/macOS. The validator enforces file-count/name parity and `.gitattributes` keeps shell scripts LF-clean on Windows clones.
