@@ -39,3 +39,11 @@
 - Clarify Policy (general): dev-environment-only artifacts → standardize on `sh` and drop `.ps1`; user-facing install-state → gitignore + regen via `specify init`. Binds future similar decisions in `/speckit-plan` without re-asking.
 - FR-002 direction confirmed by direct diff inspection — pure CRLF→LF normalization, no semantic change; pinned to "commit the LF-normalized form" without consuming a clarify slot.
 - Content-quality note: this feature is a developer-environment alignment, so its "users" are project maintainers. The spec is written for them and for downstream coding-agent collaborators, which is the appropriate non-technical-stakeholder analogue for an internal infra feature.
+
+## Implementation result (2026-05-16)
+
+All SC-001..SC-007 PASS (see `verification.md` Result summary). Implementation extended the Policy from the spec's enumerated 15 install-state paths to also cover `.specify/init-options.json`, `.specify/integration.json`, `.specify/integrations/*.manifest.json`, and 7 additional vendor-managed slash-command skill dirs (`speckit-constitution`, `speckit-specify`, plus 5 `speckit-git-*` per side) — an authorized application of the binding Policy + FR-005c per the user's "extend where needed" directive during execution. Spec text was not amended; the Policy bullet in `## Clarifications` covers the extension semantically.
+
+Two scope-acknowledged out-of-this-feature items recorded in `verification.md` for any future cleanup:
+- Historical CRLF in older specs/001-008/* and top-level README/CHANGELOG (FR-002 explicitly scoped to the dirty .gitattributes/.gitignore at start of session, not the full historical sweep).
+- Port 4's contract specified file-content parity; the actual .ps1 source did directory parity. The bash port follows the .ps1 (authoritative per FR-007). The contract document remains as a snapshot of design-time intent.
