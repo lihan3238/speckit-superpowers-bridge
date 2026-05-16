@@ -10,7 +10,7 @@ Superpowers Implementation Bridge
 
 ### Version
 
-0.4.3
+0.5.0
 
 ### Description
 
@@ -26,7 +26,7 @@ https://github.com/lihan3238/speckit-superpowers-bridge
 
 ### Download URL
 
-https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.3/speckit-superpowers-bridge-v0.4.3.zip
+https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.5.0/speckit-superpowers-bridge-v0.5.0.zip
 
 Stable latest alias:
 
@@ -107,9 +107,10 @@ Tested on:
 Release validation:
 
 - `specify --version` -> `specify 0.8.10`
-- Release workflow: https://github.com/lihan3238/speckit-superpowers-bridge/actions/runs/25955825963
-- Release ZIP SHA256: `d3da5b971b39590c66a21b2a76ab5e9c683528b812dd1ab3a71c8b31d959af01`
-- `scripts/release/validate-release-readiness.ps1 -Version 0.4.3`
+- Release workflow: <filled-by-workflow-on-tag>
+- Release ZIP SHA256: `<filled-by-workflow-on-tag>`
+- `scripts/release/validate-release-readiness.ps1 -Version 0.5.0`
+- `tests/test-bridge-state-summary.ps1`
 - `tests/test-handoff-shape.ps1`
 - `tests/test-guard-hardcoded-rules.ps1`
 - `tests/test-claude-codex-skill-parity.ps1`
@@ -118,8 +119,8 @@ Release validation:
 
 Fresh install smoke:
 
-- Windows + Codex: installed from the v0.4.3 latest alias ZIP; verified short alias, canonical fallbacks, PowerShell handoff, and guard allow/deny decisions.
-- WSL/Linux + Claude: installed from the v0.4.3 latest alias ZIP; verified short alias, canonical fallbacks, bash handoff, and guard allow/deny decisions.
+- Windows + Codex: installed from the v0.5.0 latest alias ZIP; verified short alias, canonical fallbacks, PowerShell handoff, guard allow/deny decisions, AND the new v0.5.0 `[bridge state]` block + FR-003 drift warning on complete-with-unchecked.
+- WSL/Linux + Claude: installed from the v0.5.0 latest alias ZIP; verified short alias, canonical fallbacks, bash handoff, guard allow/deny decisions, AND the new v0.5.0 `[bridge state]` block + FR-003 drift warning on complete-with-unchecked.
 - ZIP structure: `extension.yml` at archive root; `commands/`, `scripts/powershell/`, and `scripts/bash/` use portable `/` separators.
 
 ### Example Usage
@@ -155,13 +156,13 @@ Claude Code users run the same flow with slash commands:
     "name": "Superpowers Implementation Bridge",
     "description": "Thin orchestrator between Spec Kit (design) and Superpowers (implementation). Cross-agent.",
     "author": "lihan3238",
-    "version": "0.4.3",
+    "version": "0.5.0",
     "license": "MIT",
     "repository": "https://github.com/lihan3238/speckit-superpowers-bridge",
     "homepage": "https://github.com/lihan3238/speckit-superpowers-bridge",
     "documentation": "https://github.com/lihan3238/speckit-superpowers-bridge#readme",
     "changelog": "https://github.com/lihan3238/speckit-superpowers-bridge/blob/main/CHANGELOG.md",
-    "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.4.3/speckit-superpowers-bridge-v0.4.3.zip",
+    "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.5.0/speckit-superpowers-bridge-v0.5.0.zip",
     "requires": {
       "speckit_version": ">=0.8.10",
       "tools": [
@@ -186,7 +187,7 @@ Claude Code users run the same flow with slash commands:
 
 ### Additional Context
 
-This is the v0.4.3 update for the already accepted `speckit-superpowers-bridge` community catalog entry. The initial listing was accepted via issue #2581 and PR #2586. This update keeps runtime behavior unchanged, documents the official catalog as the discovery/trust surface, and adds a stable latest-release ZIP alias for the primary user-facing install path.
+This is the v0.5.0 update for the already accepted `speckit-superpowers-bridge` community catalog entry. The initial listing was accepted via issue #2581 and PR #2586; the v0.4.3 update issue #2600 is superseded by this v0.5.0 issue (closed once v0.5.0 is accepted). v0.5.0 hardens the bridge against session/agent-resume drift (new `[bridge state]` block on every script invocation + `prior_actor` audit + warning on complete-with-unchecked) and resets the minimum direct-upgrade baseline to v0.4.2.
 
 The bridge combines Spec Kit and Superpowers by keeping their responsibilities separate:
 
