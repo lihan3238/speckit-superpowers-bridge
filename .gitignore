@@ -56,3 +56,13 @@ docs/
 .specify/workflows/*/workflow.yml
 .specify/extensions/.registry
 .specify/extensions/.cache/
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Python venv shells at repo root. Some tools (uv, `python -m venv .`) drop
+# these here if invoked from the project root; we never want them tracked.
+# Anchored with leading slash so a nested `lib/` or `include/` in a subdir
+# (e.g. an extension's own scripts dir) stays trackable.
+# ─────────────────────────────────────────────────────────────────────────────
+/lib/python*/
+/include/python*/
+pyvenv.cfg
