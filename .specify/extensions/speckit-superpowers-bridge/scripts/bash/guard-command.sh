@@ -4,6 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=common-actor-resolution.sh
 . "$SCRIPT_DIR/common-actor-resolution.sh"
+# shellcheck source=bridge-state.sh
+. "$SCRIPT_DIR/bridge-state.sh"
 
 ACTION=""
 REASON=""
@@ -78,6 +80,10 @@ jq -nc \
     --arg checked_action "$ACTION" \
     '{timestamp:$timestamp, action:"guard", status:$decision, feature_directory:$feature_directory, decision:$decision, reason:$reason, actor:$actor, checked_action:$checked_action}' \
     >> "$SPECIFY_DIR/bridge-events.jsonl"
+
+# FR-002: emit [bridge state] block on every allow/deny decision (guard never mutates,
+# so EmitCompleteWarning is "false"; PriorActor is empty since guard does not change actors).
+write_bridge_state_summary "$HANDOFF_PATH" "$REPO_ROOT" "$ACTOR" "" "false"
 
 if [ "$decision" = "deny" ]; then
     printf 'Guard denied %s.\n' "$ACTION"

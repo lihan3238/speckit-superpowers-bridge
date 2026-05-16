@@ -4,6 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=common-actor-resolution.sh
 . "$SCRIPT_DIR/common-actor-resolution.sh"
+# shellcheck source=bridge-state.sh
+. "$SCRIPT_DIR/bridge-state.sh"
 
 STATUS="ready"
 FEATURE_DIRECTORY=""
@@ -76,6 +78,12 @@ json_field() {
 
 prior_feature_directory="$(json_field "$HANDOFF_PATH" '.feature_directory')"
 prior_artifact_owner="$(json_field "$HANDOFF_PATH" '.artifact_owner')"
+# FR-004: prior_actor sourced from the most recent handoff event (NOT from the handoff JSON,
+# which does not persist actor distinctly).
+prior_actor=""
+if [ -f "$SPECIFY_DIR/bridge-events.jsonl" ]; then
+    prior_actor="$(grep '"action":"handoff"' "$SPECIFY_DIR/bridge-events.jsonl" 2>/dev/null | tail -n 1 | jq -r '.actor // empty' 2>/dev/null || printf '')"
+fi
 snapshot_source_directory=""
 
 if [ "$CLEAR_FEATURE_DIRECTORY" = true ]; then
@@ -199,6 +207,20 @@ jq -n \
 
 event_reason="$REASON"
 [ -z "$event_reason" ] && event_reason="$blocked_reason"
+
+# FR-004: augment event-log reason with actor-change note when applicable.
+if [ -n "$prior_actor" ] && [ "$prior_actor" != "$ACTOR" ]; then
+    change_note="actor change $prior_actor → $ACTOR"
+    if [ -z "$event_reason" ]; then
+        event_reason="$change_note"
+    else
+        event_reason="$change_note; $event_reason"
+    fi
+fi
+
+# prior_actor JSON value: null if empty string, quoted string otherwise.
+if [ -n "$prior_actor" ]; then prior_actor_json="\"$prior_actor\""; else prior_actor_json="null"; fi
+
 mkdir -p "$SPECIFY_DIR"
 jq -nc \
     --arg timestamp "$(timestamp_iso)" \
@@ -206,10 +228,16 @@ jq -nc \
     --arg feature_directory "$feature_project" \
     --arg reason "$event_reason" \
     --arg actor "$ACTOR" \
+    --argjson prior_actor "$prior_actor_json" \
     --arg snapshot_id "$snapshot_id" \
-    '{timestamp:$timestamp, action:"handoff", status:$status, feature_directory:$feature_directory, decision:"updated", reason:$reason, actor:$actor, snapshot_id:$snapshot_id}' \
+    '{timestamp:$timestamp, action:"handoff", status:$status, feature_directory:$feature_directory, decision:"updated", reason:$reason, actor:$actor, prior_actor:$prior_actor, snapshot_id:$snapshot_id}' \
     >> "$SPECIFY_DIR/bridge-events.jsonl"
 
 printf "Wrote .specify/superpowers-handoff.json with status '%s'.\n" "$resolved_status"
 [ -n "$blocked_reason" ] && printf 'Reason: %s\n' "$blocked_reason"
+
+# FR-001..FR-003: emit [bridge state] block. EmitCompleteWarning="true" makes the helper
+# fire the FR-003 WARNING when status='complete' and tasks.md has unchecked task-IDs.
+write_bridge_state_summary "$HANDOFF_PATH" "$REPO_ROOT" "$ACTOR" "$prior_actor" "true"
+
 exit 0

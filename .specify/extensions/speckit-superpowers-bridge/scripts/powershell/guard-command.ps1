@@ -10,6 +10,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 . (Join-Path $PSScriptRoot "common-actor-resolution.ps1")
+. (Join-Path $PSScriptRoot "bridge-state.ps1")
 
 function Get-RepoRoot {
     if (Get-Command Get-BridgeRepoRoot -ErrorAction SilentlyContinue) { return Get-BridgeRepoRoot }
@@ -81,6 +82,10 @@ else {
 }
 
 Write-GuardEvent -RepoRoot $repoRoot -ActionName $Action -Decision $decision -ReasonText $denyReason -Actor $Actor -FeatureDirectory $handoffFeatureDir
+
+# FR-002: emit [bridge state] block on every allow/deny decision. The guard never mutates,
+# so we do NOT pass -EmitCompleteWarning. PriorActor is omitted (guard doesn't change actors).
+Write-BridgeStateSummaryFull -HandoffPath $handoffPath -RepoRoot $repoRoot -Actor $Actor
 
 if ($decision -eq "deny") {
     Write-Output "Guard denied $Action."

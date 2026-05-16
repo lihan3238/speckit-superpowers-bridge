@@ -76,7 +76,9 @@ Adding a new rule is a one-line edit to the script. There is no external data fi
 
 The v1 schema (post-0.3.0) is documented in `specs/006-trim-to-thin-bridge/contracts/handoff.v1.schema.json`. New writes emit only v1 fields. Reads tolerate older v2/v3 documents (unknown fields are silently ignored).
 
-As of v0.4.1, the bridge ships both `scripts/powershell/` and `scripts/bash/` flavors. The protocol, handoff schema, guard rules, and actor semantics are identical; `.specify/init-options.json.script` (`ps` or `sh`) chooses the runtime flavor.
+As of v0.4.2 (the minimum direct-upgrade baseline per CHANGELOG `[0.5.0] § Compatibility`), the bridge ships both `scripts/powershell/` and `scripts/bash/` flavors. The protocol, handoff schema, guard rules, and actor semantics are identical; `.specify/init-options.json.script` (`ps` or `sh`) chooses the runtime flavor. v0.4.0 / v0.4.1 are historical only — users on those versions should upgrade through v0.4.2 first or re-install fresh via the stable-alias URL `releases/latest/download/speckit-superpowers-bridge.zip`.
+
+As of v0.5.0, every `update-handoff` and `guard-command` invocation prints a `[bridge state]` block to stdout (Feature directory / Status / Artifact owner / Actor / Pending tasks). Transitioning a feature to `complete` while non-deferred `^- \[ \] T\d+` tasks remain in tasks.md emits `[bridge] WARNING: ...` to stderr (exit code stays 0; the warning surfaces drift for the operator to resolve). Handoff event-log entries carry `prior_actor` for audit. See `specs/008-bridge-hardening-0-5-0/contracts/bridge-state-summary.md` for the full output contract.
 
 ## Install-time registries are local state, not tracked
 
