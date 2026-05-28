@@ -58,20 +58,8 @@ specify extension add speckit-superpowers-bridge \
 
 ### Demo：用户流程
 
-这个短 demo 展示的是用户真正会跑的 happy path：
-
-| 步骤 | 用户动作 |
-|---|---|
-| 一次性安装 | `specify init` + `specify extension add ...` |
-| 设计 feature | `/speckit-specify` -> `/speckit-plan` -> `/speckit-tasks` |
-| 实现 | `/speckit-superpowers-bridge` 把 Spec Kit tasks 交给 Superpowers 执行 |
-
 <p align="center">
-  <img src="docs/demo/hero.gif" alt="用户流程 demo：展示安装、Spec Kit 设计命令与 bridge 执行" width="760" />
-</p>
-
-<p align="center">
-  <em>一段简洁的 happy path 脚本化转录；bridge 状态转换在临时项目中执行。</em>
+  <img src="docs/demo/hero.gif" alt="用户流程 demo — 安装、Spec Kit 设计命令、bridge 执行" width="760" />
 </p>
 
 ## 定位（Positioning）
@@ -215,16 +203,8 @@ sudo dnf install bash jq      # Fedora
 7. handoff → complete；下一次 /speckit-specify 自动归档上一次
 ```
 
-下面这段较长 GIF 展示同一个用户视角 happy path，只是补上了一次性 constitution 与 clarify 阶段。
-
-| 阶段 | 用户看到什么 |
-|---|---|
-| Setup | 初始化项目并安装 bridge。 |
-| Spec Kit 阶段 | `constitution.md`、`spec.md`、`plan.md`、contracts 与 `tasks.md`。 |
-| Bridge 阶段 | Superpowers 执行有序任务、验证、review，并完成 handoff。 |
-
 <p align="center">
-  <img src="docs/demo/full-cycle.gif" alt="完整用户流程：install、specify、clarify、plan、tasks、bridge execution、complete" width="820" />
+  <img src="docs/demo/full-cycle.gif" alt="完整用户流程 — install、specify、clarify、plan、tasks、bridge execution、complete" width="820" />
 </p>
 
 </details>

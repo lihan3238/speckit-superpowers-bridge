@@ -58,20 +58,8 @@ What this does, in 7 steps:
 
 ### Demo: user flow
 
-The short demo shows the path a user actually runs:
-
-| Step | User action |
-|---|---|
-| Install once | `specify init` + `specify extension add ...` |
-| Design a feature | `/speckit-specify` -> `/speckit-plan` -> `/speckit-tasks` |
-| Implement | `/speckit-superpowers-bridge` runs the Spec Kit tasks through Superpowers |
-
 <p align="center">
-  <img src="docs/demo/hero.gif" alt="User flow demo showing install, Spec Kit design commands, and bridge execution" width="760" />
-</p>
-
-<p align="center">
-  <em>A concise scripted transcript of the happy path, with bridge state transitions exercised in a scratch project.</em>
+  <img src="docs/demo/hero.gif" alt="User flow demo — install, Spec Kit design commands, bridge execution" width="760" />
 </p>
 
 ## Positioning
@@ -215,16 +203,8 @@ Contributors who run the repository smoke tests on any OS use the WSL bash suite
 7. handoff → complete; next /speckit-specify auto-archives the previous one
 ```
 
-The longer GIF below shows the same user-facing happy path with the one-time constitution step and clarify phase included.
-
-| Segment | User sees |
-|---|---|
-| Setup | Project initialization and bridge installation. |
-| Spec Kit phase | `constitution.md`, `spec.md`, `plan.md`, contracts, and `tasks.md`. |
-| Bridge phase | Superpowers executes the ordered tasks, verifies, reviews, and completes the handoff. |
-
 <p align="center">
-  <img src="docs/demo/full-cycle.gif" alt="Full user flow — install, specify, clarify, plan, tasks, bridge execution, complete" width="820" />
+  <img src="docs/demo/full-cycle.gif" alt="Full bridge cycle — install, specify, clarify, plan, tasks, bridge execution, complete" width="820" />
 </p>
 
 </details>
