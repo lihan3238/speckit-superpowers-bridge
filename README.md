@@ -16,6 +16,10 @@
   <a href="https://github.com/github/spec-kit/blob/main/docs/community/extensions.md"><img alt="Spec Kit Marketplace listed" src="https://img.shields.io/badge/Spec_Kit_Marketplace-listed-blueviolet?style=flat-square" /></a>
 </p>
 
+<p align="center">
+  <img src="docs/demo/hero.gif" alt="30-second bridge demo — state machine in action" width="800" />
+</p>
+
 # speckit-superpowers-bridge
 
 > 中文版：[README.zh-CN.md](README.zh-CN.md)
@@ -196,6 +200,10 @@ Contributors who run the repository smoke tests on any OS use the WSL bash suite
        ▼
 7. handoff → complete; next /speckit-specify auto-archives the previous one
 ```
+
+<p align="center">
+  <img src="docs/demo/full-cycle.gif" alt="Full bridge cycle — specify → tasks → execute → complete" width="900" />
+</p>
 
 </details>
 
