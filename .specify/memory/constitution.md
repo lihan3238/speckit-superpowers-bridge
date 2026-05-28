@@ -1,38 +1,48 @@
 <!--
 SYNC IMPACT REPORT
 ==================
-Version change: 1.1.0 -> 1.2.0
-Bump rationale: Add a mandatory end-user verification workflow gate using a
-fixed sibling sandbox directory (`..\test_specify_superpower`). This is new
-materially-expanded guidance under "Development Workflow & Quality Gates",
-not a change to any existing principle's semantics. MINOR per semver.
+Version change: 1.2.0 -> 1.3.0
+Bump rationale: Add a new core principle "VI. Native-First Compatibility
+(Trust Upstream Growth)" that formalizes a stance the project has been
+operating under implicitly: we trust the growth of LLM capabilities and
+of Spec Kit / Superpowers themselves, and we ship only the lightest
+compatibility and bridging layer over their native features. This is
+new materially-expanded normative guidance, orthogonal to Principle I
+("Lightweight & Repo-Local") which governs WHAT the bridge is composed
+of; the new principle governs HOW we decide what (not) to build.
+MINOR per semver (added principle, no incompatible change).
 
 Modified sections:
-  - "Development Workflow & Quality Gates" gained a new bullet group
-    "End-User Verification Sandbox" (rule + rationale).
+  - Added "### VI. Native-First Compatibility (Trust Upstream Growth)"
+    under "Core Principles".
 
-Added sections: none (expanded existing section).
+Added sections: one new principle (VI).
 Removed sections: none.
+Renamed sections: none.
 
 Templates requiring updates:
-  - .specify/templates/plan-template.md           - PENDING: add a one-line
-    note in the Constitution Check / Quality Gates section referencing the
-    new sandbox verification expectation for release-shipping features.
-  - .specify/templates/tasks-template.md          - PENDING: add a note in
-    the Polish / final-verification phase pointing to the sandbox sequence
-    for features that ship a release artifact.
+  - .specify/templates/plan-template.md           - UPDATED: Constitution
+    Check section gets a parallel one-line reference to principle VI so
+    every plan re-verifies that no new bridge surface duplicates a native
+    Spec Kit / Superpowers capability.
+  - .specify/templates/tasks-template.md          - no change required
+    (no principle-specific task category implied).
   - .specify/templates/spec-template.md           - no change required.
   - .claude/skills/speckit-constitution/*         - vendor-managed; no edit.
   - .agents/skills/speckit-constitution/*         - vendor-managed; no edit.
-  - AGENTS.md                                     - PENDING: brief mention
-    of the sandbox in workflow / release context.
+  - AGENTS.md                                     - PENDING: short
+    cross-reference to principle VI in the protocol stance section the
+    next time AGENTS.md is amended; not blocking this constitution bump.
   - CLAUDE.md                                     - no change required.
 
 Follow-up TODOs:
-  - Wire the sandbox into the next feature's release polish phase
-    (concrete tasks captured during /speckit-tasks for that feature).
-  - Optionally add a small dev-time helper script to set up the sandbox
-    project from scratch (not required by this amendment).
+  - When closing the next feature that ADDS bridge surface, the PR
+    description must explicitly answer principle VI's two questions
+    ("does upstream already do this?" / "is upstream the right place to
+    fix this?") as part of the Constitution Check.
+  - Audit existing bridge skills once per quarter for any logic that
+    upstream Spec Kit or Superpowers has since absorbed; retire local
+    mechanism per principle VI's migration rule.
 -->
 
 # Spec Kit Superpowers Bridge Constitution
@@ -138,6 +148,47 @@ handoff is reassigned or marked `blocked`.
 make the bridge's true surface area invisible. A single named writer
 prevents racey edits when both agents are co-resident in a workspace.
 
+### VI. Native-First Compatibility (Trust Upstream Growth)
+
+The bridge MUST treat Spec Kit, Superpowers, and the underlying LLM
+agents (Codex, Claude Code) as actively-evolving upstream systems whose
+native capabilities will keep growing. The bridge's role is to compose
+those native capabilities through the thinnest possible compatibility
+and hand-off layer; it MUST NOT reproduce, shadow, or pre-emptively
+patch functionality that either upstream already provides or is
+plausibly going to provide. Operationally:
+
+- A bridge skill MUST NOT re-implement or shadow a Spec Kit or
+  Superpowers command, hook, or workflow. When a native command exists,
+  the bridge delegates to it and only adds the contract enforcement
+  needed to keep the hand-off consistent.
+- New bridge surface area MUST be justified against a concrete gap that
+  cannot be addressed by improving an upstream skill or by filing an
+  upstream issue. The first design question is "does upstream already
+  do this?"; the second is "is upstream the right place to fix this?".
+  A new bridge mechanism is the answer only if both are "no".
+- When upstream ships a feature that supersedes a bridge mechanism, the
+  bridge MUST migrate to the native version at the next amendment cycle
+  and retire the local mechanism rather than carry a parallel one.
+- Bridge prompts and skills MUST trust the LLM agent's reasoning where
+  the contract allows it. Do not encode brittle deterministic rules to
+  compensate for past model behavior that newer models already handle
+  correctly; reach for hooks, guards, and state-file conventions before
+  reaching for larger machinery.
+- Where in doubt, prefer the smaller bridge. Reject custom DSLs, parallel
+  task runners, or opinionated lifecycle managers that would re-create
+  functionality the host platforms already own or are growing toward.
+
+**Rationale**: The bridge lives at the seam between two fast-moving
+upstreams and a fast-improving generation of LLMs. Any logic the bridge
+carries that duplicates upstream becomes a maintenance liability the
+moment upstream ships its own version; any logic that compensates for
+older model behavior becomes dead weight the moment a newer model
+handles the case natively. Treating upstream growth as a feature — not
+a threat — keeps the bridge small, auditable, and durable, and is what
+allows Principle I's "smallest diff" rule to remain achievable as the
+ecosystem matures.
+
 ## Boundary & Ownership Rules
 
 - The bridge guard script
@@ -167,7 +218,10 @@ prevents racey edits when both agents are co-resident in a workspace.
   MUST pass for any change to bridge scripts or skills.
 - Every PR description MUST state which principle(s) the change touches
   and whether any new complexity required justification under
-  Complexity Tracking.
+  Complexity Tracking. For any PR that adds bridge surface area, the
+  description MUST explicitly answer principle VI's two questions
+  ("does upstream already do this?" / "is upstream the right place to
+  fix this?").
 
 ### End-User Verification Sandbox
 
@@ -232,4 +286,4 @@ spec-completion stage where fixing it costs hours, not days.
 - Use `AGENTS.md` for runtime cross-agent guidance and `CLAUDE.md` for
   Claude-specific supplements.
 
-**Version**: 1.2.0 | **Ratified**: 2026-05-14 | **Last Amended**: 2026-05-16
+**Version**: 1.3.0 | **Ratified**: 2026-05-14 | **Last Amended**: 2026-05-17

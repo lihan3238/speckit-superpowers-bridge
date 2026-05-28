@@ -1,0 +1,7 @@
+{
+  "verified_at": "2026-05-28T06:53:30Z",
+  "spec_kit_version": "0.8.16",
+  "superpowers_version": "5.1.0",
+  "bridge_version": "0.6.0",
+  "notes": "Superpowers v5.1.0 removed deprecated /brainstorm /execute-plan /write-plan slash commands and the superpowers:code-reviewer named agent; bridge invocation surface grepped clean (no remediation). superpowers:finishing-a-development-branch is now provenance-scoped to .worktrees/ — transparent to the bridge. Spec Kit v0.8.16 changes (smart JSON merging, multi-install support) transparent to bridge consumers. extension.yml.requires.speckit_version floor stays at >=0.8.10."
+}
