@@ -38,9 +38,16 @@ if (-not (Test-Path -LiteralPath $catalog)) {
     if ($entry.version -ne $Version) {
         $problems.Add("catalog-entry.json: version field is '$($entry.version)', expected '$Version'")
     }
-    $expectedFragment = "v$Version"
-    if ($entry.download_url -notmatch [regex]::Escape($expectedFragment)) {
-        $problems.Add("catalog-entry.json: download_url does not contain '$expectedFragment' (got '$($entry.download_url)')")
+    # download_url: as of v0.6.0 (feature 011), this is PERMANENTLY decoupled
+    # from the per-release version pin and aliased to the GitHub stable-alias URL
+    # `releases/latest/download/speckit-superpowers-bridge.zip` (which GitHub
+    # auto-resolves to the latest release's asset). Accept that canonical form.
+    # For pre-0.6.0 historical compatibility, also accept versioned forms.
+    $stableAlias = 'releases/latest/download/speckit-superpowers-bridge.zip'
+    $versionedFragment = "v$Version"
+    if (($entry.download_url -notmatch [regex]::Escape($stableAlias)) -and
+        ($entry.download_url -notmatch [regex]::Escape($versionedFragment))) {
+        $problems.Add("catalog-entry.json: download_url is neither the v0.6.0+ stable-alias form ('$stableAlias') nor a versioned form containing 'v$Version' (got '$($entry.download_url)')")
     }
 }
 
