@@ -1,7 +1,7 @@
 {
-  "verified_at": "2026-05-28T06:53:30Z",
+  "verified_at": "2026-05-28T09:15:00Z",
   "spec_kit_version": "0.8.16",
   "superpowers_version": "5.1.0",
-  "bridge_version": "0.6.0",
-  "notes": "Superpowers v5.1.0 removed deprecated /brainstorm /execute-plan /write-plan slash commands and the superpowers:code-reviewer named agent; bridge invocation surface grepped clean (no remediation). superpowers:finishing-a-development-branch is now provenance-scoped to .worktrees/ — transparent to the bridge. Spec Kit v0.8.16 changes (smart JSON merging, multi-install support) transparent to bridge consumers. extension.yml.requires.speckit_version floor stays at >=0.8.10."
+  "bridge_version": "0.7.0",
+  "notes": "v0.7.0 ships bridge-status command + SHA256 handoff artifact-drift detection — additive on the v1 handoff schema (schema_version stays 1; uses additionalProperties: true). Verified pair carried forward from v0.6.0 (Superpowers v5.1.0 + Spec Kit 0.8.16). Bridge invocation surface re-grepped clean against Superpowers v5.1.0 removed slash commands and removed superpowers:code-reviewer named agent. extension.yml.requires.speckit_version floor stays at >=0.8.10 — no v0.7.0 functionality requires a newer Spec Kit. SC-008 preserved: existing 008-era [bridge state] print contract for update-handoff + guard-command callers is byte-frozen; new Drift: + Next: lines emitted only by the new bridge-status caller."
 }
