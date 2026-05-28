@@ -84,6 +84,16 @@
     },
     "instructions": {
       "type": ["string", "null"]
+    },
+    "artifacts_sha256": {
+      "type": "object",
+      "description": "Optional SHA256 snapshots of source-of-truth Markdown artifacts (spec.md, plan.md, tasks.md) taken at the time of the most recent executing/complete write. Used for drift detection on subsequent executing/complete writes. Present from v0.7.0 onward; pre-0.7.0 handoffs omit this field and readers MUST tolerate its absence.",
+      "additionalProperties": false,
+      "properties": {
+        "spec.md":  { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "plan.md":  { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+        "tasks.md": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" }
+      }
     }
   },
   "allOf": [
@@ -110,6 +120,14 @@
           "feature_directory": { "type": "string" },
           "artifact_owner": { "type": "string", "minLength": 1 }
         }
+      }
+    },
+    {
+      "if": {
+        "properties": { "status": { "enum": ["executing", "complete"] } }
+      },
+      "then": {
+        "required": ["artifacts_sha256"]
       }
     }
   ]

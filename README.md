@@ -222,6 +222,7 @@ The bridge no longer recommends this routing automatically (the previous `recomm
 | `/speckit-superpowers-bridge` | `$speckit-superpowers-bridge` | Run Spec Kit `tasks.md` through Superpowers via the bridge protocol |
 | `/speckit-speckit-superpowers-bridge-handoff` | `$speckit-speckit-superpowers-bridge-handoff` | Create or update the Superpowers handoff state |
 | `/speckit-speckit-superpowers-bridge-guard` | `$speckit-speckit-superpowers-bridge-guard` | Check whether a requested command is allowed under the current handoff state |
+| `bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/bridge-status.sh` (or `.ps1` on Windows) | same | **(v0.7.0+)** Print current bridge state + `Drift:` + `Next:` recommendation in under a second. Read-only. `--json` for machine output. |
 
 Fresh marketplace installs generate `$speckit-superpowers-bridge` / `/speckit-superpowers-bridge` from the execute command alias. The canonical fallback remains `$speckit-speckit-superpowers-bridge-execute` / `/speckit-speckit-superpowers-bridge-execute`. Handoff and guard intentionally keep their canonical long names because they are advanced/internal commands.
 

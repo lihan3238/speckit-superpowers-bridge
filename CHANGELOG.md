@@ -8,6 +8,32 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-05-28
+
+`bridge-status` command + SHA256 handoff artifact-hash drift detection — two pillars borrowed from rpamis/comet's design, adapted to Native-First discipline. Additive on the v1 handoff schema (`schema_version` stays at 1; `additionalProperties: true` is the extension point). All 5 hardcoded guard rules and the 008-era `[bridge state]` print contract are byte-frozen — new lines (`Drift:`, `Next:`) only appear in the new `bridge-status` caller, never in `update-handoff` or `guard-command` output.
+
+### Added
+
+- **012 / FR-001..FR-004 / SC-001 (US1)**: New read-only `bridge-status.{sh,ps1}` helper at `.specify/extensions/speckit-superpowers-bridge/scripts/{bash,powershell}/`. Reads `.specify/superpowers-handoff.json` without writing, prints the existing 5-field `[bridge state]` block, plus optional `Drift:` line (when handoff has `artifacts_sha256`), plus a `Next:` recommendation derived from a deterministic 12-rule decision table. Supports `--json`/`-Json` for machine-readable output. Exit codes: 0 normal, 2 not-in-repo, 3 corrupted handoff. Contract: `specs/012-bridge-status-and-hash/contracts/bridge-status-output.md`. Solves the "I was away — where am I in this feature?" problem in one command under 1 second.
+- **012 / FR-005, FR-006, FR-008 (US2)**: New optional top-level `artifacts_sha256` object on the handoff JSON, mapping `spec.md`/`plan.md`/`tasks.md` to their SHA256 snapshot (lowercase hex or `null` if file missing). Populated by `update-handoff.{sh,ps1}` on every `executing` and `complete` write. On `executing → complete` writes that detect drift against the prior snapshot: emit exactly one `[bridge] WARNING: artifact drift since executing snapshot: <files> (sha256 mismatch)` line to stderr AND append exactly one `artifact_drift_detected` event to `.specify/bridge-events.jsonl`. Exit code stays 0; the transition is not blocked — drift is advisory. Contract: `specs/012-bridge-status-and-hash/contracts/artifact-drift-event.md`.
+- **012 / FR-009**: v1 handoff schema (`specs/006-trim-to-thin-bridge/contracts/handoff.v1.schema.json`) gains the `artifacts_sha256` property declaration + a conditional `allOf` rule requiring the field when `status` is `executing` or `complete`. Schema delta documented at `specs/012-bridge-status-and-hash/contracts/handoff-v1.1.delta.md`.
+- **012 / FR-012**: New smoke test `tests/test-bridge-status.sh` with 26 cases covering all 14 decision-table vectors (V1..V14), all 5 US1 acceptance scenarios (S-OUT-1..5), all 6 US2 scenarios (S-EVT-1..6), FR-007 read-only enforcement, FR-013 backward-compat, and the SC-003 byte-identical idempotency check. New fixture at `tests/fixtures/pre-070-handoff.json` exercises pre-0.7.0 reader-tolerance.
+
+### Changed
+
+- **012 / FR-005**: `update-handoff.{sh,ps1}` compute SHA256 of the three source-of-truth artifacts on every `executing`/`complete` write and embed them as `artifacts_sha256`. Bash delta: 48 added lines (within SC-010 (c) 60-line budget). PowerShell delta: 47 added lines (within SC-010 (d) 60-line budget). Existing v0.5.0+ `[bridge state]` print contract preserved byte-identical.
+- **012 / FR-002, FR-007**: `bridge-state.{sh,ps1}` shared helper gains new pure-function additions (`compute_artifact_sha256`, `build_artifacts_sha256_json`, `get_drift_list`, `build_drift_details_json`, `get_next_command_recommendation` in bash; `Get-ArtifactSha256`, `Get-ArtifactsSha256Map`, `Get-DriftList`, `Get-DriftDetails`, `Get-NextCommandRecommendation` in PowerShell). Existing `write_bridge_state_summary` / `Write-BridgeStateSummary*` functions stay byte-identical so `update-handoff` and `guard-command` outputs remain unchanged.
+- **012**: Bridge version 0.6.0 → 0.7.0 across `extension.yml` and `marketplace/catalog-entry.json`. `download_url` unchanged (permanently aliased to `releases/latest/download/speckit-superpowers-bridge.zip` per v0.6.0 decoupling).
+- **012 / FR-011**: Project-owned `speckit-superpowers-bridge` SKILL.md peers (Claude + Codex) each gain one bullet under a new `## Useful commands (v0.7.0+)` heading referencing `bridge-status`. Documentation-only — no behavioral instruction changes. Vendor-managed `.{claude,agents}/skills/speckit-*` skills (other than this project-owned peer) untouched.
+
+### Compatibility
+
+- Schema `schema_version` stays at **1**. New `artifacts_sha256` field is **additive** on the v1 schema's `additionalProperties: true` extension point. No reader migration required.
+- Handoffs written by **v0.4.x, v0.5.x, v0.6.x** without `artifacts_sha256` continue to read cleanly under v0.7.0+: bridge-status omits the `Drift:` line; update-handoff does NOT emit a false-positive drift warning on the first `complete` write under v0.7.0+ (no prior snapshot to compare against). The next `executing` write populates the field.
+- All 5 hardcoded guard rules in `guard-command.{sh,ps1}` **byte-frozen** vs v0.6.0.
+- Existing 008-era `[bridge state]` print contract preserved verbatim (5 lines, same order, same labels) for `update-handoff` and `guard-command` callers per SC-008. New `Drift:` + `Next:` lines emitted ONLY by the new `bridge-status` caller.
+- Verified against **Superpowers 5.1.0** and **Spec Kit 0.8.16** (verified pair carried forward from v0.6.0; refresh if upstream changes).
+
 ## [0.6.0] - 2026-05-28
 
 Comet-style README polish + upstream verified-pair refresh + marketplace `download_url` decoupling. Bridge surface (scripts, guard rules, SKILL.md behavioral instructions, `extensions.yml` hooks) byte-frozen — v0.6.0 ships **zero behavioral changes** beyond documentation, version metadata, and the one-file `verified-versions.json` re-introduction. Net effect: a more discoverable README and one fewer source-of-truth file to edit per future release.

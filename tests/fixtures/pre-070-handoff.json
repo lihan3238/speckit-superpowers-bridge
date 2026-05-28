@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-05-15T12:34:56Z",
+  "feature_directory": "specs/099-pre-070-fixture",
+  "source_of_truth": {
+    "constitution": ".specify/memory/constitution.md",
+    "spec": "specs/099-pre-070-fixture/spec.md",
+    "plan": "specs/099-pre-070-fixture/plan.md",
+    "tasks": "specs/099-pre-070-fixture/tasks.md"
+  },
+  "supersedes": ["speckit.implement"],
+  "executor": "superpowers",
+  "capabilities": ["executing-plans"],
+  "status": "executing",
+  "blocked_reason": null,
+  "artifact_owner": "claude",
+  "review_only_agents": [],
+  "notes": "Fixture representing a v0.5.0/v0.6.0 handoff document with NO artifacts_sha256 field. Used by tests/test-bridge-status.sh to assert FR-013 backward-compat: v0.7.0+ tooling reads this without crashing, surfaces no false-positive drift, and the next executing/complete write populates the field.",
+  "last_snapshot_id": "20260515T123455999Z-executing",
+  "instructions": "Use /speckit-superpowers-bridge (Claude Code) or $speckit-superpowers-bridge (Codex)."
+}

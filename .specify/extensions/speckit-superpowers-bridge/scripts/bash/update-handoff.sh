@@ -78,6 +78,13 @@ json_field() {
 
 prior_feature_directory="$(json_field "$HANDOFF_PATH" '.feature_directory')"
 prior_artifact_owner="$(json_field "$HANDOFF_PATH" '.artifact_owner')"
+# v0.7.0+: capture prior artifacts_sha256 snapshot for drift comparison on complete writes.
+prior_artifacts_sha256_json="null"
+if [ -f "$HANDOFF_PATH" ]; then
+    if jq -e 'has("artifacts_sha256") and (.artifacts_sha256 != null)' "$HANDOFF_PATH" >/dev/null 2>&1; then
+        prior_artifacts_sha256_json="$(jq -c '.artifacts_sha256' "$HANDOFF_PATH" 2>/dev/null || printf 'null')"
+    fi
+fi
 # FR-004: prior_actor sourced from the most recent handoff event (NOT from the handoff JSON,
 # which does not persist actor distinctly).
 prior_actor=""
@@ -170,6 +177,33 @@ fi
 executor="superpowers"
 [ "$resolved_status" = "ready" ] && executor="speckit"
 
+# v0.7.0+: compute fresh artifacts_sha256 snapshot for executing/complete writes
+# (spec FR-005, contract handoff-v1.1.delta.md). Omitted on ready/blocked writes.
+fresh_artifacts_sha256_json="null"
+if [ "$resolved_status" = "executing" ] || [ "$resolved_status" = "complete" ]; then
+    if [ -n "$feature_full" ]; then
+        fresh_artifacts_sha256_json="$(build_artifacts_sha256_json "$feature_full")"
+    else
+        fresh_artifacts_sha256_json='{"spec.md":null,"plan.md":null,"tasks.md":null}'
+    fi
+fi
+
+# v0.7.0+: drift comparison on complete writes (spec FR-006, FR-008).
+# Computed BEFORE we overwrite the handoff so prior snapshot is intact.
+drifted_filenames=""
+drift_details_json="[]"
+if [ "$resolved_status" = "complete" ] && [ "$prior_artifacts_sha256_json" != "null" ]; then
+    drift_details_json="$(jq -nc \
+        --argjson p "$prior_artifacts_sha256_json" \
+        --argjson n "$fresh_artifacts_sha256_json" \
+        '["spec.md","plan.md","tasks.md"]
+         | map(. as $k | {path:$k, old_sha256:($p[$k]//null), new_sha256:($n[$k]//null)})
+         | map(select(.old_sha256 != .new_sha256))' 2>/dev/null || printf '[]')"
+    if [ "$(printf '%s' "$drift_details_json" | jq 'length' 2>/dev/null || printf 0)" -gt 0 ]; then
+        drifted_filenames="$(printf '%s' "$drift_details_json" | jq -r 'map(.path) | join(", ")')"
+    fi
+fi
+
 jq -n \
     --arg updated_at "$(timestamp_iso)" \
     --arg feature_directory "$feature_project" \
@@ -183,6 +217,7 @@ jq -n \
     --arg snapshot_id "$snapshot_id" \
     --arg instructions 'Use /speckit-superpowers-bridge (Claude Code) or $speckit-superpowers-bridge (Codex). The bridge orchestrates native Superpowers skills against tasks.md; do not run speckit.implement and do not invoke superpowers:writing-plans / :brainstorming for an active Spec Kit feature.' \
     --argjson review_only "$review_json" \
+    --argjson artifacts_sha256 "$fresh_artifacts_sha256_json" \
     '{
         schema_version: 1,
         updated_at: $updated_at,
@@ -203,7 +238,7 @@ jq -n \
         notes: null,
         last_snapshot_id: (if $snapshot_id == "" then null else $snapshot_id end),
         instructions: $instructions
-    }' > "$HANDOFF_PATH"
+    } + (if $artifacts_sha256 == null then {} else {artifacts_sha256: $artifacts_sha256} end)' > "$HANDOFF_PATH"
 
 event_reason="$REASON"
 [ -z "$event_reason" ] && event_reason="$blocked_reason"
@@ -235,6 +270,18 @@ jq -nc \
 
 printf "Wrote .specify/superpowers-handoff.json with status '%s'.\n" "$resolved_status"
 [ -n "$blocked_reason" ] && printf 'Reason: %s\n' "$blocked_reason"
+
+# v0.7.0+: emit drift warning + artifact_drift_detected event on complete writes (FR-006, FR-008).
+if [ -n "$drifted_filenames" ]; then
+    printf '[bridge] WARNING: artifact drift since executing snapshot: %s (sha256 mismatch)\n' "$drifted_filenames" >&2
+    jq -nc \
+        --arg timestamp "$(timestamp_iso)" \
+        --arg actor "$ACTOR" \
+        --arg feature_directory "$feature_project" \
+        --argjson drifted "$drift_details_json" \
+        '{event:"artifact_drift_detected", timestamp:$timestamp, actor:$actor, feature_directory:$feature_directory, drifted_artifacts:$drifted}' \
+        >> "$SPECIFY_DIR/bridge-events.jsonl"
+fi
 
 # FR-001..FR-003: emit [bridge state] block. EmitCompleteWarning="true" makes the helper
 # fire the FR-003 WARNING when status='complete' and tasks.md has unchecked task-IDs.
