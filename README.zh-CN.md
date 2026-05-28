@@ -222,6 +222,7 @@ sudo dnf install bash jq      # Fedora
 | `/speckit-superpowers-bridge` | `$speckit-superpowers-bridge` | 通过桥协议把 Spec Kit `tasks.md` 跑进 Superpowers |
 | `/speckit-speckit-superpowers-bridge-handoff` | `$speckit-speckit-superpowers-bridge-handoff` | 创建或更新 Superpowers handoff 状态 |
 | `/speckit-speckit-superpowers-bridge-guard` | `$speckit-speckit-superpowers-bridge-guard` | 检查请求的命令是否被当前 handoff 状态允许 |
+| `bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/bridge-status.sh`（Windows 用 `.ps1`） | 同左 | **(v0.7.0+)** 一秒内打印当前 bridge 状态 + `Drift:` + `Next:` 推荐命令。只读。`--json` 支持机器可读输出。 |
 
 fresh marketplace 安装会从 execute 命令的 alias 生成 `$speckit-superpowers-bridge` / `/speckit-superpowers-bridge`。官方 canonical 回退入口仍是 `$speckit-speckit-superpowers-bridge-execute` / `/speckit-speckit-superpowers-bridge-execute`。handoff 和 guard 有意保留 canonical 长命令，因为它们是高级/内部命令。
 

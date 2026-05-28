@@ -85,10 +85,15 @@ $existingHandoffPath = Join-Path $specifyDir "superpowers-handoff.json"
 $priorFeatureDirectory = $null
 $priorArtifactOwner = $null
 $priorActor = $null
+# v0.7.0+: capture prior artifacts_sha256 snapshot for drift comparison on complete writes.
+$priorArtifactsSha256 = $null
 if (Test-Path -LiteralPath $existingHandoffPath) {
     $existingHandoff = Get-Content -LiteralPath $existingHandoffPath -Raw | ConvertFrom-Json
     if ($existingHandoff.feature_directory) { $priorFeatureDirectory = [string]$existingHandoff.feature_directory }
     if ($existingHandoff.artifact_owner) { $priorArtifactOwner = [string]$existingHandoff.artifact_owner }
+    if ($existingHandoff.PSObject.Properties.Name -contains 'artifacts_sha256' -and $existingHandoff.artifacts_sha256) {
+        $priorArtifactsSha256 = $existingHandoff.artifacts_sha256
+    }
     # prior_actor is NOT stored in the handoff JSON; the last-known actor is sourced from the
     # most recent handoff event in bridge-events.jsonl. We compute it best-effort here so the
     # state-summary + event-log emission can include it (per FR-004 + Clarifications Q3=C minimum).
@@ -196,6 +201,34 @@ $handoff = [ordered]@{
     instructions = "Use /speckit-superpowers-bridge (Claude Code) or `$speckit-superpowers-bridge (Codex). The bridge orchestrates native Superpowers skills against tasks.md; do not run speckit.implement and do not invoke superpowers:writing-plans / :brainstorming for an active Spec Kit feature."
 }
 
+# v0.7.0+: compute fresh artifacts_sha256 for executing/complete writes (FR-005).
+# Omitted on ready/blocked writes per spec data-model.md Entity 2 lifecycle rules.
+$freshArtifactsSha256 = $null
+if ($resolvedStatus -eq 'executing' -or $resolvedStatus -eq 'complete') {
+    if ($featureDirectoryFullPath) {
+        $freshArtifactsSha256 = Get-ArtifactsSha256Map -FeatureFull $featureDirectoryFullPath
+    } else {
+        $freshArtifactsSha256 = [ordered]@{ 'spec.md' = $null; 'plan.md' = $null; 'tasks.md' = $null }
+    }
+    $handoff['artifacts_sha256'] = $freshArtifactsSha256
+}
+
+# v0.7.0+: drift comparison (FR-006, FR-008) — compute BEFORE writing.
+$driftedDetails = @()
+$driftedFilenames = ''
+if ($resolvedStatus -eq 'complete' -and $priorArtifactsSha256) {
+    foreach ($f in @('spec.md', 'plan.md', 'tasks.md')) {
+        $prior = $priorArtifactsSha256.$f
+        $fresh = if ($freshArtifactsSha256) { $freshArtifactsSha256[$f] } else { $null }
+        if ($prior -ne $fresh) {
+            $driftedDetails += [pscustomobject]@{ path = $f; old_sha256 = $prior; new_sha256 = $fresh }
+        }
+    }
+    if ($driftedDetails.Count -gt 0) {
+        $driftedFilenames = ($driftedDetails | ForEach-Object { $_.path }) -join ', '
+    }
+}
+
 $handoffPath = Join-Path $specifyDir "superpowers-handoff.json"
 $handoff | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath $handoffPath -Encoding UTF8
 
@@ -216,6 +249,20 @@ Write-BridgeEvent -RepoRoot $repoRoot -Action "handoff" -Status $resolvedStatus 
 
 Write-Output "Wrote .specify/superpowers-handoff.json with status '$resolvedStatus'."
 if ($blockedReason) { Write-Output "Reason: $blockedReason" }
+
+# v0.7.0+: emit drift warning + artifact_drift_detected event on complete writes (FR-006, FR-008).
+if ($driftedDetails.Count -gt 0) {
+    [Console]::Error.WriteLine("[bridge] WARNING: artifact drift since executing snapshot: $driftedFilenames (sha256 mismatch)")
+    $driftEvent = [ordered]@{
+        event = 'artifact_drift_detected'
+        timestamp = (Get-Date).ToUniversalTime().ToString("o")
+        actor = $Actor
+        feature_directory = $featureDirectoryProjectPath
+        drifted_artifacts = @($driftedDetails)
+    }
+    $eventPath = Join-Path $repoRoot ".specify\bridge-events.jsonl"
+    ($driftEvent | ConvertTo-Json -Compress -Depth 4) + [Environment]::NewLine | Add-Content -LiteralPath $eventPath -Encoding UTF8
+}
 
 # FR-001..FR-003: emit [bridge state] block. EmitCompleteWarning fires the FR-003 WARNING
 # to stderr when this call transitioned status to 'complete' and tasks.md has unchecked

@@ -171,7 +171,149 @@ function Write-BridgeStateSummary {
     }
 }
 
-function Write-BridgeStateSummaryFull {
+# ---------------------------------------------------------------------------
+# v0.7.0+ additions: artifact-hash + next-command helpers for bridge-status.ps1.
+# Spec: specs/012-bridge-status-and-hash/spec.md
+# Contracts:
+#   specs/012-bridge-status-and-hash/contracts/bridge-status-output.md
+#   specs/012-bridge-status-and-hash/contracts/handoff-v1.1.delta.md
+#   specs/012-bridge-status-and-hash/contracts/next-command-decision-table.md
+# These helpers are stateless and side-effect-free; the existing
+# Write-BridgeStateSummary / Write-BridgeStateSummaryFull above stay
+# byte-identical (SC-008).
+# ---------------------------------------------------------------------------
+
+# Canonical artifact set per spec Clarifications Q1.
+$script:BridgeArtifacts = @('spec.md', 'plan.md', 'tasks.md')
+
+function Get-ArtifactSha256 {
+    <#
+    .SYNOPSIS
+    Compute SHA256 of a file, lowercase hex, or $null when file is missing.
+    #>
+    param([Parameter(Mandatory = $true)][string]$Path)
+    if (Test-Path -LiteralPath $Path -PathType Leaf) {
+        return ((Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash).ToLower()
+    }
+    return $null
+}
+
+function Get-ArtifactsSha256Map {
+    <#
+    .SYNOPSIS
+    Build an ordered map of {spec.md, plan.md, tasks.md} -> hash-or-null
+    suitable for ConvertTo-Json embedding into the handoff document.
+    #>
+    param([Parameter(Mandatory = $true)][string]$FeatureFull)
+    $map = [ordered]@{}
+    foreach ($f in $script:BridgeArtifacts) {
+        $map[$f] = Get-ArtifactSha256 -Path (Join-Path $FeatureFull $f)
+    }
+    return $map
+}
+
+function Get-DriftList {
+    <#
+    .SYNOPSIS
+    Comma-joined list of drifted filenames in canonical order, or empty string when
+    no drift OR handoff lacks artifacts_sha256 (backward-compat).
+    #>
+    param(
+        [Parameter(Mandatory = $true)][string]$HandoffPath,
+        [Parameter(Mandatory = $true)][string]$FeatureFull
+    )
+    if (-not (Test-Path -LiteralPath $HandoffPath)) { return '' }
+    if ([string]::IsNullOrWhiteSpace($FeatureFull)) { return '' }
+    $h = Get-Content -LiteralPath $HandoffPath -Raw | ConvertFrom-Json
+    if (-not $h.PSObject.Properties.Name -contains 'artifacts_sha256') { return '' }
+    if (-not $h.artifacts_sha256) { return '' }
+    $drifted = New-Object System.Collections.Generic.List[string]
+    foreach ($f in $script:BridgeArtifacts) {
+        $stored = $h.artifacts_sha256.$f
+        $live = Get-ArtifactSha256 -Path (Join-Path $FeatureFull $f)
+        if ($stored -ne $live) { $drifted.Add($f) }
+    }
+    return ($drifted -join ', ')
+}
+
+function Get-DriftDetails {
+    <#
+    .SYNOPSIS
+    Return an array of PSCustomObjects {path, old_sha256, new_sha256} for drifted artifacts.
+    Used by update-handoff to emit the artifact_drift_detected event.
+    #>
+    param(
+        [Parameter(Mandatory = $true)][string]$HandoffPath,
+        [Parameter(Mandatory = $true)][string]$FeatureFull
+    )
+    if (-not (Test-Path -LiteralPath $HandoffPath)) { return @() }
+    $h = Get-Content -LiteralPath $HandoffPath -Raw | ConvertFrom-Json
+    if (-not ($h.PSObject.Properties.Name -contains 'artifacts_sha256')) { return @() }
+    if (-not $h.artifacts_sha256) { return @() }
+    $details = New-Object System.Collections.Generic.List[object]
+    foreach ($f in $script:BridgeArtifacts) {
+        $stored = $h.artifacts_sha256.$f
+        $live = Get-ArtifactSha256 -Path (Join-Path $FeatureFull $f)
+        if ($stored -eq $live) { continue }
+        $details.Add([pscustomobject]@{ path = $f; old_sha256 = $stored; new_sha256 = $live })
+    }
+    return $details.ToArray()
+}
+
+function Get-NextCommandRecommendation {
+    <#
+    .SYNOPSIS
+    Return the recommendation string per next-command-decision-table.md.
+    Rule precedence matches the bash flavor exactly.
+    #>
+    param(
+        [Parameter(Mandatory = $true)][string]$RepoRoot,
+        [Parameter(Mandatory = $true)][string]$HandoffPath
+    )
+    $hasHandoff = $false; $status = ''; $featureDir = ''
+    $hasConstitution = Test-Path -LiteralPath (Join-Path $RepoRoot '.specify/memory/constitution.md') -PathType Leaf
+
+    if (Test-Path -LiteralPath $HandoffPath -PathType Leaf) {
+        try {
+            $h = Get-Content -LiteralPath $HandoffPath -Raw | ConvertFrom-Json
+            $hasHandoff = $true
+            $status = if ($h.status) { [string]$h.status } else { '' }
+            $featureDir = if ($h.feature_directory) { [string]$h.feature_directory } else { '' }
+        } catch {
+            return 'inspect .specify/superpowers-handoff.json'
+        }
+    }
+
+    $hasFeatureDir = $false; $hasSpec = $false; $hasPlan = $false; $hasTasks = $false
+    $featureFull = ''
+    if ($featureDir) {
+        $featureFull = if ([System.IO.Path]::IsPathRooted($featureDir)) { $featureDir } else { Join-Path $RepoRoot $featureDir }
+        if (Test-Path -LiteralPath $featureFull -PathType Container) {
+            $hasFeatureDir = $true
+            $hasSpec = Test-Path -LiteralPath (Join-Path $featureFull 'spec.md') -PathType Leaf
+            $hasPlan = Test-Path -LiteralPath (Join-Path $featureFull 'plan.md') -PathType Leaf
+            $hasTasks = Test-Path -LiteralPath (Join-Path $featureFull 'tasks.md') -PathType Leaf
+        }
+    }
+
+    if (-not $hasConstitution) { return '/speckit-constitution' }
+    if (-not $hasHandoff)      { return '/speckit-specify' }
+    if (-not $hasFeatureDir) {
+        if ($status -eq 'ready' -or -not $status) { return '/speckit-specify' }
+        return 'clear handoff or restore feature directory'
+    }
+    if (-not $hasSpec)  { return '/speckit-specify' }
+    if (-not $hasPlan)  { return '/speckit-plan' }
+    if (-not $hasTasks) { return '/speckit-tasks' }
+
+    switch ($status) {
+        'ready'     { return 'start handoff (update-handoff --status executing)' }
+        'executing' { return 'continue implementation via speckit-superpowers-bridge SKILL' }
+        'blocked'   { return 'resolve blocked_reason or rerun /speckit-clarify' }
+        'complete'  { return '/speckit-specify' }
+        default     { return '(none)' }
+    }
+}
     <#
     .SYNOPSIS
     Same as Write-BridgeStateSummary but accepts an explicit Actor argument (the new actor

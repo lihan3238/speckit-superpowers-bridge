@@ -71,3 +71,7 @@ Every handoff transition and guard decision appends one line to `.specify/bridge
 ## Bridge state output (v0.5.0+)
 
 From v0.5.0 onward, every `update-handoff` and `guard-command` invocation prints a `[bridge state]` block to stdout showing `Feature directory`, `Status`, `Artifact owner`, `Actor` (with `prior → new` when the actor changed), and `Pending tasks: N` computed from the canonical `^- \[ \] T\d+` regex in `<feature_directory>/tasks.md`. When `update-handoff` transitions a feature to `complete` while non-deferred unchecked task-ID lines remain, an additional `[bridge] WARNING:` line is emitted to stderr (exit code stays 0; the warning surfaces the drift for the operator to resolve, it does not block the transition). The handoff event log additionally carries a `prior_actor` field for audit. Spec: `specs/008-bridge-hardening-0-5-0/contracts/bridge-state-summary.md`.
+
+## Useful commands (v0.7.0+)
+
+- `bridge-status.{sh,ps1}` — read-only on-demand introspection (prints `[bridge state]` + `Drift:` + `Next:` recommendation; never writes). See `specs/012-bridge-status-and-hash/`.
