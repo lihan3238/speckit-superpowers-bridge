@@ -225,7 +225,7 @@ function Get-DriftList {
     if (-not (Test-Path -LiteralPath $HandoffPath)) { return '' }
     if ([string]::IsNullOrWhiteSpace($FeatureFull)) { return '' }
     $h = Get-Content -LiteralPath $HandoffPath -Raw | ConvertFrom-Json
-    if (-not $h.PSObject.Properties.Name -contains 'artifacts_sha256') { return '' }
+    if (-not ($h.PSObject.Properties.Name -contains 'artifacts_sha256')) { return '' }
     if (-not $h.artifacts_sha256) { return '' }
     $drifted = New-Object System.Collections.Generic.List[string]
     foreach ($f in $script:BridgeArtifacts) {
