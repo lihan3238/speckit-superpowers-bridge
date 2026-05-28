@@ -4,13 +4,13 @@ Two synthetic-shell demos rendered by [Charmbracelet VHS](https://github.com/cha
 
 | File | Length | Size | Where it's used |
 |------|--------|------|-----------------|
-| `hero.gif`       | ~36 s  | ~464 KB | README demo block — bridge state machine in 5 beats |
-| `full-cycle.gif` | ~64 s  | ~1.5 MB | README "Your first feature in 10 minutes" details (collapsed by default, so the file size is not on the critical render path) |
+| `hero.gif`       | ~18 s  | ~1.0 MB | README demo block — concise user happy path |
+| `full-cycle.gif` | ~26 s  | ~1.7 MB | README "Your first feature in 10 minutes" details (collapsed by default, so the file size is not on the critical render path) |
 
 ## What's real vs. synthesized in the GIFs
 
-- **Real**: every call to `bridge-status.sh`, `update-handoff.sh`, and `guard-command.sh` — the tape copies the repo's actual scripts into a `mktemp -d` sandbox and runs them. The output text, including the literal `[bridge state]` block, the `Next:` recommendation, and the guard's deny reasons, is byte-identical to what a real user sees.
-- **Synthesized via `printf`**: the `/speckit-specify`, `/speckit-plan`, `/speckit-tasks` LLM-side outputs and the `superpowers:*` progress lines. These are scripted so the demo is deterministic and reproducible.
+- **Real**: bridge handoff transitions. The tape copies the repo's actual `update-handoff.sh` into a `mktemp -d` project and uses it for `executing` and `complete`.
+- **Synthesized via a tiny demo shell**: the user-facing Spec Kit and Superpowers progress lines. Slash-command output depends on the active AI agent, so the transcript is scripted to keep the README demo concise and reproducible.
 
 ## Re-rendering
 

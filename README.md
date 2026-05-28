@@ -56,22 +56,22 @@ What this does, in 7 steps:
 > [!TIP]
 > Have only a vague idea? Run `superpowers:brainstorming` *before* `/speckit-specify`. The bridge guard allows it in the pre-spec window — the resulting design doc at `docs/superpowers/specs/<date>-<topic>-design.md` can be referenced in your `/speckit-specify` description so the LLM picks it up as context. See feature [010-prespec-brainstorming](specs/010-prespec-brainstorming/spec.md) for the documented lifecycle decision.
 
-### Demo: 37-second boundary run
+### Demo: user flow
 
-The short demo is meant to be watched for three things, not read like a full terminal transcript:
+The short demo shows the path a user actually runs:
 
-| Moment | What to notice |
+| Step | User action |
 |---|---|
-| Handoff appears | Spec Kit finishes `tasks.md`; the bridge flips status to `executing`. |
-| Guard refuses | A raw `speckit.implement` run is denied while Superpowers owns implementation. |
-| Completion warns | The bridge allows `complete`, but still surfaces unchecked tasks. |
+| Install once | `specify init` + `specify extension add ...` |
+| Design a feature | `/speckit-specify` -> `/speckit-plan` -> `/speckit-tasks` |
+| Implement | `/speckit-superpowers-bridge` runs the Spec Kit tasks through Superpowers |
 
 <p align="center">
-  <img src="docs/demo/hero.gif" alt="37-second demo showing bridge status, guard denial, and unchecked-task warning" width="760" />
+  <img src="docs/demo/hero.gif" alt="User flow demo showing install, Spec Kit design commands, and bridge execution" width="760" />
 </p>
 
 <p align="center">
-  <em>Real bridge scripts in a temporary sandbox; Spec Kit/Superpowers narration is scripted for repeatability.</em>
+  <em>A concise scripted transcript of the happy path, with bridge state transitions exercised in a scratch project.</em>
 </p>
 
 ## Positioning
@@ -215,16 +215,16 @@ Contributors who run the repository smoke tests on any OS use the WSL bash suite
 7. handoff → complete; next /speckit-specify auto-archives the previous one
 ```
 
-The longer GIF below is reference material for the whole cycle. It is collapsed here so the main README stays skimmable.
+The longer GIF below shows the same user-facing happy path with the one-time constitution step and clarify phase included.
 
-| Segment | Shows |
+| Segment | User sees |
 |---|---|
-| Spec Kit phase | `spec.md`, `plan.md`, and `tasks.md` become the implementation contract. |
-| Guard phase | Boundary rules block the two common wrong turns. |
-| Superpowers phase | Execution, TDD, verification, review, and branch finishing run in order. |
+| Setup | Project initialization and bridge installation. |
+| Spec Kit phase | `constitution.md`, `spec.md`, `plan.md`, contracts, and `tasks.md`. |
+| Bridge phase | Superpowers executes the ordered tasks, verifies, reviews, and completes the handoff. |
 
 <p align="center">
-  <img src="docs/demo/full-cycle.gif" alt="Full bridge cycle — specify, tasks, execute, guard, review, complete" width="820" />
+  <img src="docs/demo/full-cycle.gif" alt="Full user flow — install, specify, clarify, plan, tasks, bridge execution, complete" width="820" />
 </p>
 
 </details>
