@@ -56,6 +56,24 @@ specify extension add speckit-superpowers-bridge \
 > [!TIP]
 > 只有一个模糊的想法？在 `/speckit-specify` 之前先跑 `superpowers:brainstorming`。桥的 guard 在「pre-spec」窗口允许这条路径 —— 产出的 design doc 落在 `docs/superpowers/specs/<date>-<topic>-design.md`，你可以把它的相对路径写进 `/speckit-specify` 的描述里，LLM 会把它当作 context。参见 feature [010-prespec-brainstorming](specs/010-prespec-brainstorming/spec.md) 中记录的生命周期决策。
 
+### Demo：37 秒边界演示
+
+这个短 demo 不应该被当成一整段终端日志来读；它只想让你抓住三件事：
+
+| 时刻 | 重点看什么 |
+|---|---|
+| Handoff 出现 | Spec Kit 写完 `tasks.md`，桥把状态切到 `executing`。 |
+| Guard 拒绝 | Superpowers 已经接管实现期时，裸跑 `speckit.implement` 会被拦住。 |
+| Complete 提醒 | 桥允许转到 `complete`，但仍会把未勾选任务亮出来。 |
+
+<p align="center">
+  <img src="docs/demo/hero.gif" alt="37 秒 demo：展示 bridge status、guard denial 与 unchecked-task warning" width="760" />
+</p>
+
+<p align="center">
+  <em>真实桥脚本跑在临时 sandbox 中；Spec Kit/Superpowers 叙事行通过脚本固定，保证可复现。</em>
+</p>
+
 ## 定位（Positioning）
 
 桥和「啥都不用」、「只用一边」或同类 hybrid 工具的差异：
@@ -196,6 +214,18 @@ sudo dnf install bash jq      # Fedora
        ▼
 7. handoff → complete；下一次 /speckit-specify 自动归档上一次
 ```
+
+下面这段较长 GIF 是完整周期的参考材料。它留在折叠区里，避免主 README 被长动图拖慢阅读节奏。
+
+| 阶段 | 展示内容 |
+|---|---|
+| Spec Kit 阶段 | `spec.md`、`plan.md`、`tasks.md` 形成实现契约。 |
+| Guard 阶段 | 边界规则拦住两个常见误用。 |
+| Superpowers 阶段 | execution、TDD、verification、review、branch finishing 按顺序运行。 |
+
+<p align="center">
+  <img src="docs/demo/full-cycle.gif" alt="完整桥周期：specify、tasks、execute、guard、review、complete" width="820" />
+</p>
 
 </details>
 

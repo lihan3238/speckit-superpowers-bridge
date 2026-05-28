@@ -16,10 +16,6 @@
   <a href="https://github.com/github/spec-kit/blob/main/docs/community/extensions.md"><img alt="Spec Kit Marketplace listed" src="https://img.shields.io/badge/Spec_Kit_Marketplace-listed-blueviolet?style=flat-square" /></a>
 </p>
 
-<p align="center">
-  <img src="docs/demo/hero.gif" alt="30-second bridge demo — state machine in action" width="800" />
-</p>
-
 # speckit-superpowers-bridge
 
 > 中文版：[README.zh-CN.md](README.zh-CN.md)
@@ -59,6 +55,24 @@ What this does, in 7 steps:
 
 > [!TIP]
 > Have only a vague idea? Run `superpowers:brainstorming` *before* `/speckit-specify`. The bridge guard allows it in the pre-spec window — the resulting design doc at `docs/superpowers/specs/<date>-<topic>-design.md` can be referenced in your `/speckit-specify` description so the LLM picks it up as context. See feature [010-prespec-brainstorming](specs/010-prespec-brainstorming/spec.md) for the documented lifecycle decision.
+
+### Demo: 37-second boundary run
+
+The short demo is meant to be watched for three things, not read like a full terminal transcript:
+
+| Moment | What to notice |
+|---|---|
+| Handoff appears | Spec Kit finishes `tasks.md`; the bridge flips status to `executing`. |
+| Guard refuses | A raw `speckit.implement` run is denied while Superpowers owns implementation. |
+| Completion warns | The bridge allows `complete`, but still surfaces unchecked tasks. |
+
+<p align="center">
+  <img src="docs/demo/hero.gif" alt="37-second demo showing bridge status, guard denial, and unchecked-task warning" width="760" />
+</p>
+
+<p align="center">
+  <em>Real bridge scripts in a temporary sandbox; Spec Kit/Superpowers narration is scripted for repeatability.</em>
+</p>
 
 ## Positioning
 
@@ -201,8 +215,16 @@ Contributors who run the repository smoke tests on any OS use the WSL bash suite
 7. handoff → complete; next /speckit-specify auto-archives the previous one
 ```
 
+The longer GIF below is reference material for the whole cycle. It is collapsed here so the main README stays skimmable.
+
+| Segment | Shows |
+|---|---|
+| Spec Kit phase | `spec.md`, `plan.md`, and `tasks.md` become the implementation contract. |
+| Guard phase | Boundary rules block the two common wrong turns. |
+| Superpowers phase | Execution, TDD, verification, review, and branch finishing run in order. |
+
 <p align="center">
-  <img src="docs/demo/full-cycle.gif" alt="Full bridge cycle — specify → tasks → execute → complete" width="900" />
+  <img src="docs/demo/full-cycle.gif" alt="Full bridge cycle — specify, tasks, execute, guard, review, complete" width="820" />
 </p>
 
 </details>

@@ -1,9 +1,9 @@
-# speckit-superpowers-bridge — 30-second hero demo
+# speckit-superpowers-bridge — 37-second hero demo
 #
 # Renders ./hero.gif via Charmbracelet VHS (https://github.com/charmbracelet/vhs).
 # Re-render with: `vhs hero.tape` (run from this directory).
 #
-# Storyboard (5 beats, ~30 s):
+# Storyboard (5 beats, ~36 s):
 #   1. empty sandbox → bridge-status shows "(no handoff)"
 #   2. synthesize spec.md/plan.md/tasks.md + flip handoff to executing
 #   3. bridge-status now shows "executing" + pending=3 + Next: continue
@@ -12,14 +12,16 @@
 
 Output hero.gif
 
-Set FontFamily "JetBrains Mono"
-Set FontSize 16
-Set Width 1400
-Set Height 700
-Set Theme "Dracula"
-Set Framerate 24
-Set TypingSpeed 25ms
-Set Padding 30
+Set FontFamily "DejaVu Sans Mono"
+Set FontSize 22
+Set LetterSpacing 0
+Set LineHeight 1.15
+Set Width 1200
+Set Height 650
+Set Theme "GitHub Dark"
+Set Framerate 20
+Set TypingSpeed 18ms
+Set Padding 24
 
 # --- hidden setup: real bridge scripts + helper functions ---
 Hide
@@ -56,6 +58,9 @@ Enter
 Sleep 3500ms
 
 # Beat 2 — design artifacts → handoff fires
+Type "clear"
+Enter
+Sleep 300ms
 Type "# 2. /speckit-specify -> /speckit-plan -> /speckit-tasks (synthesized)"
 Enter
 Sleep 600ms
@@ -64,6 +69,9 @@ Enter
 Sleep 2500ms
 
 # Beat 3 — bridge sees executing
+Type "clear"
+Enter
+Sleep 300ms
 Type "# 3. bridge-status now sees the executing handoff"
 Enter
 Sleep 500ms
@@ -72,6 +80,9 @@ Enter
 Sleep 4000ms
 
 # Beat 4 — guard denial
+Type "clear"
+Enter
+Sleep 300ms
 Type "# 4. Try /speckit-implement while bridge is executing -- guard refuses"
 Enter
 Sleep 500ms
@@ -80,6 +91,9 @@ Enter
 Sleep 4000ms
 
 # Beat 5 — complete; bridge calls out unchecked tasks (honesty)
+Type "clear"
+Enter
+Sleep 300ms
 Type "# 5. Mark complete -> bridge flags unchecked tasks (it keeps you honest)"
 Enter
 Sleep 500ms
@@ -88,6 +102,9 @@ Enter
 Sleep 4500ms
 
 # Beat 6 — tagline
+Type "clear"
+Enter
+Sleep 300ms
 Type "# Spec Kit owns WHAT · Superpowers owns HOW · bridge keeps them honest"
 Enter
 Sleep 3000ms

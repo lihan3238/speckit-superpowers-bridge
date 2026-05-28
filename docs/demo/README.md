@@ -4,8 +4,8 @@ Two synthetic-shell demos rendered by [Charmbracelet VHS](https://github.com/cha
 
 | File | Length | Size | Where it's used |
 |------|--------|------|-----------------|
-| `hero.gif`       | ~37 s  | ~1.4 MB | README top hero — bridge state machine in 5 beats |
-| `full-cycle.gif` | ~1m45  | ~6.1 MB | README "Your first feature in 10 minutes" details (collapsed by default, so the file size is not on the critical render path) |
+| `hero.gif`       | ~36 s  | ~464 KB | README demo block — bridge state machine in 5 beats |
+| `full-cycle.gif` | ~64 s  | ~1.5 MB | README "Your first feature in 10 minutes" details (collapsed by default, so the file size is not on the critical render path) |
 
 ## What's real vs. synthesized in the GIFs
 
@@ -30,10 +30,11 @@ The wrapper checks for `vhs` and prints the install pointer if missing. VHS's ru
 
 ## Editing the storyboard
 
-Each tape file is heavily commented. Pacing knobs:
+Each tape file is heavily commented. The demos use `DejaVu Sans Mono`, which is available in the WSL image used for maintainer rendering; switching to a missing font can make VHS fall back to a badly tracked font. Pacing knobs:
 
+- `Set FontSize 20` / `Set FontSize 22` — larger = more readable on GitHub; smaller = more terminal context.
 - `Set TypingSpeed 40ms` — slower = more readable; faster = shorter GIF.
 - `Sleep 800ms` between beats — the budget that controls total length.
-- `Set Framerate 30` — drop to 24 if file size needs to shrink.
+- `Set Framerate 20` — increase only if motion feels choppy.
 
-The hero target is < 2 MB; the full-cycle target is < 5 MB so README load stays snappy.
+The hero target is < 1 MB; the full-cycle target is < 2 MB so README load stays snappy.
