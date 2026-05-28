@@ -3,6 +3,12 @@ For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
 <!-- SPECKIT END -->
 
+> **Canonical project instructions**, readable by any AGENTS.md-aware tool
+> (Codex, Cursor, Copilot, Gemini CLI, Aider, Windsurf, …). For Claude Code,
+> `CLAUDE.md` is a one-line `@AGENTS.md` import — edit shared project rules
+> here, not there. The SPECKIT marker block above is vendor-managed by
+> `specify init` in both files; do not hand-edit it.
+
 ## Primary Design Reference
 
 The canonical "north star" for this bridge's overall design direction is:
@@ -82,7 +88,7 @@ themselves — they ARE this project's product.
 - Pass `-Actor codex` / `--actor codex` from Codex and `-Actor claude` / `--actor claude` from Claude Code when invoking bridge guard or handoff scripts.
 - If actor is omitted, bridge scripts resolve actor in three steps: explicit actor argument → `SPECKIT_BRIDGE_ACTOR` env var → `"unknown"`.
 - Command IDs and agent invocations are different: internal Spec Kit command IDs use dots such as `speckit.plan`; Codex uses `$speckit-plan`; Claude Code uses slash commands generated from skill names such as `/speckit-plan`. Bridge extension commands use the namespace `speckit.speckit-superpowers-bridge.*` (three retained: `execute`, `handoff`, `guard`).
-- `AGENTS.md` is the master bridge protocol. `CLAUDE.md` may add Claude-specific notes, but it must defer to `AGENTS.md` on conflicts.
+- `AGENTS.md` is the master bridge protocol and the canonical source for all shared project rules. `CLAUDE.md` is a one-line `@AGENTS.md` import (plus the Spec Kit vendor-managed marker block) and adds no Claude-specific supplement — anything Claude-relevant lives here.
 - Do not hand-edit official generated `.agents/skills/speckit-*` or `.claude/skills/speckit-*`; put bridge-specific behavior in separate `speckit-superpowers-bridge` skills.
 - Only one agent may own writes to Spec Kit control artifacts for an active feature at a time. Other agents may review only until ownership changes or the handoff is marked `blocked` for repair.
 
@@ -109,7 +115,7 @@ Adding a new rule is a one-line edit to the script. There is no external data fi
 
 The v1 schema (post-0.3.0) is documented in `specs/006-trim-to-thin-bridge/contracts/handoff.v1.schema.json`. New writes emit only v1 fields. Reads tolerate older v2/v3 documents (unknown fields are silently ignored).
 
-As of v0.4.2 (the minimum direct-upgrade baseline per CHANGELOG `[0.5.0] § Compatibility`), the bridge ships both `scripts/powershell/` and `scripts/bash/` flavors. The protocol, handoff schema, guard rules, and actor semantics are identical; `.specify/init-options.json.script` (`ps` or `sh`) chooses the runtime flavor. v0.4.0 / v0.4.1 are historical only — users on those versions should upgrade through v0.4.2 first or re-install fresh via the stable-alias URL `releases/latest/download/speckit-superpowers-bridge.zip`.
+As of v0.4.2 (the minimum direct-upgrade baseline per CHANGELOG `[0.5.0] § Compatibility`), the bridge ships both `scripts/powershell/` and `scripts/bash/` flavors. The protocol, handoff schema, guard rules, and actor semantics are identical; `.specify/init-options.json.script` (`ps` or `sh`) chooses the runtime flavor. v0.4.0 / v0.4.1 are historical only — users on those versions should upgrade through v0.4.2 first or re-install fresh via the stable-alias URL `releases/latest/download/speckit-superpowers-bridge.zip`. As of v0.6.0, the marketplace `catalog-entry.json.download_url` is permanently decoupled to this stable-alias URL — future releases never edit `download_url`; only `version` bumps (see CHANGELOG `[0.6.0]` `### Changed`).
 
 As of v0.5.0, every `update-handoff` and `guard-command` invocation prints a `[bridge state]` block to stdout (Feature directory / Status / Artifact owner / Actor / Pending tasks). Transitioning a feature to `complete` while non-deferred `^- \[ \] T\d+` tasks remain in tasks.md emits `[bridge] WARNING: ...` to stderr (exit code stays 0; the warning surfaces drift for the operator to resolve). Handoff event-log entries carry `prior_actor` for audit. See `specs/008-bridge-hardening-0-5-0/contracts/bridge-state-summary.md` for the full output contract.
 

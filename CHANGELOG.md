@@ -8,12 +8,45 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-05-28
+
+Comet-style README polish + upstream verified-pair refresh + marketplace `download_url` decoupling. Bridge surface (scripts, guard rules, SKILL.md behavioral instructions, `extensions.yml` hooks) byte-frozen — v0.6.0 ships **zero behavioral changes** beyond documentation, version metadata, and the one-file `verified-versions.json` re-introduction. Net effect: a more discoverable README and one fewer source-of-truth file to edit per future release.
+
+### Added
+
+- **011 (v0.6.0 polish)**: Hero-led README layout modelled on the rpamis/comet structural pattern (`<p align="center">` hero + tagline + 5-badge row with `style=flat-square`, language-toggle blockquote, bold value-prop, `## Why` / `## Quick Start` / `## Positioning` above the first scroll fold, 10 `<details>`-collapsed factual sections including Workflow / Installation / Prerequisites / First Feature / When to Skip / Commands / Configuration / Troubleshooting / Maintenance / Architecture). Uses native Markdown + GitHub-flavored alerts (`> [!TIP]` / `> [!NOTE]` / `> [!WARNING]`) only — no JavaScript, no CSS, no build step, no SVG mirror.
+- **011**: `README.zh-CN.md` mirror with structural parity (identical H2 count, identical `<details>` count, identical 5-badge row, identical comparison-table row count); prose translated, commands/paths/code blocks stay English per CLAUDE.md preservation rule.
+- **011 / FR-004**: Re-introduced `.specify/extensions/speckit-superpowers-bridge/verified-versions.json` with a locked 5-field schema (`verified_at`, `spec_kit_version`, `superpowers_version`, `bridge_version`, `notes`) and a documented additive-only extension policy. Schema captured in `specs/011-v060-comet-polish/contracts/verified-versions.schema.json`. Closes the long-standing runbook reference / file-absent gap that has been present since v0.3.0.
+- **011**: New `## Positioning` comparison table distinguishing the bridge from `speckit.implement`-alone, raw Superpowers, and rpamis/comet (peer hybrid). Factual cell content only; refreshed only when a peer changes positioning.
+
 ### Changed
 
-- **009 (WSL dev env alignment)**: ported `tests/test-*.ps1` → `tests/test-*.sh` and deleted the PowerShell originals after the bash equivalents verified green on WSL bash (4 ports + a new `tests/run-all.sh` runner; full suite < 10 s on a typical WSL host). Smoke-test surface now bash-only, consistent with the project's primary dev environment moving to WSL.
+- **011 / FR-007 — DECOUPLED `marketplace/catalog-entry.json.download_url`** from the per-release version pin to the GitHub stable-alias URL `https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip`. This is a **one-shot freeze**: post-v0.6.0 releases never edit `download_url` again — only the `version` field bumps per release. Empirically safe because every release since v0.5.0 already uploads BOTH the versioned ZIP and the stable-aliased `speckit-superpowers-bridge.zip` asset (verified via GitHub API at clarify time: 44 708 bytes identical). Net effect: one permanent fewer source-of-truth file to edit per release.
+- **011 / FR-006**: `.specify/extensions/speckit-superpowers-bridge/extension.yml` `extension.version` 0.5.0 → 0.6.0. `requires.speckit_version` floor STAYS at `>=0.8.10` — no v0.6.0 functionality requires a newer Spec Kit, and bumping the floor would force needless upgrade pressure on existing users.
+- **011 / FR-007**: `marketplace/catalog-entry.json.version` 0.5.0 → 0.6.0.
+- **011 / FR-017**: `docs/release-runbook.md` Step 10 updated to retire the per-release `download_url` edit instruction; post-publish stable-alias `curl` verification added (broader runbook hygiene around removed-in-0.3.0 script references is deferred to a future cleanup feature — out of v0.6.0 SC-010 lightness budget).
+- **009 (WSL dev env alignment, carried from prior Unreleased)**: ported `tests/test-*.ps1` → `tests/test-*.sh` and deleted the PowerShell originals after the bash equivalents verified green on WSL bash (4 ports + a new `tests/run-all.sh` runner; full suite < 10 s on a typical WSL host). Smoke-test surface now bash-only, consistent with the project's primary dev environment moving to WSL.
 - **009**: untracked Spec Kit install-time state per `specs/009-wsl-dev-env-alignment/spec.md` Clarifications Q1+Q2 Policy — `.specify/scripts/`, `.specify/init-options.json`, `.specify/integration.json`, `.specify/integrations/*.manifest.json`, and the vendor-managed slash-command skill files under `.{claude,agents}/skills/speckit-{analyze,checklist,clarify,constitution,implement,plan,specify,tasks,taskstoissues,git-commit,git-feature,git-initialize,git-remote,git-validate}/`. The project-owned `.{claude,agents}/skills/speckit-superpowers-bridge/` remains tracked. Each developer regenerates the install-state locally via `specify init --here --script <ps|sh> --force`.
 - **009**: normalized `.gitattributes` + `.gitignore` to LF (FR-002 — corrects a phantom CRLF/LF mismatch surfaced on the maintainer's first WSL run).
 - **009**: marketplace docs updated to reference `tests/test-*.sh` (was `.ps1`).
+- **010 (pre-spec brainstorming handoff)**: documented the optional Superpowers `brainstorming` → `/speckit-specify` lifecycle decision in README + zh-CN mirror; zero new bridge code or guard rules added. See `specs/010-prespec-brainstorming/spec.md` (doc-only feature; landed alongside v0.6.0).
+
+### Compatibility
+
+- Verified against **Superpowers 5.1.0** and **Spec Kit 0.8.16** — see `.specify/extensions/speckit-superpowers-bridge/verified-versions.json`.
+- Bridge script surface (`guard-command.{ps1,sh}`, `update-handoff.{ps1,sh}`, `auto-archive-handoff.{ps1,sh}`, `bridge-state.{ps1,sh}`, `common-actor-resolution.{ps1,sh}`) is **byte-identical** to v0.5.0.
+- 5 hardcoded guard rules in `guard-command.{ps1,sh}` are **byte-identical** to v0.5.0.
+- Project-owned bridge `SKILL.md` peers at `.{claude,agents}/skills/speckit-superpowers-bridge/SKILL.md` carry no behavioral-instruction changes (cosmetic version-line refreshes only, if any).
+- Vendor-managed `.{claude,agents}/skills/speckit-*` skills (other than the project-owned `speckit-superpowers-bridge` peers) untouched.
+- Minimum direct-upgrade source: still v0.4.2 (carried forward from v0.5.0 baseline).
+
+### Upstream notes (informational only — no bridge remediation required)
+
+- **Superpowers v5.1.0** removed legacy slash commands `/brainstorm`, `/execute-plan`, `/write-plan` (deprecated stubs). The bridge invokes by skill name (`superpowers:brainstorming`, `superpowers:executing-plans`, `superpowers:writing-plans`) — grep-verified clean during planning.
+- **Superpowers v5.1.0** removed the `superpowers:code-reviewer` named agent; its persona+checklist merged into `skills/requesting-code-review/code-reviewer.md` as a Task-dispatch template. The bridge invokes `superpowers:requesting-code-review` (the skill) — grep-verified clean.
+- **Superpowers v5.1.0** `superpowers:finishing-a-development-branch` is now provenance-scoped — it only cleans worktrees inside `.worktrees/` (created by Superpowers itself). Worktrees outside that path are left alone. Behavior change inside the upstream skill, transparent to the bridge.
+- **Superpowers v2.0+** moved skills into a separate `obra/superpowers-skills` repo, leaving the plugin as a lightweight shim. Transparent to bridge consumers; skills still resolve by name through whichever loader each agent uses.
+- **Spec Kit v0.8.16** changes (smart JSON merging for `.vscode/settings.json` in `specify init`, multi-install support per PR #2389, build/CI refinements) are transparent to bridge consumers.
 
 ## [0.5.0] - 2026-05-16
 

@@ -47,6 +47,15 @@
 > sandbox run in `..\test_specify_superpower` BEFORE handoff completion.
 > The sandbox install uses the published release URL, not the local `--dev`
 > path. Plan a task for each supported platform under the Polish phase.
+>
+> **Native-First gate** (constitution §"VI. Native-First Compatibility",
+> v1.3.0+): Any plan that adds NEW bridge surface area (new skill, new
+> hook, new script, new state file, or new convention beyond the existing
+> contract) MUST answer two questions explicitly in this section before
+> Phase 0 research: (1) "does upstream Spec Kit / Superpowers / the LLM
+> agent already do this?", and (2) "is upstream the right place to fix
+> this?". If either answer is "yes", the plan MUST either delete the new
+> surface or justify it under Complexity Tracking.
 
 ## Project Structure
 
