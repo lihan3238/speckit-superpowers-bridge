@@ -200,18 +200,23 @@ Claude Code users run the same flow with slash commands:
 
 ### Additional Context
 
-This is the **v0.7.0 update** for the already accepted `speckit-superpowers-bridge` community catalog entry. Prior issue history: initial listing accepted via issue #2581 / PR #2586; v0.4.3 update via issue #2600; v0.5.0 + v0.6.0 updates via subsequent catalog-update issues. v0.7.0 supersedes those.
+This is the **v0.7.0 update** for the already accepted `speckit-superpowers-bridge` community catalog entry. Prior upstream issue history (audited via GitHub search): initial listing accepted via #2575 / #2581 (closed); v0.4.3 update via #2599 / #2600 (closed); v0.5.0 update via #2601 (closed). The v0.6.0 release shipped on this repo but a corresponding upstream issue was **prepared locally but never filed** (commit `eb5ec78` only updated `marketplace/extension-submission-body.md` in the source repo). This v0.7.0 issue therefore carries forward the v0.6.0 catalog changes alongside the new v0.7.0 features.
 
-**One catalog edit requested in this issue:**
+**Two catalog edits requested in this issue:**
 
-1. Bump `version` from `0.6.0` to `0.7.0`.
-
-`download_url` does NOT need editing — it was permanently decoupled to the GitHub `/releases/latest/download/` stable-alias in v0.6.0 (catalog edit accepted then). Every bridge release tag attaches both the versioned and the stable-aliased ZIP at identical content (verified for v0.7.0: 61730-byte identical content). This eliminates the recurring per-release catalog-edit class.
+1. Bump `version` from `0.5.0` to `0.7.0` (skipping v0.6.0 in the catalog — v0.6.0 is documentation + metadata only, no breaking surface; v0.7.0 supersedes it).
+2. **Replace `download_url`** with the GitHub `/releases/latest/download/speckit-superpowers-bridge.zip` stable-alias URL (this is the v0.6.0 decoupling that was prepared but never filed). After this one-time edit, the catalog's `download_url` does NOT need editing on future bridge releases — GitHub's `/releases/latest/` alias always resolves to the current published tag's asset, and every bridge release tag attaches both the versioned and the stable-aliased ZIP at identical content (verified for v0.7.0: 61730-byte identical). This eliminates a recurring per-release catalog-edit class.
 
 **What's new in v0.7.0** (two pillars borrowed from [rpamis/comet](https://github.com/rpamis/comet)'s design and adapted to this bridge's Native-First discipline):
 
 1. **`bridge-status.{sh,ps1}`** — on-demand bridge state introspection. Reads the local `superpowers-handoff.json`, prints the existing 5-field `[bridge state]` block plus optional `Drift:` line + `Next:` recommendation. Solves the "I was away for a day — where am I?" recovery problem in one sub-second command, without needing to spawn a guard check or write the handoff just for the side-effect of the printout.
 2. **`artifacts_sha256` + `artifact_drift_detected` event** — handoff artifact integrity. Adds an additive optional `artifacts_sha256` object on the handoff JSON. `update-handoff` snapshots SHA256 of `spec.md`/`plan.md`/`tasks.md` on every `executing`/`complete` write. On `complete` writes that detect drift vs the prior snapshot, emits one stderr `[bridge] WARNING:` + one `artifact_drift_detected` event. Exit code stays 0 — drift is advisory, not blocking; the operator decides whether to abort or roll back.
+
+**What's carried from v0.6.0** (documentation + metadata, no breaking surface):
+
+- Hero-led + bilingual README modelled on the rpamis/comet structural pattern (5-badge row, `## Why` / `## Quick Start` / `## Positioning` above the fold, 10 `<details>`-collapsed sections). Native Markdown + GFM alerts only — no JS / CSS / build step.
+- `verified-versions.json` artifact at the bridge package root (5-field locked schema; refreshed for v0.7.0).
+- The `download_url` decoupling (edit #2 above).
 
 The bridge combines Spec Kit and Superpowers by keeping their responsibilities separate:
 
@@ -220,7 +225,7 @@ The bridge combines Spec Kit and Superpowers by keeping their responsibilities s
 - **The bridge only orchestrates**: it writes the handoff JSON, enforces five boundary guard rules, appends event logs/snapshots, and exposes generated command skills for Codex and Claude Code.
 - **No overlap, no replacement**: the extension does not run `speckit.implement`, does not create a second planning system, does not edit the global Superpowers cache, and does not implement custom execution discipline.
 
-v0.7.0 is a **thin behavioral-additive** release: SC-010 lightness-budget audit (9 sub-checks) all PASS — bridge-status helpers ≤200 lines each; update-handoff deltas ≤60 added lines each; 4 new files total (2 helpers + 1 test + 1 fixture); 0 new state files; 0 new commands at the slash/extension layer; 0 edits to vendor-managed Spec Kit skills. The 5 hardcoded guard rules in `guard-command.{sh,ps1}` are **byte-frozen** vs v0.6.0. The existing 008-era `[bridge state]` print contract is preserved verbatim for `update-handoff` and `guard-command` callers; the new `Drift:` and `Next:` lines are emitted only by the new `bridge-status` caller. v1 handoff schema's `schema_version` field stays at `1` (additive via the existing `additionalProperties: true` extension point).
+v0.7.0 is a **thin behavioral-additive** release: SC-010 lightness-budget audit (9 sub-checks) all PASS — bridge-status helpers ≤200 lines each; update-handoff deltas ≤60 added lines each; 4 new files total (2 helpers + 1 test + 1 fixture); 0 new state files; 0 new commands at the slash/extension layer; 0 edits to vendor-managed Spec Kit skills. The 5 hardcoded guard rules in `guard-command.{sh,ps1}` are **byte-frozen** vs v0.5.0. The existing 008-era `[bridge state]` print contract is preserved verbatim for `update-handoff` and `guard-command` callers; the new `Drift:` and `Next:` lines are emitted only by the new `bridge-status` caller. v1 handoff schema's `schema_version` field stays at `1` (additive via the existing `additionalProperties: true` extension point).
 
 Design direction still follows [Spec Kit vs Superpowers - A Comprehensive Comparison & Practical Guide to Combining Both](https://dev.to/truongpx396/spec-kit-vs-superpowers-a-comprehensive-comparison-practical-guide-to-combining-both-52jj): Spec Kit remains the source of truth for design; Superpowers executes the implementation discipline at the lifecycle phases the bridge dispatches. The two new v0.7.0 pillars are operational quality-of-life additions (state introspection + integrity audit) rather than new design surface.
 
