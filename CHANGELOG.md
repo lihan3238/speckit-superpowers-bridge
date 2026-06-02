@@ -8,6 +8,20 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-06-02
+
+Release-metadata correction for v0.7.1. No bridge runtime behavior changes.
+
+### Changed
+
+- Corrected the v0.7.1 release metadata after the `.github/workflows/release.yml` bash-suite change was deferred: the available GitHub credential cannot push workflow-file edits without `workflow` scope. The existing release workflow still completed successfully for v0.7.1.
+- Kept the v0.7.1 Spec Kit `0.9.1` compatibility refresh, bundled `agent-context` source import, generated-skill ignore rules, release runbook cleanup, and ZIP packaging fix.
+- Updated release metadata to `0.7.2` across `extension.yml`, `marketplace/catalog-entry.json`, `verified-versions.json`, README badges/maintenance text, and `marketplace/extension-submission-body.md`.
+
+### Compatibility
+
+- Direct upgrade from v0.7.0 or v0.7.1 is supported. Handoff schema, guard rules, script behavior, command count, hook count, and `artifacts_sha256` semantics are unchanged.
+
 ## [0.7.1] - 2026-06-02
 
 Spec Kit v0.9.1 compatibility refresh and release-tooling alignment. No bridge runtime behavior changes from v0.7.0; this is a patch release so current v0.7.0 users can upgrade directly.
@@ -21,7 +35,6 @@ Spec Kit v0.9.1 compatibility refresh and release-tooling alignment. No bridge r
 - Refreshed verified compatibility from Spec Kit `0.8.16` to `0.9.1` while retaining Superpowers `5.1.0`: updated README badges, `README.zh-CN.md`, `verified-versions.json`, `extension-submission-body.md`, and marketplace version metadata.
 - Kept `extension.yml.requires.speckit_version` and `marketplace/catalog-entry.json.requires.speckit_version` at `>=0.8.10`. Spec Kit v0.9.x's `agent-context` migration affects this repo's bootstrap state, not the bridge extension runtime.
 - Ignored generated `.{claude,agents}/skills/speckit-agent-context-update/` directories as vendor-managed integration state, matching the existing generated-skill ignore policy.
-- Updated `.github/workflows/release.yml` to run the current bash smoke suite (`bash tests/run-all.sh`) instead of the removed `tests/*.ps1` suite.
 - Updated `docs/release-runbook.md` to match the current release flow: pre-tag catalog version bump, release readiness validator, bash smoke suite, validator self-test, build dry run, then tag/push.
 - Fixed `scripts/release/build-extension-zip.ps1` to include `.specify/extensions/speckit-superpowers-bridge/verified-versions.json` in the release ZIP, matching the documented package metadata contract.
 

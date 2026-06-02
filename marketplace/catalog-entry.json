@@ -3,7 +3,7 @@
   "name": "Superpowers Implementation Bridge",
   "description": "Thin orchestrator between Spec Kit (design) and Superpowers (implementation). Cross-agent.",
   "author": "lihan3238",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "license": "MIT",
   "repository": "https://github.com/lihan3238/speckit-superpowers-bridge",
   "homepage": "https://github.com/lihan3238/speckit-superpowers-bridge",

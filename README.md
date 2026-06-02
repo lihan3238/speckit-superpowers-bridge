@@ -279,7 +279,7 @@ See `AGENTS.md` for the master cross-agent protocol; `CLAUDE.md` for Claude-spec
 <details>
 <summary><strong>Maintenance and versioning</strong></summary>
 
-This release (v0.7.1) is verified against:
+This release (v0.7.2) is verified against:
 
 - **Spec Kit** `0.9.1`
 - **Superpowers** `5.1.0`

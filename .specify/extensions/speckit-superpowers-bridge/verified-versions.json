@@ -2,6 +2,6 @@
   "verified_at": "2026-06-02T13:03:23Z",
   "spec_kit_version": "0.9.1",
   "superpowers_version": "5.1.0",
-  "bridge_version": "0.7.1",
-  "notes": "v0.7.1 refreshes the verified pair to Spec Kit 0.9.1 + Superpowers 5.1.0. Spec Kit 0.9.x moves coding-agent context updates into the bundled agent-context extension; this source repo now explicitly installs/tracks that bundled extension and ignores the generated speckit-agent-context-update skills. Bridge runtime is unchanged from v0.7.0, so extension.yml.requires.speckit_version stays at >=0.8.10. Release tooling now runs the bash smoke suite and includes this verified-versions.json file in the ZIP package."
+  "bridge_version": "0.7.2",
+  "notes": "v0.7.2 refreshes the verified pair to Spec Kit 0.9.1 + Superpowers 5.1.0. Spec Kit 0.9.x moves coding-agent context updates into the bundled agent-context extension; this source repo now explicitly installs/tracks that bundled extension and ignores the generated speckit-agent-context-update skills. Bridge runtime is unchanged from v0.7.0; v0.7.2 supersedes v0.7.1 to correct release metadata after the workflow-file change was deferred, so extension.yml.requires.speckit_version stays at >=0.8.10. The release ZIP now includes this verified-versions.json file; the release runbook records bash smoke-suite verification while the .github workflow change is deferred until credentials with workflow scope are available."
 }

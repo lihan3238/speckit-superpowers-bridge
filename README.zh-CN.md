@@ -279,7 +279,7 @@ v0.2.x 中存在的 6 个元命令（`audit`、`validate`、`parity`、`recommen
 <details>
 <summary><strong>维护与版本（Maintenance and versioning）</strong></summary>
 
-本版本（v0.7.1）针对以下版本验证：
+本版本（v0.7.2）针对以下版本验证：
 
 - **Spec Kit** `0.9.1`
 - **Superpowers** `5.1.0`
