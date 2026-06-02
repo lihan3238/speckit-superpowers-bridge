@@ -10,7 +10,7 @@ Superpowers Implementation Bridge
 
 ### Version
 
-0.7.0
+0.7.1
 
 ### Description
 
@@ -30,9 +30,9 @@ https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download
 
 (Version-pinned alternative for reproducible installs:)
 
-https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.7.0/speckit-superpowers-bridge-v0.7.0.zip
+https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.7.1/speckit-superpowers-bridge-v0.7.1.zip
 
-> **Note for catalog maintainers**: as of v0.6.0 the canonical `download_url` is the GitHub `/releases/latest/download/` stable-alias (above). Every release tag attaches BOTH the versioned and the stable-aliased asset (verified for v0.7.0: 61730-byte identical content). The decoupling means the catalog `download_url` does NOT need editing on future bridge releases — only the `version` field bumps for audit trail.
+> **Note for catalog maintainers**: as of v0.6.0 the canonical `download_url` is the GitHub `/releases/latest/download/` stable-alias (above). Every release tag attaches BOTH the versioned and the stable-aliased asset. The decoupling means the catalog `download_url` does NOT need editing on future bridge releases — only the `version` field bumps for audit trail.
 
 ### License
 
@@ -54,7 +54,7 @@ https://github.com/lihan3238/speckit-superpowers-bridge/blob/main/CHANGELOG.md
 
 >=0.8.10
 
-(Verified compatibility for v0.7.0: Spec Kit `0.8.16`. The floor stays at `>=0.8.10` — v0.7.0's new surface is additive on the v1 handoff schema's existing `additionalProperties: true` extension point, so no newer Spec Kit version is required.)
+(Verified compatibility for v0.7.1: Spec Kit `0.9.1`. The floor stays at `>=0.8.10` — Spec Kit v0.9.x's `agent-context` migration affects project bootstrap state, not the bridge extension runtime.)
 
 ### Required Tools (optional)
 
@@ -83,9 +83,10 @@ bridge, superpowers, cross-agent, tdd, workflow
 - Adds a thin handoff/guard layer so the two systems do not duplicate planning or execution ownership.
 - Supports Windows, Linux, and macOS through one ZIP containing PowerShell and bash script flavors.
 - Supports Codex, Claude Code, or both; the short entrypoint is `$speckit-superpowers-bridge` for Codex and `/speckit-superpowers-bridge` for Claude Code.
+- **New in v0.7.1**: verified compatibility refreshed to Spec Kit `0.9.1`, with the source repo explicitly tracking Spec Kit's bundled `agent-context` extension and ignoring its generated agent skills. Bridge runtime is unchanged from v0.7.0.
 - **New in v0.7.0** (US1): `bridge-status.{sh,ps1}` — read-only on-demand bridge state introspection. Prints the existing 5-field `[bridge state]` block plus a `Next:` command recommendation derived from a deterministic 12-rule decision table (no LLM call, no network — only file-existence checks). `--json` / `-Json` for machine-readable output. Designed for the "I was away — where am I in this feature?" recovery moment. Sub-second wall-clock on the reference WSL bash environment. Read-only: never writes the handoff, never appends to the event log.
 - **New in v0.7.0** (US2): SHA256 artifact-drift detection on phase transitions. `update-handoff` snapshots SHA256 of `spec.md`/`plan.md`/`tasks.md` into an additive `artifacts_sha256` object on every `executing`/`complete` write. On `complete` writes that detect drift vs the prior snapshot, the script emits exactly one `[bridge] WARNING:` line to stderr AND appends exactly one `artifact_drift_detected` event to `bridge-events.jsonl` — exit code stays 0, transition is not blocked, drift is advisory. The new `bridge-status --json` surfaces drift passively via a `Drift:` line (read-only).
-- **Carried from v0.6.0**: hero-led + bilingual README with a 5-badge row, `## Why` / `## Quick Start` / `## Positioning` sections above the fold, and 10 collapsed `<details>` sections — modelled on the rpamis/comet structural pattern using native Markdown + GitHub-flavored alerts only (no JS / CSS / build step). `verified-versions.json` at the bridge package root (now refreshed for v0.7.0). Marketplace `download_url` permanently decoupled from the version pin — only the catalog `version` field bumps per release.
+- **Carried from v0.6.0**: hero-led + bilingual README with a 5-badge row, `## Why` / `## Quick Start` / `## Positioning` sections above the fold, and 10 collapsed `<details>` sections — modelled on the rpamis/comet structural pattern using native Markdown + GitHub-flavored alerts only (no JS / CSS / build step). `verified-versions.json` at the bridge package root (now refreshed for v0.7.1). Marketplace `download_url` permanently decoupled from the version pin — only the catalog `version` field bumps per release.
 
 ### Testing Checklist
 
@@ -108,16 +109,16 @@ bridge, superpowers, cross-agent, tdd, workflow
 
 Tested on:
 
-- WSL Ubuntu bash 5.x with Spec Kit `0.8.16`, Claude Code integration, and bash flavor (post-009 dev environment alignment — primary smoke surface).
+- WSL Ubuntu bash 5.x with Spec Kit `0.9.1`, Claude Code integration, Codex integration, bundled `agent-context`, and bash flavor (post-009 dev environment alignment — primary smoke surface).
 - Windows PowerShell 5.1+ with Spec Kit `0.8.10+`, Codex integration, and PowerShell flavor (functional parity by inspection plus the v0.7.0 PowerShell precedence bug fixed at `bridge-state.ps1:228` per code review, commit `22d5190`).
 - Superpowers release baseline `v5.1.0` (grep-verified clean against v5.1.0's removed slash commands and removed `superpowers:code-reviewer` named agent — bridge invokes by skill name only).
 
 Release validation:
 
-- `specify --version` -> `specify 0.8.16` (maintainer dev environment); floor `>=0.8.10` carried forward.
-- v0.7.0 release ZIP published: both `speckit-superpowers-bridge-v0.7.0.zip` and the stable-aliased `speckit-superpowers-bridge.zip` (61730 bytes, identical content).
+- `specify --version` -> `specify 0.9.1` (maintainer dev environment, installed from `github/spec-kit` tag `v0.9.1`); floor `>=0.8.10` carried forward.
+- v0.7.1 release ZIP published: both `speckit-superpowers-bridge-v0.7.1.zip` and the stable-aliased `speckit-superpowers-bridge.zip` (same content; SHA256 recorded in the release workflow summary).
 - `bash tests/run-all.sh` -> all 5 smoke tests pass on WSL bash, including the new `tests/test-bridge-status.sh` (26 cases: all 14 decision-table vectors V1..V14 + 5 US1 acceptance scenarios + 5 US2 scenarios + SC-003 byte-identical idempotency check + 6 edge cases).
-- Version triplet consistency: `extension.yml.extension.version == catalog-entry.json.version == verified-versions.json.bridge_version == "0.7.0"`.
+- Version triplet consistency: `extension.yml.extension.version == catalog-entry.json.version == verified-versions.json.bridge_version == "0.7.1"`.
 - `jq -e '.verified_at and .spec_kit_version and .superpowers_version and .bridge_version and .notes' .specify/extensions/speckit-superpowers-bridge/verified-versions.json` -> exit 0 (5-field schema validates).
 - SC-010 lightness-budget audit (all 9 sub-checks PASS): `bridge-status.sh` 173 lines (≤200); `bridge-status.ps1` 191 lines (≤200); `update-handoff.sh` delta +48 (≤60); `update-handoff.ps1` delta +47 (≤60); exactly 1 new event type (`artifact_drift_detected`); 4 new files in bridge package (2 helpers + 1 test + 1 fixture); 0 new state files; 0 new commands/hooks at the slash/extension layer; 0 edits to vendor-managed `.{claude,agents}/skills/speckit-{analyze,checklist,clarify,constitution,implement,plan,specify,tasks,taskstoissues,git-*}/` (only the project-owned `speckit-superpowers-bridge` SKILL.md peers gained the FR-011 one-line documentation reference).
 - SC-008 (no regression in 008-era `[bridge state]` print contract): existing 4 smoke tests stay green after v0.7.0 changes.
@@ -170,7 +171,7 @@ Claude Code users run the same flow with slash commands:
   "id": "speckit-superpowers-bridge",
   "description": "Thin orchestrator between Spec Kit (design) and Superpowers (implementation). Cross-agent.",
   "author": "lihan3238",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip",
   "repository": "https://github.com/lihan3238/speckit-superpowers-bridge",
   "homepage": "https://github.com/lihan3238/speckit-superpowers-bridge",
@@ -200,12 +201,11 @@ Claude Code users run the same flow with slash commands:
 
 ### Additional Context
 
-This is the **v0.7.0 update** for the already accepted `speckit-superpowers-bridge` community catalog entry. Prior upstream issue history (audited via GitHub search): initial listing accepted via #2575 / #2581 (closed); v0.4.3 update via #2599 / #2600 (closed); v0.5.0 update via #2601 (closed). The v0.6.0 release shipped on this repo but a corresponding upstream issue was **prepared locally but never filed** (commit `eb5ec78` only updated `marketplace/extension-submission-body.md` in the source repo). This v0.7.0 issue therefore carries forward the v0.6.0 catalog changes alongside the new v0.7.0 features.
+This is the **v0.7.1 patch update** for the already accepted `speckit-superpowers-bridge` community catalog entry. Prior upstream issue history (audited via GitHub search): initial listing accepted via #2575 / #2581 (closed); v0.4.3 update via #2599 / #2600 (closed); v0.5.0 update via #2601 (closed). This patch refreshes the verified Spec Kit pair from `0.8.16` to `0.9.1` and aligns release tooling; bridge runtime behavior is unchanged from v0.7.0.
 
-**Two catalog edits requested in this issue:**
+**Catalog edit requested in this issue:**
 
-1. Bump `version` from `0.5.0` to `0.7.0` (skipping v0.6.0 in the catalog — v0.6.0 is documentation + metadata only, no breaking surface; v0.7.0 supersedes it).
-2. **Replace `download_url`** with the GitHub `/releases/latest/download/speckit-superpowers-bridge.zip` stable-alias URL (this is the v0.6.0 decoupling that was prepared but never filed). After this one-time edit, the catalog's `download_url` does NOT need editing on future bridge releases — GitHub's `/releases/latest/` alias always resolves to the current published tag's asset, and every bridge release tag attaches both the versioned and the stable-aliased ZIP at identical content (verified for v0.7.0: 61730-byte identical). This eliminates a recurring per-release catalog-edit class.
+1. Bump `version` to `0.7.1`. Leave `download_url` unchanged at the GitHub `/releases/latest/download/speckit-superpowers-bridge.zip` stable-alias URL.
 
 **What's new in v0.7.0** (two pillars borrowed from [rpamis/comet](https://github.com/rpamis/comet)'s design and adapted to this bridge's Native-First discipline):
 
@@ -215,7 +215,7 @@ This is the **v0.7.0 update** for the already accepted `speckit-superpowers-brid
 **What's carried from v0.6.0** (documentation + metadata, no breaking surface):
 
 - Hero-led + bilingual README modelled on the rpamis/comet structural pattern (5-badge row, `## Why` / `## Quick Start` / `## Positioning` above the fold, 10 `<details>`-collapsed sections). Native Markdown + GFM alerts only — no JS / CSS / build step.
-- `verified-versions.json` artifact at the bridge package root (5-field locked schema; refreshed for v0.7.0).
+- `verified-versions.json` artifact at the bridge package root (5-field locked schema; refreshed for v0.7.1).
 - The `download_url` decoupling (edit #2 above).
 
 The bridge combines Spec Kit and Superpowers by keeping their responsibilities separate:

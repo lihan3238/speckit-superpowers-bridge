@@ -22,8 +22,11 @@ if (-not (Test-Path -LiteralPath $distDir)) { New-Item -ItemType Directory -Forc
 if (Test-Path -LiteralPath $stageRoot) { Remove-Item -Recurse -Force -LiteralPath $stageRoot }
 New-Item -ItemType Directory -Force -Path $stageDir | Out-Null
 
-# Bridge content: extension.yml, commands/, scripts/powershell/
+# Bridge content: extension.yml, optional package metadata, commands/, scripts/
 Copy-Item -LiteralPath (Join-Path $bridgeDir "extension.yml") -Destination $stageDir
+if (Test-Path -LiteralPath (Join-Path $bridgeDir "verified-versions.json")) {
+    Copy-Item -LiteralPath (Join-Path $bridgeDir "verified-versions.json") -Destination $stageDir
+}
 Copy-Item -Recurse -LiteralPath (Join-Path $bridgeDir "commands") -Destination $stageDir
 New-Item -ItemType Directory -Force -Path (Join-Path $stageDir "scripts") | Out-Null
 Copy-Item -Recurse -LiteralPath (Join-Path $bridgeDir "scripts/powershell") -Destination (Join-Path $stageDir "scripts/powershell")

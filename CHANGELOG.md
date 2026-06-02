@@ -8,6 +8,28 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-06-02
+
+Spec Kit v0.9.1 compatibility refresh and release-tooling alignment. No bridge runtime behavior changes from v0.7.0; this is a patch release so current v0.7.0 users can upgrade directly.
+
+### Added
+
+- Tracked Spec Kit's bundled `.specify/extensions/agent-context/` extension in this source repo after `specify init --here --script sh --force --integration claude` under Spec Kit v0.9.1. `.specify/extensions.yml` now explicitly installs `agent-context` and registers its optional `after_specify` / `after_plan` context-refresh hooks. This keeps the project ready for Spec Kit's announced removal of inline context updates in v0.12.0.
+
+### Changed
+
+- Refreshed verified compatibility from Spec Kit `0.8.16` to `0.9.1` while retaining Superpowers `5.1.0`: updated README badges, `README.zh-CN.md`, `verified-versions.json`, `extension-submission-body.md`, and marketplace version metadata.
+- Kept `extension.yml.requires.speckit_version` and `marketplace/catalog-entry.json.requires.speckit_version` at `>=0.8.10`. Spec Kit v0.9.x's `agent-context` migration affects this repo's bootstrap state, not the bridge extension runtime.
+- Ignored generated `.{claude,agents}/skills/speckit-agent-context-update/` directories as vendor-managed integration state, matching the existing generated-skill ignore policy.
+- Updated `.github/workflows/release.yml` to run the current bash smoke suite (`bash tests/run-all.sh`) instead of the removed `tests/*.ps1` suite.
+- Updated `docs/release-runbook.md` to match the current release flow: pre-tag catalog version bump, release readiness validator, bash smoke suite, validator self-test, build dry run, then tag/push.
+- Fixed `scripts/release/build-extension-zip.ps1` to include `.specify/extensions/speckit-superpowers-bridge/verified-versions.json` in the release ZIP, matching the documented package metadata contract.
+
+### Compatibility
+
+- Direct upgrade from v0.7.0 is supported. Handoff schema, guard rules, script behavior, command count, hook count, and `artifacts_sha256` semantics are unchanged.
+- Spec Kit v0.9.1 release notes list `agent-context` as bundled extension behavior carried from v0.9.0 plus v0.9.1 fixes for UTF-8 init-option I/O and missing Cline agent-context entries. The bridge does not depend on Cline and needs no non-incremental runtime update.
+
 ## [0.7.0] - 2026-05-28
 
 `bridge-status` command + SHA256 handoff artifact-hash drift detection — two pillars borrowed from rpamis/comet's design, adapted to Native-First discipline. Additive on the v1 handoff schema (`schema_version` stays at 1; `additionalProperties: true` is the extension point). All 5 hardcoded guard rules and the 008-era `[bridge state]` print contract are byte-frozen — new lines (`Drift:`, `Next:`) only appear in the new `bridge-status` caller, never in `update-handoff` or `guard-command` output.

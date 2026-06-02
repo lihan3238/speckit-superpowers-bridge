@@ -102,6 +102,7 @@ pyvenv.cfg
 .claude/skills/speckit-git-initialize/
 .claude/skills/speckit-git-remote/
 .claude/skills/speckit-git-validate/
+.claude/skills/speckit-agent-context-update/
 .agents/skills/speckit-analyze/
 .agents/skills/speckit-checklist/
 .agents/skills/speckit-clarify/
@@ -114,6 +115,7 @@ pyvenv.cfg
 .agents/skills/speckit-git-initialize/
 .agents/skills/speckit-git-remote/
 .agents/skills/speckit-git-validate/
+.agents/skills/speckit-agent-context-update/
 .claude/skills/speckit-constitution/
 .claude/skills/speckit-specify/
 .agents/skills/speckit-constitution/

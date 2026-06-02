@@ -11,7 +11,7 @@
 <p align="center">
   <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" /></a>
   <a href="https://github.com/lihan3238/speckit-superpowers-bridge/releases"><img alt="Bridge version" src="https://img.shields.io/github/v/release/lihan3238/speckit-superpowers-bridge?style=flat-square&label=bridge" /></a>
-  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.8.16" src="https://img.shields.io/badge/Spec_Kit-verified_0.8.16-success?style=flat-square" /></a>
+  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.9.1" src="https://img.shields.io/badge/Spec_Kit-verified_0.9.1-success?style=flat-square" /></a>
   <a href="https://github.com/obra/superpowers"><img alt="Superpowers verified 5.1.0" src="https://img.shields.io/badge/Superpowers-verified_5.1.0-success?style=flat-square" /></a>
   <a href="https://github.com/github/spec-kit/blob/main/docs/community/extensions.md"><img alt="Spec Kit Marketplace listed" src="https://img.shields.io/badge/Spec_Kit_Marketplace-listed-blueviolet?style=flat-square" /></a>
 </p>
@@ -279,14 +279,16 @@ See `AGENTS.md` for the master cross-agent protocol; `CLAUDE.md` for Claude-spec
 <details>
 <summary><strong>Maintenance and versioning</strong></summary>
 
-This release (v0.6.0) is verified against:
+This release (v0.7.1) is verified against:
 
-- **Spec Kit** `0.8.16`
+- **Spec Kit** `0.9.1`
 - **Superpowers** `5.1.0`
 
 Verified-pair metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned, 5-field schema (verified_at / spec_kit_version / superpowers_version / bridge_version / notes) refreshed once per bridge release. The file was re-introduced in v0.6.0 with a locked, additive-only schema (the pre-0.3.0 automated `verified-versions.json` had different semantics; the runbook reference was preserved through the 0.3–0.5 cycles and v0.6.0 closes the long-standing gap).
 
 When upstream tools ship a new release that breaks the bridge, we either patch the four cross-platform state scripts or pin the documented compatible versions in `CHANGELOG.md`.
+
+Spec Kit `0.9.x` moved coding-agent context updates into the bundled `agent-context` extension. The bridge runtime does not depend on that extension, so `requires.speckit_version` stays at `>=0.8.10`; this repository tracks `agent-context` only to keep its own Spec Kit project bootstrap current.
 
 > [!NOTE]
 > **From v0.6.0 onward**, the marketplace `download_url` is decoupled from the version. It permanently points at `https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip` and resolves via GitHub's `/releases/latest/` alias. Future bridge releases never edit `download_url`; only `version` is bumped in `marketplace/catalog-entry.json`. This removes a recurring per-release edit class and a drift surface — one of the smallest possible Principle-VI wins.

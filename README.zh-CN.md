@@ -11,7 +11,7 @@
 <p align="center">
   <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" /></a>
   <a href="https://github.com/lihan3238/speckit-superpowers-bridge/releases"><img alt="Bridge version" src="https://img.shields.io/github/v/release/lihan3238/speckit-superpowers-bridge?style=flat-square&label=bridge" /></a>
-  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.8.16" src="https://img.shields.io/badge/Spec_Kit-verified_0.8.16-success?style=flat-square" /></a>
+  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.9.1" src="https://img.shields.io/badge/Spec_Kit-verified_0.9.1-success?style=flat-square" /></a>
   <a href="https://github.com/obra/superpowers"><img alt="Superpowers verified 5.1.0" src="https://img.shields.io/badge/Superpowers-verified_5.1.0-success?style=flat-square" /></a>
   <a href="https://github.com/github/spec-kit/blob/main/docs/community/extensions.md"><img alt="Spec Kit Marketplace listed" src="https://img.shields.io/badge/Spec_Kit_Marketplace-listed-blueviolet?style=flat-square" /></a>
 </p>
@@ -279,14 +279,16 @@ v0.2.x 中存在的 6 个元命令（`audit`、`validate`、`parity`、`recommen
 <details>
 <summary><strong>维护与版本（Maintenance and versioning）</strong></summary>
 
-本版本（v0.6.0）针对以下版本验证：
+本版本（v0.7.1）针对以下版本验证：
 
-- **Spec Kit** `0.8.16`
+- **Spec Kit** `0.9.1`
 - **Superpowers** `5.1.0`
 
 verified-pair 元数据记录在 [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) —— 项目自有的 5 字段 schema（verified_at / spec_kit_version / superpowers_version / bridge_version / notes），每次桥 release 刷新一次。该文件在 v0.6.0 重新引入，使用锁定的、只可增量扩展的 schema（0.3.0 之前的自动化 `verified-versions.json` 语义不同；runbook 对它的引用从 0.3 一直留到 0.5，v0.6.0 关闭了这个长期 gap）。
 
 当上游工具的新版破坏了桥，我们要么修补四个跨平台状态脚本，要么在 `CHANGELOG.md` 中钉住已验证的兼容版本。
+
+Spec Kit `0.9.x` 已把 coding-agent context 更新迁移到 bundled `agent-context` 扩展。桥的运行时不依赖这个扩展，所以 `requires.speckit_version` 仍保持 `>=0.8.10`；本仓库跟踪 `agent-context` 只是为了让自身的 Spec Kit project bootstrap 保持最新。
 
 > [!NOTE]
 > **自 v0.6.0 起**，marketplace 的 `download_url` 与版本号解耦。它永久指向 `https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip`，由 GitHub 的 `/releases/latest/` 别名解析。后续桥 release 不再编辑 `download_url`，只在 `marketplace/catalog-entry.json` 里 bump `version`。这消除了一类反复出现的「每个版本编辑一次」工作量和漂移面 —— 是 Principle VI 能取得的最小一次胜利。
