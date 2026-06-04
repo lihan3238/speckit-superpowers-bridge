@@ -193,16 +193,35 @@ specify extension add speckit-superpowers-bridge --from https://github.com/lihan
 
 Both `.agents/skills/` (Codex) and `.claude/skills/` (Claude Code) receive the bridge skill peer files. You can design in one agent and implement in another by simply switching tabs.
 
-**Local development install** (for working on the bridge itself):
+**Local development usage** (for working on this bridge repo itself):
+
+This source checkout already contains the bridge extension at
+`.specify/extensions/speckit-superpowers-bridge/`, and
+`.specify/extensions.yml` registers that local source as the installed
+extension. Use the normal `$speckit-*` / `/speckit-*` commands from this repo;
+do **not** install the published ZIP into the same checkout unless you
+intentionally want to replace the local extension tree with release contents.
+
+If a fresh `specify init --here ... --force` regenerated local install state and
+the bridge needs to be re-registered, use the local dev path instead:
+
+```bash
+specify extension add --dev ./.specify/extensions/speckit-superpowers-bridge
+```
+
+PowerShell equivalent:
 
 ```powershell
 specify extension add --dev .\.specify\extensions\speckit-superpowers-bridge
 ```
 
+Use the published ZIP only in a separate consumer project or in the sibling
+release-verification sandbox `../test_specify_superpower`.
+
 **Version-pinned install** (for reproducible installs of a specific release):
 
 ```powershell
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.6.0/speckit-superpowers-bridge-v0.6.0.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.0/speckit-superpowers-bridge-v1.0.0.zip
 ```
 
 </details>

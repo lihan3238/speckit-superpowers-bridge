@@ -55,6 +55,14 @@ and are gitignored.
 `.claude/skills/speckit-superpowers-bridge/` and
 `.agents/skills/speckit-superpowers-bridge/` are the bridge skill files
 themselves — they ARE this project's product.
+The source extension at `.specify/extensions/speckit-superpowers-bridge/` is
+also the product source in this repository. Do not install the published ZIP
+back into this same checkout unless intentionally testing replacement behavior;
+it uses the same extension ID and target directory. If local install metadata
+needs refreshing after `specify init --here ... --force`, re-register the local
+source with `specify extension add --dev ./.specify/extensions/speckit-superpowers-bridge`
+from bash, or the equivalent PowerShell path. Test release ZIP installs in a
+separate consumer project or `../test_specify_superpower`.
 
 ### Running the smoke-test suite
 

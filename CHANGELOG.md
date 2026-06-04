@@ -8,6 +8,14 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+### Changed
+
+- Clarified source-repo local extension usage: this development checkout already
+  registers `.specify/extensions/speckit-superpowers-bridge/` as the installed
+  local source, so contributors should not install the published ZIP back into
+  the same checkout unless intentionally testing replacement behavior. Updated
+  the version-pinned install example to v1.0.0.
+
 ## [1.0.0] - 2026-06-04
 
 Stable protocol release candidate for the Spec Kit + Superpowers bridge. This release keeps the bridge deliberately thin: Spec Kit remains the source of truth for design artifacts, Superpowers remains the implementation discipline, and the bridge continues to orchestrate only guard, handoff, execute, status, and archive behavior.

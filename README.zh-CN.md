@@ -193,16 +193,35 @@ specify extension add speckit-superpowers-bridge --from https://github.com/lihan
 
 `.agents/skills/`（Codex）与 `.claude/skills/`（Claude Code）都会拿到桥的同名 skill 文件。一边设计、一边实现，只需切换 Tab。
 
-**本地开发安装**（用来开发桥本身）：
+**本地开发使用**（用来开发这个桥仓库本身）：
+
+这个源码 checkout 已经把桥放在
+`.specify/extensions/speckit-superpowers-bridge/`，并且
+`.specify/extensions.yml` 已经把这份本地源码注册为 installed extension。
+在这个仓库里直接使用正常的 `$speckit-*` / `/speckit-*` 命令即可；不要在
+同一个 checkout 里安装发布 ZIP，除非你就是想用 release 内容替换本地
+extension 目录。
+
+如果 fresh `specify init --here ... --force` 重新生成了本地安装态，需要重新注册桥，
+使用本地 dev path：
+
+```bash
+specify extension add --dev ./.specify/extensions/speckit-superpowers-bridge
+```
+
+PowerShell 等价命令：
 
 ```powershell
 specify extension add --dev .\.specify\extensions\speckit-superpowers-bridge
 ```
 
+发布 ZIP 只用于独立消费项目，或 sibling release-verification sandbox
+`../test_specify_superpower`。
+
 **固定版本安装**（用来可复现地安装某个精确版本）：
 
 ```powershell
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v0.6.0/speckit-superpowers-bridge-v0.6.0.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.0/speckit-superpowers-bridge-v1.0.0.zip
 ```
 
 </details>
