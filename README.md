@@ -11,7 +11,7 @@
 <p align="center">
   <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" /></a>
   <a href="https://github.com/lihan3238/speckit-superpowers-bridge/releases"><img alt="Bridge version" src="https://img.shields.io/github/v/release/lihan3238/speckit-superpowers-bridge?style=flat-square&label=bridge" /></a>
-  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.9.1" src="https://img.shields.io/badge/Spec_Kit-verified_0.9.1-success?style=flat-square" /></a>
+  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.9.3" src="https://img.shields.io/badge/Spec_Kit-verified_0.9.3-success?style=flat-square" /></a>
   <a href="https://github.com/obra/superpowers"><img alt="Superpowers verified 5.1.0" src="https://img.shields.io/badge/Superpowers-verified_5.1.0-success?style=flat-square" /></a>
   <a href="https://github.com/github/spec-kit/blob/main/docs/community/extensions.md"><img alt="Spec Kit Marketplace listed" src="https://img.shields.io/badge/Spec_Kit_Marketplace-listed-blueviolet?style=flat-square" /></a>
 </p>
@@ -56,6 +56,31 @@ What this does, in 7 steps:
 > [!TIP]
 > Have only a vague idea? Run `superpowers:brainstorming` *before* `/speckit-specify`. The bridge guard allows it in the pre-spec window — the resulting design doc at `docs/superpowers/specs/<date>-<topic>-design.md` can be referenced in your `/speckit-specify` description so the LLM picks it up as context. See feature [010-prespec-brainstorming](specs/010-prespec-brainstorming/spec.md) for the documented lifecycle decision.
 
+## 1.0.0 Readiness and Support
+
+v1.0.0 is a stable protocol release: no new workflow engine, no daemon, no service, no database, and no replacement for native Spec Kit or Superpowers behavior. The release adds stricter package/readiness checks and evidence for the supported platforms and agents.
+
+| Target | Status | Evidence |
+|---|---|---|
+| Linux bash | Verified | Full bash smoke suite plus release-artifact sandbox cycle. |
+| Windows PowerShell 5.1+ | Verified | Native PowerShell smoke plus release-artifact sandbox cycle. Set `PYTHONUTF8=1` if an older Windows Spec Kit CLI renders Rich symbols through a GBK console. |
+| Codex | Verified | Bounded sandbox run with `codex-cli 0.137.0`. |
+| Claude Code | Verified | Bounded sandbox run with Claude Code `2.1.162`. |
+
+Run the lightweight readiness check after install:
+
+```bash
+bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/bridge-status.sh --readiness --actor codex
+bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/bridge-status.sh --readiness --json --actor codex
+```
+
+```powershell
+.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\bridge-status.ps1 -Readiness -Actor claude
+.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\bridge-status.ps1 -Readiness -Json -Actor claude
+```
+
+The readiness report is read-only. It checks script flavor, required tools, command namespace, package files, current bridge state, verified agent metadata, and the next recommended action.
+
 ### Demo: user flow
 
 <p align="center">
@@ -70,7 +95,9 @@ How the bridge differs from doing nothing, doing only one side, or using a peer 
 |---|---|---|---|---|
 | **Just `speckit.implement`** | Spec Kit | Spec Kit (one-shot LLM run) | partial (agent-aware via Spec Kit) | none |
 | **Just Superpowers (no Spec Kit)** | Superpowers (`brainstorming` + `writing-plans`) | Superpowers (TDD + subagents) | yes (Claude Code + Codex via OS-level skills) | none |
-| **rpamis/comet (OpenSpec + Superpowers)** | OpenSpec change/spec | Superpowers via comet's state machine | yes (multi-platform npm installer) | medium — comet has its own `.yaml` + guard scripts |
+| **Superspec** | Spec-first workflow | Plugin-managed implementation flow | varies by agent | higher — useful doctor/status ideas, but 1.0.0 install failures showed catalog id / namespace drift risk |
+| **SuperB** | Superpowers-centered planning | Superpowers-centered implementation | yes | higher — richer orchestration, but more lifecycle ownership than this bridge wants |
+| **Comet (rpamis/comet, OpenSpec + Superpowers)** | OpenSpec change/spec | Superpowers via Comet's state machine | yes (multi-platform npm installer) | medium — Comet has its own `.yaml` + guard scripts |
 | **speckit-superpowers-bridge** (this) | Spec Kit (vendor-owned) | Superpowers (vendor-owned) | yes (Codex + Claude Code, identical contract) | **extremely thin** — 1 guard script, 1 handoff JSON, 0 new state machinery |
 
 The bridge's brand is **compatible with upstream growth + extremely lightweight**. Every release is graded against the constitution's [Principle VI Native-First gate](.specify/memory/constitution.md): does upstream already do this? Is upstream the right place to fix this? If either answer is "yes", the bridge does NOT add the feature.
@@ -232,7 +259,7 @@ The bridge no longer recommends this routing automatically (the previous `recomm
 | `/speckit-superpowers-bridge` | `$speckit-superpowers-bridge` | Run Spec Kit `tasks.md` through Superpowers via the bridge protocol |
 | `/speckit-speckit-superpowers-bridge-handoff` | `$speckit-speckit-superpowers-bridge-handoff` | Create or update the Superpowers handoff state |
 | `/speckit-speckit-superpowers-bridge-guard` | `$speckit-speckit-superpowers-bridge-guard` | Check whether a requested command is allowed under the current handoff state |
-| `bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/bridge-status.sh` (or `.ps1` on Windows) | same | **(v0.7.0+)** Print current bridge state + `Drift:` + `Next:` recommendation in under a second. Read-only. `--json` for machine output. |
+| `bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/bridge-status.sh` (or `.ps1` on Windows) | same | **(v0.7.0+)** Print current bridge state + `Drift:` + `Next:` recommendation in under a second. Read-only. `--json` for machine output. In v1.0.0, add `--readiness` / `-Readiness` for install health. |
 
 Fresh marketplace installs generate `$speckit-superpowers-bridge` / `/speckit-superpowers-bridge` from the execute command alias. The canonical fallback remains `$speckit-speckit-superpowers-bridge-execute` / `/speckit-speckit-superpowers-bridge-execute`. Handoff and guard intentionally keep their canonical long names because they are advanced/internal commands.
 
@@ -279,12 +306,14 @@ See `AGENTS.md` for the master cross-agent protocol; `CLAUDE.md` for Claude-spec
 <details>
 <summary><strong>Maintenance and versioning</strong></summary>
 
-This release (v0.7.2) is verified against:
+This release (v1.0.0) is verified against:
 
-- **Spec Kit** `0.9.1`
+- **Spec Kit** `0.9.3` on Linux bash; Windows sandbox also passed the bridge runtime floor with Spec Kit CLI `0.8.10`
 - **Superpowers** `5.1.0`
+- **Codex CLI** `0.137.0`
+- **Claude Code** `2.1.162`
 
-Verified-pair metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned, 5-field schema (verified_at / spec_kit_version / superpowers_version / bridge_version / notes) refreshed once per bridge release. The file was re-introduced in v0.6.0 with a locked, additive-only schema (the pre-0.3.0 automated `verified-versions.json` had different semantics; the runbook reference was preserved through the 0.3–0.5 cycles and v0.6.0 closes the long-standing gap).
+Verified metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned additive schema refreshed once per bridge release. v1.0.0 records bridge, upstream tool, platform, and real-agent rows; missing or blocked rows are not advertised as verified.
 
 When upstream tools ship a new release that breaks the bridge, we either patch the four cross-platform state scripts or pin the documented compatible versions in `CHANGELOG.md`.
 

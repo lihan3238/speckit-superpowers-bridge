@@ -314,6 +314,8 @@ function Get-NextCommandRecommendation {
         default     { return '(none)' }
     }
 }
+
+function Write-BridgeStateSummaryFull {
     <#
     .SYNOPSIS
     Same as Write-BridgeStateSummary but accepts an explicit Actor argument (the new actor

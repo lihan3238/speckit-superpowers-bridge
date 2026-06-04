@@ -6,6 +6,7 @@
 [CmdletBinding()]
 param(
     [switch]$Json,
+    [switch]$Readiness,
     [string]$Actor = "",
     [switch]$NoDriftCheck
 )
@@ -122,6 +123,136 @@ $NextRec = Get-NextCommandRecommendation -RepoRoot $RepoRoot -HandoffPath $Hando
 # ---------------------------------------------------------------------------
 # Emit
 # ---------------------------------------------------------------------------
+
+if ($Readiness) {
+    $BridgeDir = (Resolve-Path -LiteralPath (Join-Path $ScriptDir '..\..')).Path
+
+    $toolsStatus = 'ready'
+    $toolsItems = @(
+        [ordered]@{ name = 'powershell'; status = 'ready'; version = $PSVersionTable.PSVersion.ToString() }
+    )
+    $toolsDetail = "powershell: $($PSVersionTable.PSVersion)"
+
+    $namespaceStatus = 'ready'
+    $namespaceDetail = 'speckit.speckit-superpowers-bridge.*'
+    $extensionId = ''
+    $manifestPath = Join-Path $BridgeDir 'extension.yml'
+    if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
+        $namespaceStatus = 'failed'
+        $namespaceDetail = 'missing extension.yml'
+    } else {
+        $manifest = Get-Content -LiteralPath $manifestPath -Raw
+        $m = [regex]::Match($manifest, '(?m)^\s{2,}id:\s*["'']?([^"''\s#]+)')
+        if ($m.Success) { $extensionId = $m.Groups[1].Value }
+        $expectedPrefix = "speckit.$extensionId."
+        $commandMatches = [regex]::Matches($manifest, '(?m)^\s*-\s+name:\s*["'']?([^"''\s#]+)')
+        $hookMatches = [regex]::Matches($manifest, '(?m)^\s*command:\s*["'']?([^"''\s#]+)')
+        foreach ($match in $commandMatches) {
+            $name = $match.Groups[1].Value
+            if ($name.StartsWith('speckit.', [System.StringComparison]::Ordinal) -and -not $name.StartsWith($expectedPrefix, [System.StringComparison]::Ordinal)) {
+                $namespaceStatus = 'failed'
+            }
+        }
+        foreach ($match in $hookMatches) {
+            $name = $match.Groups[1].Value
+            if ($name.StartsWith('speckit.', [System.StringComparison]::Ordinal) -and -not $name.StartsWith($expectedPrefix, [System.StringComparison]::Ordinal)) {
+                $namespaceStatus = 'failed'
+            }
+        }
+        if ($extensionId -ne 'speckit-superpowers-bridge') {
+            $namespaceStatus = 'failed'
+        }
+        if ($namespaceStatus -eq 'failed') {
+            $namespaceDetail = 'expected prefix speckit.speckit-superpowers-bridge.*'
+        }
+    }
+
+    $requiredFiles = @(
+        'extension.yml',
+        'verified-versions.json',
+        'commands/speckit.speckit-superpowers-bridge.execute.md',
+        'commands/speckit.speckit-superpowers-bridge.guard.md',
+        'commands/speckit.speckit-superpowers-bridge.handoff.md',
+        'scripts/bash/bridge-status.sh',
+        'scripts/bash/guard-command.sh',
+        'scripts/bash/update-handoff.sh',
+        'scripts/powershell/bridge-status.ps1',
+        'scripts/powershell/guard-command.ps1',
+        'scripts/powershell/update-handoff.ps1'
+    )
+    $missing = @()
+    foreach ($rel in $requiredFiles) {
+        if (-not (Test-Path -LiteralPath (Join-Path $BridgeDir ($rel -replace '/', [System.IO.Path]::DirectorySeparatorChar)))) {
+            $missing += $rel
+        }
+    }
+    $packageStatus = if ($missing.Count -gt 0) { 'failed' } else { 'ready' }
+    $packageDetail = if ($missing.Count -gt 0) { "missing: $($missing -join ', ')" } else { 'required bridge files present' }
+
+    $bridgeStateStatus = 'ready'
+    $bridgeStateDetail = "status: $Status; pending tasks: $PendingLabel"
+    if ($State -eq 'corrupted') {
+        $bridgeStateStatus = 'failed'
+        $bridgeStateDetail = 'corrupted handoff'
+    } elseif ($State -eq 'no-handoff') {
+        $bridgeStateStatus = 'warning'
+        $bridgeStateDetail = 'no handoff file'
+    }
+
+    $agentsStatus = 'not checked'
+    $agentsDetail = 'verified-versions.json has no agent rows'
+    $agentsItems = @()
+    $verifiedPath = Join-Path $BridgeDir 'verified-versions.json'
+    if (Test-Path -LiteralPath $verifiedPath -PathType Leaf) {
+        try {
+            $verified = Get-Content -LiteralPath $verifiedPath -Raw | ConvertFrom-Json
+            if ($verified.agents) {
+                $agentsItems = @($verified.agents)
+                $allPassed = $true
+                foreach ($item in $agentsItems) {
+                    if ($item.status -ne 'passed') { $allPassed = $false }
+                }
+                $agentsStatus = if ($allPassed -and $agentsItems.Count -gt 0) { 'ready' } else { 'warning' }
+                $agentsDetail = (($agentsItems | ForEach-Object { "$($_.name): $($_.status)" }) -join '; ')
+            }
+        } catch {
+            $agentsStatus = 'warning'
+            $agentsDetail = 'verified-versions.json could not be parsed'
+        }
+    }
+
+    $overallStatus = 'ready'
+    if ($toolsStatus -eq 'failed' -or $namespaceStatus -eq 'failed' -or $packageStatus -eq 'failed' -or $bridgeStateStatus -eq 'failed') {
+        $overallStatus = 'failed'
+    } elseif ($toolsStatus -eq 'warning' -or $bridgeStateStatus -eq 'warning' -or $agentsStatus -eq 'warning' -or $agentsStatus -eq 'not checked') {
+        $overallStatus = 'warning'
+    }
+
+    if ($Json) {
+        $payload = [ordered]@{
+            script_flavor  = 'ps'
+            required_tools = [ordered]@{ status = $toolsStatus; items = @($toolsItems) }
+            namespace      = [ordered]@{ status = $namespaceStatus; extension_id = $extensionId; command_prefix = 'speckit.speckit-superpowers-bridge.' }
+            package_files  = [ordered]@{ status = $packageStatus; missing = @($missing) }
+            bridge_state   = [ordered]@{ status = $bridgeStateStatus; feature_directory = $(if ($FeatureDir -eq '(none)') { $null } else { $FeatureDir }); next = $NextRec }
+            agents         = [ordered]@{ status = $agentsStatus; items = @($agentsItems) }
+            overall_status = $overallStatus
+            next           = $NextRec
+        }
+        Write-Output ($payload | ConvertTo-Json -Compress -Depth 8)
+    } else {
+        Write-Output '[bridge readiness]'
+        Write-Output '  Script flavor: ps'
+        Write-Output "  Required tools: $toolsStatus ($toolsDetail)"
+        Write-Output "  Namespace: $namespaceStatus ($namespaceDetail)"
+        Write-Output "  Package files: $packageStatus ($packageDetail)"
+        Write-Output "  Bridge state: $bridgeStateStatus ($bridgeStateDetail)"
+        Write-Output "  Agents: $agentsStatus ($agentsDetail)"
+        Write-Output "  Next: $NextRec"
+    }
+    if ($overallStatus -eq 'failed') { exit 1 }
+    exit 0
+}
 
 if ($Json) {
     $jsonFeatureDir = if ($FeatureDir -eq '(none)' -or [string]::IsNullOrWhiteSpace($FeatureDir)) { $null } else { $FeatureDir }

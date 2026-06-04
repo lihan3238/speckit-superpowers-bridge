@@ -1,6 +1,8 @@
 # README demo GIFs
 
-Two synthetic-shell demos rendered by [Charmbracelet VHS](https://github.com/charmbracelet/vhs).
+Truth label: illustrative, transcript-derived demo assets. These GIFs are not real Codex or Claude Code recordings.
+
+Two synthetic-shell demos rendered by [Charmbracelet VHS](https://github.com/charmbracelet/vhs). For v1.0.0, real verification evidence lives in `specs/013-v1-0-release-hardening/verification.md` and the sibling sandbox evidence files under `../test_specify_superpower/`.
 
 | File | Length | Size | Where it's used |
 |------|--------|------|-----------------|
@@ -11,6 +13,7 @@ Two synthetic-shell demos rendered by [Charmbracelet VHS](https://github.com/cha
 
 - **Real**: bridge handoff transitions. The tape copies the repo's actual `update-handoff.sh` into a `mktemp -d` project and uses it for `executing` and `complete`.
 - **Synthesized via a tiny demo shell**: the user-facing Spec Kit and Superpowers progress lines. Slash-command output depends on the active AI agent, so the transcript is scripted to keep the README demo concise and reproducible.
+- **Truth label**: illustrative. The GIFs are useful for orientation, but release claims must cite the sandbox/platform/agent evidence instead of these animations.
 
 ## Re-rendering
 
@@ -27,6 +30,8 @@ vhs full-cycle.tape
 ```
 
 The wrapper checks for `vhs` and prints the install pointer if missing. VHS's runtime deps are `ttyd` and `ffmpeg`.
+
+If `vhs`, `ttyd`, or `ffmpeg` is unavailable, do not regenerate GIFs from fake terminal output and do not label old GIFs as real recordings. Keep this truth label and publish transcript/sandbox evidence instead.
 
 ## Editing the storyboard
 

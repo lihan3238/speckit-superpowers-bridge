@@ -7,13 +7,30 @@
 
 set -euo pipefail
 
-VHS_BIN="$(command -v vhs || true)"
-if [[ -z "$VHS_BIN" && -x "$HOME/go/bin/vhs" ]]; then
-    VHS_BIN="$HOME/go/bin/vhs"
-fi
+find_tool() {
+    local name="$1"
+    local fallback="${2:-}"
+    local found
+    found="$(command -v "$name" || true)"
+    if [[ -z "$found" && -n "$fallback" && -x "$fallback" ]]; then
+        found="$fallback"
+    fi
+    printf '%s\n' "$found"
+}
 
-if [[ -z "$VHS_BIN" ]]; then
-    printf 'vhs is not installed. See https://github.com/charmbracelet/vhs for install instructions.\n' >&2
+VHS_BIN="$(find_tool vhs "$HOME/go/bin/vhs")"
+TTYD_BIN="$(find_tool ttyd "$HOME/.local/bin/ttyd")"
+FFMPEG_BIN="$(find_tool ffmpeg "")"
+
+missing=()
+[[ -n "$VHS_BIN" ]] || missing+=("vhs")
+[[ -n "$TTYD_BIN" ]] || missing+=("ttyd")
+[[ -n "$FFMPEG_BIN" ]] || missing+=("ffmpeg")
+
+if [[ "${#missing[@]}" -gt 0 ]]; then
+    printf 'Cannot render demos; missing required tool(s): %s\n' "${missing[*]}" >&2
+    printf 'Install VHS and its runtime dependencies before regenerating GIFs.\n' >&2
+    printf 'Do not present old or scripted GIF output as a real sandbox/agent recording; keep docs/demo/README.md truth labels current.\n' >&2
     exit 2
 fi
 

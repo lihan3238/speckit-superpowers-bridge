@@ -21,12 +21,14 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 JSON_MODE=false
 ACTOR=""
 NO_DRIFT_CHECK=false
+READINESS_MODE=false
 
 usage_error() { printf 'Usage error: %s\n' "$1" >&2; exit 2; }
 
 while [ $# -gt 0 ]; do
     case "$1" in
         --json)            JSON_MODE=true; shift ;;
+        --readiness)       READINESS_MODE=true; shift ;;
         --actor)           ACTOR="${2:-}"; shift 2 ;;
         --no-drift-check)  NO_DRIFT_CHECK=true; shift ;;
         *) usage_error "unknown argument: $1" ;;
@@ -110,6 +112,124 @@ fi
 next_rec="$(get_next_command_recommendation "$REPO_ROOT" "$HANDOFF_PATH")"
 
 # Emit output
+
+if [ "$READINESS_MODE" = true ]; then
+    BRIDGE_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+    tools_status="ready"
+    jq_version="$(jq --version 2>/dev/null | sed 's/^jq-//')"
+    bash_version="${BASH_VERSION%%(*}"
+    tools_detail="jq: ${jq_version:-unknown}; bash: ${bash_version:-unknown}"
+    tools_json="$(jq -nc --arg jqv "${jq_version:-unknown}" --arg bashv "${bash_version:-unknown}" '[{name:"jq",status:"ready",version:$jqv},{name:"bash",status:"ready",version:$bashv}]')"
+
+    namespace_status="ready"
+    namespace_detail="speckit.speckit-superpowers-bridge.*"
+    extension_id=""
+    manifest="$BRIDGE_DIR/extension.yml"
+    if [ ! -f "$manifest" ]; then
+        namespace_status="failed"
+        namespace_detail="missing extension.yml"
+    else
+        extension_id="$(sed -nE 's/^[[:space:]]{2,}id:[[:space:]]*["'\'']?([^"'\''[:space:]#]+).*/\1/p' "$manifest" | head -1)"
+        expected_prefix="speckit.${extension_id}."
+        bad_commands="$(grep -E '^[[:space:]]*-[[:space:]]+name:[[:space:]]*["'\'']?speckit\.' "$manifest" 2>/dev/null | grep -vF "$expected_prefix" || true)"
+        bad_hooks="$(grep -E '^[[:space:]]*command:[[:space:]]*["'\'']?speckit\.' "$manifest" 2>/dev/null | grep -vF "$expected_prefix" || true)"
+        if [ "$extension_id" != "speckit-superpowers-bridge" ] || [ -n "$bad_commands$bad_hooks" ]; then
+            namespace_status="failed"
+            namespace_detail="expected prefix speckit.speckit-superpowers-bridge.*"
+        fi
+    fi
+
+    missing=()
+    for rel in \
+        extension.yml \
+        verified-versions.json \
+        commands/speckit.speckit-superpowers-bridge.execute.md \
+        commands/speckit.speckit-superpowers-bridge.guard.md \
+        commands/speckit.speckit-superpowers-bridge.handoff.md \
+        scripts/bash/bridge-status.sh \
+        scripts/bash/guard-command.sh \
+        scripts/bash/update-handoff.sh \
+        scripts/powershell/bridge-status.ps1 \
+        scripts/powershell/guard-command.ps1 \
+        scripts/powershell/update-handoff.ps1
+    do
+        [ -e "$BRIDGE_DIR/$rel" ] || missing+=("$rel")
+    done
+    package_status="ready"
+    package_detail="required bridge files present"
+    if [ "${#missing[@]}" -gt 0 ]; then
+        package_status="failed"
+        package_detail="missing: ${missing[*]}"
+    fi
+    if [ "${#missing[@]}" -gt 0 ]; then
+        missing_json="$(printf '%s\n' "${missing[@]}" | jq -Rsc 'split("\n")[:-1]')"
+    else
+        missing_json='[]'
+    fi
+
+    bridge_state_status="ready"
+    bridge_state_detail="status: $status; pending tasks: $pending_label"
+    if [ "$STATE" = "corrupted" ]; then
+        bridge_state_status="failed"
+        bridge_state_detail="corrupted handoff"
+    elif [ "$STATE" = "no-handoff" ]; then
+        bridge_state_status="warning"
+        bridge_state_detail="no handoff file"
+    fi
+
+    agents_status="not checked"
+    agents_detail="verified-versions.json has no agent rows"
+    agents_json='[]'
+    verified="$BRIDGE_DIR/verified-versions.json"
+    if [ -f "$verified" ] && jq -e '.agents? // empty' "$verified" >/dev/null 2>&1; then
+        agents_json="$(jq -c '.agents' "$verified")"
+        if jq -e '(.agents // []) | length > 0 and all(.status == "passed")' "$verified" >/dev/null 2>&1; then
+            agents_status="ready"
+        else
+            agents_status="warning"
+        fi
+        agents_detail="$(jq -r '(.agents // []) | map(.name + ": " + .status) | join("; ")' "$verified")"
+        [ -n "$agents_detail" ] || agents_detail="no agent rows"
+    fi
+
+    overall_status="ready"
+    if [ "$tools_status" = "failed" ] || [ "$namespace_status" = "failed" ] || [ "$package_status" = "failed" ] || [ "$bridge_state_status" = "failed" ]; then
+        overall_status="failed"
+    elif [ "$tools_status" = "warning" ] || [ "$bridge_state_status" = "warning" ] || [ "$agents_status" = "warning" ] || [ "$agents_status" = "not checked" ]; then
+        overall_status="warning"
+    fi
+
+    if [ "$JSON_MODE" = true ]; then
+        jq -nc \
+            --arg script_flavor "sh" \
+            --arg tools_status "$tools_status" --argjson tools_items "$tools_json" \
+            --arg namespace_status "$namespace_status" --arg extension_id "$extension_id" --arg command_prefix "speckit.speckit-superpowers-bridge." \
+            --arg package_status "$package_status" --argjson missing "$missing_json" \
+            --arg bridge_status "$bridge_state_status" --arg feature_directory "$([ "$feature_dir" = "(none)" ] && printf '' || printf '%s' "$feature_dir")" --arg next "$next_rec" \
+            --arg agents_status "$agents_status" --argjson agents_items "$agents_json" \
+            --arg overall_status "$overall_status" \
+            '{script_flavor:$script_flavor,
+              required_tools:{status:$tools_status,items:$tools_items},
+              namespace:{status:$namespace_status,extension_id:$extension_id,command_prefix:$command_prefix},
+              package_files:{status:$package_status,missing:$missing},
+              bridge_state:{status:$bridge_status,feature_directory:(if $feature_directory=="" then null else $feature_directory end),next:$next},
+              agents:{status:$agents_status,items:$agents_items},
+              overall_status:$overall_status,
+              next:$next}'
+    else
+        printf '[bridge readiness]\n'
+        printf '  Script flavor: sh\n'
+        printf '  Required tools: %s (%s)\n' "$tools_status" "$tools_detail"
+        printf '  Namespace: %s (%s)\n' "$namespace_status" "$namespace_detail"
+        printf '  Package files: %s (%s)\n' "$package_status" "$package_detail"
+        printf '  Bridge state: %s (%s)\n' "$bridge_state_status" "$bridge_state_detail"
+        printf '  Agents: %s (%s)\n' "$agents_status" "$agents_detail"
+        printf '  Next: %s\n' "$next_rec"
+    fi
+    [ "$overall_status" = "failed" ] && exit 1
+    exit 0
+fi
 
 if [ "$JSON_MODE" = true ]; then
     # JSON output mode (R-JSON-1..R-JSON-8). Use jq -n to build the object.

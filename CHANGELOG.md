@@ -8,6 +8,34 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-06-04
+
+Stable protocol release candidate for the Spec Kit + Superpowers bridge. This release keeps the bridge deliberately thin: Spec Kit remains the source of truth for design artifacts, Superpowers remains the implementation discipline, and the bridge continues to orchestrate only guard, handoff, execute, status, and archive behavior.
+
+### Added
+
+- Release-readiness validation now catches namespace and catalog drift before packaging: `extension.id`, marketplace catalog id, command names, and hook command references must all align to `speckit-superpowers-bridge`.
+- Release package inspection now supports an explicit `-PackageZip` gate and verifies the ZIP root manifest, command files, both bash and PowerShell script flavors, README files, license, changelog, `.gitattributes`, `verified-versions.json`, and portable `/` archive entries.
+- Focused release smoke coverage now includes `tests/test-release-package.sh`, `tests/test-release-powershell.ps1`, and expanded validator self-tests for namespace drift, missing script flavor, missing line-ending policy, and stale workflow test references.
+- `verified-versions.json` now records the 1.0.0 bridge baseline with local upstream tool versions: Spec Kit `0.9.3`, Superpowers `5.1.0`, Codex CLI `0.137.0`, and Claude Code `2.1.162`, plus explicit platform and agent verification rows.
+
+### Changed
+
+- Bumped bridge release metadata to `1.0.0` in `extension.yml`, `marketplace/catalog-entry.json`, and `verified-versions.json`; the marketplace `download_url` remains the stable latest-release alias introduced in v0.6.0.
+- Preserved the existing public bridge surface: 3 commands, 5 hooks, both script flavors, v1 handoff compatibility, and the `requires.speckit_version` runtime floor of `>=0.8.10`.
+- Documented the 1.0.0 evidence model around mandatory Linux bash, native Windows PowerShell 5.1+, real Codex, and real Claude Code verification rows. Missing rows stay blockers rather than being advertised as support claims.
+
+### Compatibility
+
+- Direct upgrade from the current 0.7.2 baseline is supported. Existing readable handoff files, guard rules, command namespace, hook namespace, and status/archive behavior remain compatible.
+- Windows PowerShell and Linux bash are first-class release targets for 1.0.0. WSL bash may satisfy the Linux row, but does not replace native Windows PowerShell evidence.
+
+### Validation
+
+- Release readiness validator self-tests cover version, catalog, namespace, workflow inventory, `.gitattributes`, and package-flavor drift.
+- Package smoke checks include no-heavy-runtime and vendor-managed generated-skill protections so the bridge does not become a separate workflow engine or mutate generated Spec Kit command skills.
+- Real sandbox, Codex, Claude Code, final artifact hash, release workflow, and demo-truth evidence are required before tagging or publishing can be claimed complete.
+
 ## [0.7.2] - 2026-06-02
 
 Release-metadata correction for v0.7.1. No bridge runtime behavior changes.

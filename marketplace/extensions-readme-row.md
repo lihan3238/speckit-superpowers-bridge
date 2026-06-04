@@ -1,11 +1,9 @@
 <!--
-  Pasted into upstream `docs/community/extensions.md`'s community-extensions table.
-  Verify the upstream table's column order before submission - Spec Kit may
-  change it. As of 2026-05-16 (verified during 008 T026 research against
-  `docs/community/extensions.md` at commit 81e9ecd), the columns are:
-  Extension | Purpose | Category | Effect | URL.
-  (Previously documented in v0.4.3 as "Name | Description | Category | Permissions | Repository"
-   — upstream renamed columns since PR #2586. Cell content is unchanged.)
+  Reference row for the community extension listing. As of the official
+  Extension Publishing Guide checked for v1.0.0, submit catalog updates via
+  GitHub's Extension Submission issue template; do not open a direct PR editing
+  `extensions/catalog.community.json`. Maintainers update the catalog/listing
+  from the issue metadata.
 -->
 
-| Superpowers Implementation Bridge | Thin orchestrator between Spec Kit (design) and Superpowers (implementation). Cross-agent. | `process` | Read+Write | [speckit-superpowers-bridge](https://github.com/lihan3238/speckit-superpowers-bridge) |
+| Superpowers Implementation Bridge | Thin 1.0.0 bridge from Spec Kit design artifacts to Superpowers implementation discipline; verified on Linux bash, Windows PowerShell, Codex, and Claude Code. | `process` | Read+Write | [speckit-superpowers-bridge](https://github.com/lihan3238/speckit-superpowers-bridge) |

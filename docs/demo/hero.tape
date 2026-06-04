@@ -1,5 +1,9 @@
 # speckit-superpowers-bridge — concise user-flow demo (~18 s)
 #
+# Truth label: illustrative transcript-derived demo. It calls real bridge
+# update-handoff.sh for state transitions, but Spec Kit / Superpowers / agent
+# output lines are synthesized for a concise README animation.
+#
 # Renders ./hero.gif via Charmbracelet VHS (https://github.com/charmbracelet/vhs).
 # Re-render with: `vhs hero.tape` (run from this directory).
 #

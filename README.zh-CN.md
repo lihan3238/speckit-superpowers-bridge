@@ -11,7 +11,7 @@
 <p align="center">
   <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" /></a>
   <a href="https://github.com/lihan3238/speckit-superpowers-bridge/releases"><img alt="Bridge version" src="https://img.shields.io/github/v/release/lihan3238/speckit-superpowers-bridge?style=flat-square&label=bridge" /></a>
-  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.9.1" src="https://img.shields.io/badge/Spec_Kit-verified_0.9.1-success?style=flat-square" /></a>
+  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.9.3" src="https://img.shields.io/badge/Spec_Kit-verified_0.9.3-success?style=flat-square" /></a>
   <a href="https://github.com/obra/superpowers"><img alt="Superpowers verified 5.1.0" src="https://img.shields.io/badge/Superpowers-verified_5.1.0-success?style=flat-square" /></a>
   <a href="https://github.com/github/spec-kit/blob/main/docs/community/extensions.md"><img alt="Spec Kit Marketplace listed" src="https://img.shields.io/badge/Spec_Kit_Marketplace-listed-blueviolet?style=flat-square" /></a>
 </p>
@@ -56,6 +56,31 @@ specify extension add speckit-superpowers-bridge \
 > [!TIP]
 > 只有一个模糊的想法？在 `/speckit-specify` 之前先跑 `superpowers:brainstorming`。桥的 guard 在「pre-spec」窗口允许这条路径 —— 产出的 design doc 落在 `docs/superpowers/specs/<date>-<topic>-design.md`，你可以把它的相对路径写进 `/speckit-specify` 的描述里，LLM 会把它当作 context。参见 feature [010-prespec-brainstorming](specs/010-prespec-brainstorming/spec.md) 中记录的生命周期决策。
 
+## 1.0.0 readiness 与支持矩阵
+
+v1.0.0 是稳定协议 release：不引入新的 workflow engine、不引入 daemon/service/database，也不替代 Spec Kit 或 Superpowers 的原生行为。本版本加强 package/readiness 检查，并记录受支持平台与 Agent 的真实证据。
+
+| 目标 | 状态 | 证据 |
+|---|---|---|
+| Linux bash | 已验证 | 完整 bash smoke suite + release artifact sandbox cycle。 |
+| Windows PowerShell 5.1+ | 已验证 | 原生 PowerShell smoke + release artifact sandbox cycle。旧 Windows Spec Kit CLI 在 GBK 控制台渲染 Rich 符号时可设置 `PYTHONUTF8=1`。 |
+| Codex | 已验证 | `codex-cli 0.137.0` 的受限 sandbox 运行。 |
+| Claude Code | 已验证 | Claude Code `2.1.162` 的受限 sandbox 运行。 |
+
+安装后运行轻量 readiness 检查：
+
+```bash
+bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/bridge-status.sh --readiness --actor codex
+bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/bridge-status.sh --readiness --json --actor codex
+```
+
+```powershell
+.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\bridge-status.ps1 -Readiness -Actor claude
+.\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\bridge-status.ps1 -Readiness -Json -Actor claude
+```
+
+readiness 报告是只读的：检查 script flavor、required tools、command namespace、package files、当前 bridge state、已验证 Agent metadata，以及下一步推荐动作。
+
 ### Demo：用户流程
 
 <p align="center">
@@ -70,7 +95,9 @@ specify extension add speckit-superpowers-bridge \
 |---|---|---|---|---|
 | **只用 `speckit.implement`** | Spec Kit | Spec Kit（一次性 LLM 调用） | 部分（通过 Spec Kit 的 agent-aware） | 无 |
 | **只用 Superpowers（不用 Spec Kit）** | Superpowers（`brainstorming` + `writing-plans`） | Superpowers（TDD + subagents） | 是（Claude Code + Codex，通过 OS-level skills） | 无 |
-| **rpamis/comet（OpenSpec + Superpowers）** | OpenSpec change/spec | Superpowers，经 comet 的 state machine | 是（多平台 npm 安装器） | 中等 —— comet 自己有 `.yaml` + guard 脚本 |
+| **Superspec** | spec-first workflow | plugin-managed implementation flow | 因 Agent 而异 | 更高 —— doctor/status 思路值得吸收，但 1.0.0 安装失败也暴露 catalog id / namespace 漂移风险 |
+| **SuperB** | 以 Superpowers 为中心的规划 | 以 Superpowers 为中心的实现 | 是 | 更高 —— 编排更丰富，但生命周期 ownership 超出本桥目标 |
+| **Comet（rpamis/comet，OpenSpec + Superpowers）** | OpenSpec change/spec | Superpowers，经 Comet 的 state machine | 是（多平台 npm 安装器） | 中等 —— Comet 自己有 `.yaml` + guard 脚本 |
 | **speckit-superpowers-bridge**（本项目） | Spec Kit（厂商所有） | Superpowers（厂商所有） | 是（Codex + Claude Code，契约相同） | **极薄** —— 1 个 guard 脚本、1 个 handoff JSON、0 套新的状态机 |
 
 桥的招牌是 **兼容上游成长 + 极度轻量**。每个 release 都会过宪法 [Principle VI Native-First gate](.specify/memory/constitution.md)：上游是否已经做了这件事？上游是否是解决这件事的正确位置？只要任一答案是「是」，桥就**不**加这个功能。
@@ -232,7 +259,7 @@ sudo dnf install bash jq      # Fedora
 | `/speckit-superpowers-bridge` | `$speckit-superpowers-bridge` | 通过桥协议把 Spec Kit `tasks.md` 跑进 Superpowers |
 | `/speckit-speckit-superpowers-bridge-handoff` | `$speckit-speckit-superpowers-bridge-handoff` | 创建或更新 Superpowers handoff 状态 |
 | `/speckit-speckit-superpowers-bridge-guard` | `$speckit-speckit-superpowers-bridge-guard` | 检查请求的命令是否被当前 handoff 状态允许 |
-| `bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/bridge-status.sh`（Windows 用 `.ps1`） | 同左 | **(v0.7.0+)** 一秒内打印当前 bridge 状态 + `Drift:` + `Next:` 推荐命令。只读。`--json` 支持机器可读输出。 |
+| `bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/bridge-status.sh`（Windows 用 `.ps1`） | 同左 | **(v0.7.0+)** 一秒内打印当前 bridge 状态 + `Drift:` + `Next:` 推荐命令。只读。`--json` 支持机器可读输出。v1.0.0 起可加 `--readiness` / `-Readiness` 查看安装健康度。 |
 
 fresh marketplace 安装会从 execute 命令的 alias 生成 `$speckit-superpowers-bridge` / `/speckit-superpowers-bridge`。官方 canonical 回退入口仍是 `$speckit-speckit-superpowers-bridge-execute` / `/speckit-speckit-superpowers-bridge-execute`。handoff 和 guard 有意保留 canonical 长命令，因为它们是高级/内部命令。
 
@@ -279,12 +306,14 @@ v0.2.x 中存在的 6 个元命令（`audit`、`validate`、`parity`、`recommen
 <details>
 <summary><strong>维护与版本（Maintenance and versioning）</strong></summary>
 
-本版本（v0.7.2）针对以下版本验证：
+本版本（v1.0.0）针对以下版本验证：
 
-- **Spec Kit** `0.9.1`
+- **Spec Kit** `0.9.3`（Linux bash）；Windows sandbox 也在 bridge runtime floor 对应的 Spec Kit CLI `0.8.10` 上通过
 - **Superpowers** `5.1.0`
+- **Codex CLI** `0.137.0`
+- **Claude Code** `2.1.162`
 
-verified-pair 元数据记录在 [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) —— 项目自有的 5 字段 schema（verified_at / spec_kit_version / superpowers_version / bridge_version / notes），每次桥 release 刷新一次。该文件在 v0.6.0 重新引入，使用锁定的、只可增量扩展的 schema（0.3.0 之前的自动化 `verified-versions.json` 语义不同；runbook 对它的引用从 0.3 一直留到 0.5，v0.6.0 关闭了这个长期 gap）。
+verified metadata 记录在 [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) —— 项目自有、只做增量扩展的 schema，每次桥 release 刷新一次。v1.0.0 记录 bridge、上游工具、平台和真实 Agent 行；缺失或 blocked 的行不会被宣传为 verified。
 
 当上游工具的新版破坏了桥，我们要么修补四个跨平台状态脚本，要么在 `CHANGELOG.md` 中钉住已验证的兼容版本。
 

@@ -78,3 +78,4 @@ From v0.5.0 onward, every `update-handoff` and `guard-command` invocation prints
 ## Useful commands (v0.7.0+)
 
 - `bridge-status.{sh,ps1}` — read-only on-demand introspection (prints `[bridge state]` + `Drift:` + `Next:` recommendation; never writes). See `specs/012-bridge-status-and-hash/`.
+- `bridge-status.{sh,ps1} --readiness` / `-Readiness` — read-only install health report added for v1.0.0. It checks script flavor, required tools, namespace alignment, package files, bridge state, verified agent metadata, and next action; `--json` / `-Json` returns machine-readable readiness output.
