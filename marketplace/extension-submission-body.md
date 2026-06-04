@@ -12,7 +12,7 @@ Superpowers Implementation Bridge
 
 ### Version
 
-1.0.0
+1.0.1
 
 ### Description
 
@@ -32,7 +32,7 @@ https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download
 
 Version-pinned artifact:
 
-https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.0/speckit-superpowers-bridge-v1.0.0.zip
+https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.1/speckit-superpowers-bridge-v1.0.1.zip
 
 The catalog `download_url` intentionally remains the stable latest-release alias. Since v0.6.0 every release uploads both the versioned ZIP and `speckit-superpowers-bridge.zip`; future catalog updates should bump only `version` unless the distribution policy changes.
 
@@ -56,7 +56,7 @@ https://github.com/lihan3238/speckit-superpowers-bridge/blob/main/CHANGELOG.md
 
 >=0.8.10
 
-Verified release baseline for v1.0.0:
+Verified release baseline for v1.0.1:
 
 - Spec Kit `0.9.3` on Linux bash.
 - Spec Kit CLI `0.8.10` on native Windows PowerShell for bridge runtime floor coverage.
@@ -92,6 +92,8 @@ bridge, superpowers, cross-agent, tdd, workflow
 - Supports Codex and Claude Code through the same handoff contract.
 - New in v1.0.0: release readiness checks for version, catalog id, command namespace, hook namespace, package contents, workflow inventory, platform rows, agent rows, and evidence completeness.
 - New in v1.0.0: `bridge-status --readiness` / `bridge-status.ps1 -Readiness` read-only install health report covering script flavor, required tools, namespace, package files, bridge state, verified agent metadata, and next action.
+- New in v1.0.1: source-repo development instructions now use a temporary external dev source for `specify extension add --dev`, avoiding source=destination replacement in Spec Kit 0.9.x.
+- New in v1.0.1: Spec Kit 0.9.x generated `.specify-dev` command material and canonical `speckit-speckit-superpowers-bridge-*` skills are documented as local install state, not product source.
 
 ### Support Matrix
 
@@ -104,7 +106,7 @@ bridge, superpowers, cross-agent, tdd, workflow
 
 ### Release Validation Summary
 
-- `scripts/release/validate-release-readiness.ps1 -Version 1.0.0 -PackageZip dist/speckit-superpowers-bridge-v1.0.0.zip` passes.
+- `scripts/release/validate-release-readiness.ps1 -Version 1.0.1 -PackageZip dist/speckit-superpowers-bridge-v1.0.1.zip` passes.
 - `scripts/release/test-validate-release-readiness.ps1` passes, including negative fixtures for namespace drift, stale marketplace metadata, missing package flavor, missing agent rows, missing platform rows, and missing workflow evidence.
 - `bash tests/run-all.sh` passes.
 - `tests/test-release-powershell.ps1` passes under native Windows PowerShell 5.1.
@@ -112,7 +114,7 @@ bridge, superpowers, cross-agent, tdd, workflow
 
 ### Lightweight Positioning
 
-v1.0.0 remains a stable protocol release, not a workflow rewrite. The bridge does not introduce a daemon, service, database, custom DSL, independent state machine, or parallel task runner. It borrows useful ideas from Superspec, SuperB, and Comet at the diagnostic/documentation level (readiness checks, evidence rows, namespace validation, truthful demos), but keeps runtime ownership with upstream Spec Kit and Superpowers.
+v1.0.1 remains the same stable protocol release surface as v1.0.0, not a workflow rewrite. The bridge does not introduce a daemon, service, database, custom DSL, independent state machine, or parallel task runner. It borrows useful ideas from Superspec, SuperB, and Comet at the diagnostic/documentation level (readiness checks, evidence rows, namespace validation, truthful demos), but keeps runtime ownership with upstream Spec Kit and Superpowers.
 
 ### AI-Assistance Disclosure
 
@@ -131,7 +133,7 @@ This extension is developed with AI coding assistants. Claude Code and Codex wer
 - [x] Valid `extension.yml` manifest included.
 - [x] README.md with installation and usage instructions included.
 - [x] LICENSE file included.
-- [x] GitHub release created with version tag: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v1.0.0
+- [x] GitHub release created with version tag: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v1.0.1
 - [x] All command files exist and are properly formatted.
 - [x] Extension ID follows naming conventions: lowercase with hyphens.
 
@@ -180,7 +182,7 @@ Claude Code users invoke the same bridge contract as:
     "id": "speckit-superpowers-bridge",
     "description": "Thin orchestrator between Spec Kit (design) and Superpowers (implementation). Cross-agent.",
     "author": "lihan3238",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip",
     "repository": "https://github.com/lihan3238/speckit-superpowers-bridge",
     "homepage": "https://github.com/lihan3238/speckit-superpowers-bridge",

@@ -98,7 +98,7 @@ printf '%s\n' "$readiness_json" | jq -e '
 ' >/dev/null || fail "readiness JSON missing expected fields"
 
 for file in README.md README.zh-CN.md; do
-    for needle in "1.0.0" "Windows" "Linux" "readiness" "Codex" "Claude" "Superspec" "SuperB" "Comet"; do
+    for needle in "$version" "Windows" "Linux" "readiness" "Codex" "Claude" "Superspec" "SuperB" "Comet"; do
         grep -Fq "$needle" "$REPO_ROOT/$file" || fail "$file missing README parity term: $needle"
     done
 done
@@ -128,7 +128,7 @@ changed_generated="$(
 )"
 [ -z "$changed_generated" ] || fail "vendor-managed generated skills have local diffs: $changed_generated"
 
-zip_path="$REPO_ROOT/dist/speckit-superpowers-bridge-v1.0.0.zip"
+zip_path="$REPO_ROOT/dist/speckit-superpowers-bridge-v$version.zip"
 if [ -f "$zip_path" ]; then
     printf 'release-package: checking ZIP %s\n' "$zip_path"
     python3 - "$zip_path" <<'PY'

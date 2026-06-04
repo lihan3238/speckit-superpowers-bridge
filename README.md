@@ -76,9 +76,10 @@ What this does, in 7 steps:
 > [!TIP]
 > Have only a vague idea? Run `superpowers:brainstorming` *before* `/speckit-specify`. The bridge guard allows it in the pre-spec window — the resulting design doc at `docs/superpowers/specs/<date>-<topic>-design.md` can be referenced in your `/speckit-specify` description so the LLM picks it up as context. See feature [010-prespec-brainstorming](specs/010-prespec-brainstorming/spec.md) for the documented lifecycle decision.
 
-## 1.0.0 Readiness and Support
+## 1.0.x Readiness and Support
 
 v1.0.0 is a stable protocol release: no new workflow engine, no daemon, no service, no database, and no replacement for native Spec Kit or Superpowers behavior. The release adds stricter package/readiness checks and evidence for the supported platforms and agents.
+v1.0.1 is a documentation and development-checkout cleanup patch on the same protocol surface.
 
 | Target | Status | Evidence |
 |---|---|---|
@@ -230,7 +231,7 @@ release-verification sandbox `../test_specify_superpower`.
 **Version-pinned install** (for reproducible installs of a specific release):
 
 ```powershell
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.0/speckit-superpowers-bridge-v1.0.0.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.1/speckit-superpowers-bridge-v1.0.1.zip
 ```
 
 </details>
@@ -354,14 +355,14 @@ See `AGENTS.md` for the master cross-agent protocol; `CLAUDE.md` for Claude-spec
 <details>
 <summary><strong>Maintenance and versioning</strong></summary>
 
-This release (v1.0.0) is verified against:
+This release (v1.0.1) is verified against:
 
 - **Spec Kit** `0.9.3` on Linux bash; Windows sandbox also passed the bridge runtime floor with Spec Kit CLI `0.8.10`
 - **Superpowers** `5.1.0`
 - **Codex CLI** `0.137.0`
 - **Claude Code** `2.1.162`
 
-Verified metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned additive schema refreshed once per bridge release. v1.0.0 records bridge, upstream tool, platform, and real-agent rows; missing or blocked rows are not advertised as verified.
+Verified metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned additive schema refreshed once per bridge release. v1.0.1 records bridge, upstream tool, platform, and real-agent rows; missing or blocked rows are not advertised as verified.
 
 When upstream tools ship a new release that breaks the bridge, we either patch the four cross-platform state scripts or pin the documented compatible versions in `CHANGELOG.md`.
 

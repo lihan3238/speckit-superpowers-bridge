@@ -8,16 +8,21 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-06-04
+
 ### Changed
 
 - Clarified source-repo local extension usage: this development checkout already
   registers `.specify/extensions/speckit-superpowers-bridge/` as the installed
   local source, so contributors should not install the published ZIP back into
   the same checkout unless intentionally testing replacement behavior. Updated
-  the version-pinned install example to v1.0.0.
+  the version-pinned install example to v1.0.1.
 - Documented the safe Spec Kit 0.9.x dev-registration path for this source repo:
   register from a temporary copy outside the in-repo target extension directory
   to avoid source=destination replacement.
+- Ignored Spec Kit 0.9.x generated `.specify-dev` command material and canonical
+  `speckit-speckit-superpowers-bridge-*` skill directories as local install
+  state, while keeping the hand-authored short bridge peers tracked.
 
 ## [1.0.0] - 2026-06-04
 

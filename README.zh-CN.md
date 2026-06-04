@@ -76,9 +76,10 @@ specify extension add speckit-superpowers-bridge \
 > [!TIP]
 > 只有一个模糊的想法？在 `/speckit-specify` 之前先跑 `superpowers:brainstorming`。桥的 guard 在「pre-spec」窗口允许这条路径 —— 产出的 design doc 落在 `docs/superpowers/specs/<date>-<topic>-design.md`，你可以把它的相对路径写进 `/speckit-specify` 的描述里，LLM 会把它当作 context。参见 feature [010-prespec-brainstorming](specs/010-prespec-brainstorming/spec.md) 中记录的生命周期决策。
 
-## 1.0.0 readiness 与支持矩阵
+## 1.0.x readiness 与支持矩阵
 
 v1.0.0 是稳定协议 release：不引入新的 workflow engine、不引入 daemon/service/database，也不替代 Spec Kit 或 Superpowers 的原生行为。本版本加强 package/readiness 检查，并记录受支持平台与 Agent 的真实证据。
+v1.0.1 是同一协议面上的文档与开发 checkout 清理补丁。
 
 | 目标 | 状态 | 证据 |
 |---|---|---|
@@ -229,7 +230,7 @@ specify extension add --dev (Join-Path $tmp.FullName "speckit-superpowers-bridge
 **固定版本安装**（用来可复现地安装某个精确版本）：
 
 ```powershell
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.0/speckit-superpowers-bridge-v1.0.0.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.1/speckit-superpowers-bridge-v1.0.1.zip
 ```
 
 </details>
@@ -353,14 +354,14 @@ v0.2.x 中存在的 6 个元命令（`audit`、`validate`、`parity`、`recommen
 <details>
 <summary><strong>维护与版本（Maintenance and versioning）</strong></summary>
 
-本版本（v1.0.0）针对以下版本验证：
+本版本（v1.0.1）针对以下版本验证：
 
 - **Spec Kit** `0.9.3`（Linux bash）；Windows sandbox 也在 bridge runtime floor 对应的 Spec Kit CLI `0.8.10` 上通过
 - **Superpowers** `5.1.0`
 - **Codex CLI** `0.137.0`
 - **Claude Code** `2.1.162`
 
-verified metadata 记录在 [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) —— 项目自有、只做增量扩展的 schema，每次桥 release 刷新一次。v1.0.0 记录 bridge、上游工具、平台和真实 Agent 行；缺失或 blocked 的行不会被宣传为 verified。
+verified metadata 记录在 [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) —— 项目自有、只做增量扩展的 schema，每次桥 release 刷新一次。v1.0.1 记录 bridge、上游工具、平台和真实 Agent 行；缺失或 blocked 的行不会被宣传为 verified。
 
 当上游工具的新版破坏了桥，我们要么修补四个跨平台状态脚本，要么在 `CHANGELOG.md` 中钉住已验证的兼容版本。
 
