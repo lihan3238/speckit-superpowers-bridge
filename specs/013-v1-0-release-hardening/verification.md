@@ -4,16 +4,16 @@
 
 - Version: 1.0.0
 - ZIP path or URL: `dist/speckit-superpowers-bridge-v1.0.0.zip`
-- SHA256: `8d95beeaa322d132cac1c80f8ab22cdee3c5868124ee27aa4f4f4ee9388d8848`
-- Built at: `2026-06-04T09:02:41Z`
-- Built from: bash-first release builder working tree on `013-v1-0-release-hardening`; deterministic ZIP output verified by `tests/test-release-package.sh`.
+- SHA256: `4ad6fa06f8ebd95a0f793e46de699417df3ec6b56f7e62e844ac193729095476`
+- Built at: `2026-06-04T09:13:12Z`
+- Built from: bash-first release builder on `013-v1-0-release-hardening`; deterministic ZIP output and normalized ZIP modes verified by `tests/test-release-package.sh`.
 
 ## Platform Matrix
 
 | Platform | Environment | Script flavor | Install source | Smoke | Sandbox cycle | Readiness | Result | Notes |
 |---|---|---|---|---|---|---|---|---|
-| Linux bash | WSL bash 5.2 on `/mnt/c` checkout and sandbox | sh | `dist/speckit-superpowers-bridge-v1.0.0.zip` via localhost ZIP URL | PASS | PASS | PASS | PASS | Full bash suite and bash-built final-package sandbox bridge/readiness cycle passed in `../test_specify_superpower/v1-0-linux-bashfirst-final-20260604T090309Z`. |
-| Windows PowerShell | Native Windows PowerShell 5.1 on host | ps | `dist/speckit-superpowers-bridge-v1.0.0.zip` via localhost ZIP URL | PASS | PASS | PASS | PASS | PowerShell smoke and bash-built final-package sandbox bridge/readiness cycle passed in `../test_specify_superpower/v1-0-windows-bashfirst-final-20260604T090337Z` with `PYTHONUTF8=1` for Spec Kit CLI install output. |
+| Linux bash | WSL bash 5.2 on `/mnt/c` checkout and sandbox | sh | `dist/speckit-superpowers-bridge-v1.0.0.zip` via localhost ZIP URL | PASS | PASS | PASS | PASS | Full bash suite and bash-built final-package sandbox bridge/readiness cycle passed in `../test_specify_superpower/v1-0-linux-finalsha-20260604T091342Z`. |
+| Windows PowerShell | Native Windows PowerShell 5.1 on host | ps | `dist/speckit-superpowers-bridge-v1.0.0.zip` via localhost ZIP URL | PASS | PASS | PASS | PASS | PowerShell smoke and bash-built final-package sandbox bridge/readiness cycle passed in `../test_specify_superpower/v1-0-windows-finalsha-20260604T091411Z` with `PYTHONUTF8=1` for Spec Kit CLI install output. |
 
 ## Agent Matrix
 
@@ -53,9 +53,9 @@ GIF regeneration decision: not regenerated for v1.0.0 because `vhs` is not avail
 
 ## Known Blockers and Deferrals
 
-- No platform, package, release workflow, or real-agent verification blockers remain for the local v1.0.0 release candidate.
+- No platform, package, release workflow, published-asset, or real-agent verification blockers remain for v1.0.0.
 - GIF regeneration is deferred because `vhs` is not available in WSL PATH. Existing demo assets are explicitly labelled illustrative/transcript-derived and are not used as release verification evidence.
-- Tagging/publishing `v1.0.0` and opening the upstream Spec Kit catalog issue/PR are external side effects that require maintainer authorization. Prepared material lives in `marketplace/extension-submission-body.md`.
+- `v1.0.0` is published at `https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v1.0.0`; upstream Spec Kit catalog update issue is `https://github.com/github/spec-kit/issues/2844`.
 
 ## US1 Gate Evidence
 
@@ -64,14 +64,14 @@ GIF regeneration decision: not regenerated for v1.0.0 because `vhs` is not avail
 | Release readiness, source | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/release/validate-release-readiness.ps1 -Version 1.0.0` | PASS | Version, catalog, namespace, changelog, script parity, `.gitattributes`, workflow inventory. |
 | Release readiness, package ZIP | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/release/validate-release-readiness.ps1 -Version 1.0.0 -PackageZip dist/speckit-superpowers-bridge-v1.0.0.zip` | PASS | Required ZIP root files, commands, bash scripts, PowerShell scripts, and portable entries. |
 | Validator self-tests | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/release/test-validate-release-readiness.ps1` | PASS | Includes version mismatch, catalog id mismatch, command namespace mismatch, hook namespace mismatch, stale workflow reference, PowerShell package-builder rollback fixture, and missing package PowerShell flavor fixtures. |
-| Package smoke | `bash tests/test-release-package.sh` | PASS | Source inventory, deterministic bash build, readiness output, README parity, and built ZIP inspection all passed. |
+| Package smoke | `bash tests/test-release-package.sh` | PASS | Source inventory, deterministic bash build, normalized ZIP modes, readiness output, README parity, and built ZIP inspection all passed. |
 | Extension surface audit | `extension.yml` inspection + file counts | PASS | Commands: 3; hooks: 5; bash scripts: 6; PowerShell scripts: 6. Namespaces preserved as `speckit.speckit-superpowers-bridge.*`. |
 | No-heavy-runtime audit | `grep -RInE 'daemon|database|sqlite|postgres|redis|node_modules|docker-compose' .specify/extensions/speckit-superpowers-bridge` | PASS | No heavy runtime/state-machine markers found in the bridge package. |
 | Vendor-managed skill audit | `git diff --name-only -- .agents/skills .claude/skills` + `git ls-files '.agents/skills/speckit-*' '.claude/skills/speckit-*'` | PASS | No generated Spec Kit skill diffs; tracked skill files are only the project-owned bridge peers. |
 
 ## Build Script Decision
 
-The CI release job now builds the package with `bash scripts/release/build-extension-zip.sh --version 1.0.0`. This avoids Linux runner differences in PowerShell hidden-file enumeration and makes WSL/Linux the preferred release-build path. The bash builder fixes ZIP entry ordering, timestamps, and permissions so repeated builds produce the same SHA256. The PowerShell builder remains as a Windows-compatible fallback and was patched with `Get-ChildItem -Force` so dotfiles such as `.gitattributes` are not omitted if maintainers run it manually.
+The CI release job now builds the package with `bash scripts/release/build-extension-zip.sh --version 1.0.0`. This avoids Linux runner differences in PowerShell hidden-file enumeration and makes WSL/Linux the preferred release-build path. The bash builder fixes ZIP entry ordering, timestamps, and permissions so repeated builds produce the same SHA256. It also normalizes ZIP modes (`scripts/bash/*.sh` as `0755`, all other files as `0644`) so WSL checkouts under `/mnt/c` match GitHub's clean checkout artifact. The PowerShell builder remains as a Windows-compatible fallback and was patched with `Get-ChildItem -Force` so dotfiles such as `.gitattributes` are not omitted if maintainers run it manually.
 
 ## US2 Platform Gate Evidence
 
@@ -111,8 +111,10 @@ The CI release job now builds the package with `bash scripts/release/build-exten
 | Release readiness, source | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/release/validate-release-readiness.ps1 -Version 1.0.0` | PASS | `Release readiness OK for version 1.0.0.` |
 | Release readiness, package ZIP | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/release/validate-release-readiness.ps1 -Version 1.0.0 -PackageZip dist/speckit-superpowers-bridge-v1.0.0.zip` | PASS | `Release readiness OK for version 1.0.0.` |
 | Validator self-tests | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/release/test-validate-release-readiness.ps1` | PASS | Ends with `validate-release-readiness-tests-ok`. |
-| Final package build | `bash scripts/release/build-extension-zip.sh --version 1.0.0` | PASS | Built `dist/speckit-superpowers-bridge-v1.0.0.zip` and stable alias `dist/speckit-superpowers-bridge.zip`; both SHA256 values are `8d95beeaa322d132cac1c80f8ab22cdee3c5868124ee27aa4f4f4ee9388d8848`. Rebuilding twice in `tests/test-release-package.sh` produced the same SHA. |
+| Final package build | `bash scripts/release/build-extension-zip.sh --version 1.0.0` | PASS | Built `dist/speckit-superpowers-bridge-v1.0.0.zip` and stable alias `dist/speckit-superpowers-bridge.zip`; both SHA256 values are `4ad6fa06f8ebd95a0f793e46de699417df3ec6b56f7e62e844ac193729095476`. Rebuilding twice in `tests/test-release-package.sh` produced the same SHA and normalized ZIP modes. |
 | Linux bash final suite | `bash tests/run-all.sh` | PASS | All 6 bash smoke tests passed. |
 | Windows PowerShell final smoke | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File tests/test-release-powershell.ps1` | PASS | Ends with `release-powershell-tests-ok`; expected warning fixture verifies incomplete-task warning behavior. |
-| Publish tag/release | Not run | DEFERRED | Requires maintainer authorization for remote tag/release side effects. |
-| Upstream catalog submission | Prepared only | DEFERRED | Submission body is ready in `marketplace/extension-submission-body.md`; opening issue/PR requires maintainer authorization. |
+| Release workflow | `gh run watch 26942206493 --repo lihan3238/speckit-superpowers-bridge --exit-status` | PASS | Linux gate, Windows gate, and build/publish release job all passed. |
+| Published release assets | `curl -fsSL` versioned ZIP and latest alias, then `sha256sum` | PASS | Versioned and stable-alias downloads both returned SHA256 `4ad6fa06f8ebd95a0f793e46de699417df3ec6b56f7e62e844ac193729095476`; HEAD checks returned 302 -> 200. |
+| Publish tag/release | `git push --force ... v1.0.0` + release workflow | PASS | Release URL: `https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v1.0.0`; assets uploaded at `2026-06-04T09:07:55Z`. |
+| Upstream catalog submission | GitHub issue | PASS | `https://github.com/github/spec-kit/issues/2844` opened using `marketplace/extension-submission-body.md` as the source body. |

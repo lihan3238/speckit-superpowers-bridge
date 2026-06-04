@@ -173,12 +173,20 @@ with zipfile.ZipFile(zip_path) as zf:
     missing += [prefix for prefix in required_prefixes if not any(n.startswith(prefix) for n in names)]
     bad = [name for name in names if "\\" in name]
     heavy = [name for name in names if name in heavy_markers or any(name.startswith(marker) for marker in heavy_markers if marker.endswith("/"))]
+    bad_modes = []
+    for name in names:
+        mode = (zf.getinfo(name).external_attr >> 16) & 0o777
+        expected = 0o755 if name.startswith("scripts/bash/") and name.endswith(".sh") else 0o644
+        if mode != expected:
+            bad_modes.append(f"{name} has {oct(mode)}, expected {oct(expected)}")
 if missing:
     raise SystemExit("missing ZIP entries: " + ", ".join(missing))
 if bad:
     raise SystemExit("non-portable ZIP entries: " + ", ".join(bad))
 if heavy:
     raise SystemExit("heavy runtime markers in ZIP: " + ", ".join(heavy))
+if bad_modes:
+    raise SystemExit("non-normalized ZIP modes: " + "; ".join(bad_modes))
 PY
 else
     printf 'release-package: ZIP not present yet; package ZIP checks deferred until build task\n'

@@ -77,7 +77,7 @@ fixed_time = (1980, 1, 1, 0, 0, 0)
 with zipfile.ZipFile(out_zip, "w", zipfile.ZIP_DEFLATED) as zf:
     for path in sorted(p for p in stage.rglob("*") if p.is_file()):
         rel = path.relative_to(stage).as_posix()
-        mode = 0o755 if (path.stat().st_mode & 0o111) else 0o644
+        mode = 0o755 if rel.startswith("scripts/bash/") and rel.endswith(".sh") else 0o644
         info = zipfile.ZipInfo(rel, fixed_time)
         info.compress_type = zipfile.ZIP_DEFLATED
         info.create_system = 3

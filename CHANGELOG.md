@@ -34,7 +34,7 @@ Stable protocol release candidate for the Spec Kit + Superpowers bridge. This re
 ### Validation
 
 - Release readiness validator self-tests cover version, catalog, namespace, workflow inventory, `.gitattributes`, and package-flavor drift.
-- Package smoke checks include deterministic bash ZIP build verification, no-heavy-runtime checks, and vendor-managed generated-skill protections so the bridge does not become a separate workflow engine or mutate generated Spec Kit command skills.
+- Package smoke checks include deterministic bash ZIP build and normalized ZIP-mode verification, no-heavy-runtime checks, and vendor-managed generated-skill protections so the bridge does not become a separate workflow engine or mutate generated Spec Kit command skills.
 - Real sandbox, Codex, Claude Code, final artifact hash, release workflow, and demo-truth evidence are required before tagging or publishing can be claimed complete.
 
 ## [0.7.2] - 2026-06-02

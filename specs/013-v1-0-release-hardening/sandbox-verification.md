@@ -4,20 +4,20 @@ The sibling sandbox `../test_specify_superpower` is the release simulation targe
 
 ## Linux Bash
 
-- Environment: WSL bash 5.2 on `/mnt/c/.../test_specify_superpower/v1-0-linux-bashfirst-final-20260604T090309Z`
+- Environment: WSL bash 5.2 on `/mnt/c/.../test_specify_superpower/v1-0-linux-finalsha-20260604T091342Z`
 - Script flavor: `sh`
 - Install source: `http://127.0.0.1:8765/speckit-superpowers-bridge-v1.0.0.zip` served from the bash-built `dist/` artifact
-- Artifact SHA256: `8d95beeaa322d132cac1c80f8ab22cdee3c5868124ee27aa4f4f4ee9388d8848`
+- Artifact SHA256: `4ad6fa06f8ebd95a0f793e46de699417df3ec6b56f7e62e844ac193729095476`
 - Commands run: `git init`; `specify init --here --integration claude --script sh --force`; `specify extension add speckit-superpowers-bridge --from <localhost ZIP>`; `bridge-status.sh --readiness`; `update-handoff.sh --status ready`; `guard-command.sh --action speckit.plan`; `update-handoff.sh --status executing`; `bridge-status.sh --readiness --json`; `update-handoff.sh --status complete`; `auto-archive-handoff.sh`.
 - Result: PASS
 - Notes: Final package row uses an independent child git repo so bridge repo-root discovery does not resolve to the parent sandbox repo. This row verifies the CI-preferred bash builder artifact after deterministic ZIP fixes.
 
 ## Windows PowerShell
 
-- Environment: Native Windows PowerShell 5.1 on `C:\lihan_work\ai_workplace\test_specify_superpower\v1-0-windows-bashfirst-final-20260604T090337Z`
+- Environment: Native Windows PowerShell 5.1 on `C:\lihan_work\ai_workplace\test_specify_superpower\v1-0-windows-finalsha-20260604T091411Z`
 - Script flavor: `ps`
 - Install source: `http://127.0.0.1:8765/speckit-superpowers-bridge-v1.0.0.zip` served from the bash-built `dist/` artifact
-- Artifact SHA256: `8d95beeaa322d132cac1c80f8ab22cdee3c5868124ee27aa4f4f4ee9388d8848`
+- Artifact SHA256: `4ad6fa06f8ebd95a0f793e46de699417df3ec6b56f7e62e844ac193729095476`
 - Commands run: `git init`; `specify init --here --integration claude --script ps --offline --force`; `specify extension add speckit-superpowers-bridge --from <localhost ZIP>` with `PYTHONUTF8=1`; `bridge-status.ps1 -Readiness`; `update-handoff.ps1 -Status ready`; `guard-command.ps1 -Action speckit.plan`; `update-handoff.ps1 -Status executing`; `bridge-status.ps1 -Readiness -Json`; `update-handoff.ps1 -Status complete`; `auto-archive-handoff.ps1`.
 - Result: PASS
 - Notes: Windows `specify 0.8.10` under the default GBK console emitted a Rich `UnicodeEncodeError` after successful extension install because of the `✓` character. Setting `PYTHONUTF8=1` and `PYTHONIOENCODING=utf-8` produced a clean install transcript. Bridge PowerShell output itself remained readable and ASCII-compatible. This row verifies that the bash-built release artifact still installs and executes through the native PowerShell flavor.
