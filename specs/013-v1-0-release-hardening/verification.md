@@ -4,16 +4,16 @@
 
 - Version: 1.0.0
 - ZIP path or URL: `dist/speckit-superpowers-bridge-v1.0.0.zip`
-- SHA256: `4ad6fa06f8ebd95a0f793e46de699417df3ec6b56f7e62e844ac193729095476`
-- Built at: `2026-06-04T09:13:12Z`
+- SHA256: `b54e6f1a0b8acaca7499add926740912f87649eb80b3200e0dc66fca95bed711`
+- Built at: `2026-06-04T09:26:17Z`
 - Built from: bash-first release builder on `013-v1-0-release-hardening`; deterministic ZIP output and normalized ZIP modes verified by `tests/test-release-package.sh`.
 
 ## Platform Matrix
 
 | Platform | Environment | Script flavor | Install source | Smoke | Sandbox cycle | Readiness | Result | Notes |
 |---|---|---|---|---|---|---|---|---|
-| Linux bash | WSL bash 5.2 on `/mnt/c` checkout and sandbox | sh | `dist/speckit-superpowers-bridge-v1.0.0.zip` via localhost ZIP URL | PASS | PASS | PASS | PASS | Full bash suite and bash-built final-package sandbox bridge/readiness cycle passed in `../test_specify_superpower/v1-0-linux-finalsha-20260604T091342Z`. |
-| Windows PowerShell | Native Windows PowerShell 5.1 on host | ps | `dist/speckit-superpowers-bridge-v1.0.0.zip` via localhost ZIP URL | PASS | PASS | PASS | PASS | PowerShell smoke and bash-built final-package sandbox bridge/readiness cycle passed in `../test_specify_superpower/v1-0-windows-finalsha-20260604T091411Z` with `PYTHONUTF8=1` for Spec Kit CLI install output. |
+| Linux bash | WSL bash 5.2 on `/mnt/c` checkout and sandbox | sh | `dist/speckit-superpowers-bridge-v1.0.0.zip` via localhost ZIP URL | PASS | PASS | PASS | PASS | Full bash suite and bash-built final-package sandbox bridge/readiness cycle passed in `../test_specify_superpower/v1-0-linux-readmepolish-20260604T092645Z`. |
+| Windows PowerShell | Native Windows PowerShell 5.1 on host | ps | `dist/speckit-superpowers-bridge-v1.0.0.zip` via localhost ZIP URL | PASS | PASS | PASS | PASS | PowerShell smoke and bash-built final-package sandbox bridge/readiness cycle passed in `../test_specify_superpower/v1-0-windows-readmepolish-20260604T092715Z` with `PYTHONUTF8=1` for Spec Kit CLI install output. |
 
 ## Agent Matrix
 
@@ -111,10 +111,10 @@ The CI release job now builds the package with `bash scripts/release/build-exten
 | Release readiness, source | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/release/validate-release-readiness.ps1 -Version 1.0.0` | PASS | `Release readiness OK for version 1.0.0.` |
 | Release readiness, package ZIP | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/release/validate-release-readiness.ps1 -Version 1.0.0 -PackageZip dist/speckit-superpowers-bridge-v1.0.0.zip` | PASS | `Release readiness OK for version 1.0.0.` |
 | Validator self-tests | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/release/test-validate-release-readiness.ps1` | PASS | Ends with `validate-release-readiness-tests-ok`. |
-| Final package build | `bash scripts/release/build-extension-zip.sh --version 1.0.0` | PASS | Built `dist/speckit-superpowers-bridge-v1.0.0.zip` and stable alias `dist/speckit-superpowers-bridge.zip`; both SHA256 values are `4ad6fa06f8ebd95a0f793e46de699417df3ec6b56f7e62e844ac193729095476`. Rebuilding twice in `tests/test-release-package.sh` produced the same SHA and normalized ZIP modes. |
+| Final package build | `bash scripts/release/build-extension-zip.sh --version 1.0.0` | PASS | Built `dist/speckit-superpowers-bridge-v1.0.0.zip` and stable alias `dist/speckit-superpowers-bridge.zip`; both SHA256 values are `b54e6f1a0b8acaca7499add926740912f87649eb80b3200e0dc66fca95bed711`. Rebuilding twice in `tests/test-release-package.sh` produced the same SHA and normalized ZIP modes. |
 | Linux bash final suite | `bash tests/run-all.sh` | PASS | All 6 bash smoke tests passed. |
 | Windows PowerShell final smoke | `powershell.exe -NoProfile -ExecutionPolicy Bypass -File tests/test-release-powershell.ps1` | PASS | Ends with `release-powershell-tests-ok`; expected warning fixture verifies incomplete-task warning behavior. |
 | Release workflow | `gh run watch <v1.0.0 tag run> --repo lihan3238/speckit-superpowers-bridge --exit-status` | PASS | Linux gate, Windows gate, and build/publish release job all passed for the final `v1.0.0` tag push. |
-| Published release assets | `curl -fsSL` versioned ZIP and latest alias, then `sha256sum` | PASS | Versioned and stable-alias downloads both returned SHA256 `4ad6fa06f8ebd95a0f793e46de699417df3ec6b56f7e62e844ac193729095476`; HEAD checks returned 302 -> 200. |
+| Published release assets | `curl -fsSL` versioned ZIP and latest alias, then `sha256sum` | PASS | Versioned and stable-alias downloads both returned SHA256 `b54e6f1a0b8acaca7499add926740912f87649eb80b3200e0dc66fca95bed711`; HEAD checks returned 302 -> 200. |
 | Publish tag/release | `git push --force ... v1.0.0` + release workflow | PASS | Release URL: `https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v1.0.0`; workflow uploaded both the versioned ZIP and stable-alias ZIP. |
 | Upstream catalog submission | GitHub issue | PASS | `https://github.com/github/spec-kit/issues/2844` opened using `marketplace/extension-submission-body.md` as the source body. |

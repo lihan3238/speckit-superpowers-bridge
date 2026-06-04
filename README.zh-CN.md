@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <em>「极薄」桥接：Spec Kit 负责「设计」，Superpowers 负责「实现」。</em>
+  <em>Spec Kit 写 WHAT。Superpowers 执行 HOW。这个桥只负责 handoff。</em>
 </p>
 
 <p align="center">
@@ -20,11 +20,31 @@
 
 > English: [README.md](README.md)
 
-**一座连接 Spec Kit（设计）与 Superpowers（实现）的轻量编排桥。** Spec Kit 仍是设计的唯一真相源（constitution → spec → plan → tasks）。Superpowers 负责实现期的 TDD、验证、code review 等纪律，由桥在指定生命周期阶段**显式**调用。跨 Agent：Codex、Claude Code 任选其一或同时使用。仓库内协议；无守护进程、无服务、无超出 Superpowers 原生能力的自定义纪律。
+**speckit-superpowers-bridge 是 Spec Kit 设计 artifact 与 Superpowers 实现纪律之间的 handoff 层。** Spec Kit 仍是设计唯一真相源（constitution → spec → plan → tasks）。Superpowers 负责实现期的 TDD、验证、code review 等纪律，由桥在指定生命周期阶段**显式**调用。Codex 与 Claude Code 共享同一个仓库内协议。
+
+无守护进程。无服务。无数据库。无第二套 workflow engine。无超出 Superpowers 原生能力的自定义纪律。
 
 > 设计意图参见 [Spec Kit vs Superpowers 对比文章](https://dev.to/truongpx396/spec-kit-vs-superpowers-a-comprehensive-comparison-practical-guide-to-combining-both-52jj) —— 本插件是让二者合作所需的最小接线。
 
 ---
+
+## 一眼看懂
+
+| 如果你想要... | 这个桥提供... |
+|---|---|
+| Spec Kit artifact 保持权威 | Spec Kit 继续拥有 `spec.md`、`plan.md` 和 `tasks.md`。 |
+| 不重新规划也能使用 Superpowers 纪律 | 把 `tasks.md` 交给原生 Superpowers execution、verification、review、branch-finishing 技能。 |
+| Codex 与 Claude Code 协作 | 共享 `.specify/superpowers-handoff.json` 契约，两端 bridge skill 内容一致。 |
+| Windows 与 Linux 都能验证 | 同一个 ZIP 同时带 bash 与 Windows PowerShell flavor，release gate 覆盖两端。 |
+| 插件市场需要的可信证据 | `bridge-status --readiness`、package validation、确定性 release ZIP、已发布 SHA 证据。 |
+| 最小运行负担 | 3 个命令、5 个 hook、每种 shell flavor 6 个小状态脚本，无 runtime service。 |
+
+安装当前稳定版：
+
+```bash
+specify extension add speckit-superpowers-bridge \
+  --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip
+```
 
 ## 为什么用 speckit-superpowers-bridge
 

@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <em>Thinnest possible bridge from Spec Kit (design) to Superpowers (implementation).</em>
+  <em>Spec Kit writes WHAT. Superpowers enforces HOW. This bridge only carries the handoff.</em>
 </p>
 
 <p align="center">
@@ -20,11 +20,31 @@
 
 > 中文版：[README.zh-CN.md](README.zh-CN.md)
 
-**A thin orchestrating bridge between Spec Kit (design) and Superpowers (implementation).** Spec Kit stays the source of truth for design (constitution → spec → plan → tasks). Superpowers executes implementation with TDD, verification, and review — invoked **explicitly** at named lifecycle phases. Cross-agent: works on Codex, Claude Code, or both. Repo-local protocol; no daemon, no service, no custom discipline beyond what native Superpowers provides.
+**speckit-superpowers-bridge is the handoff layer between Spec Kit design artifacts and Superpowers implementation discipline.** Spec Kit stays the source of truth for design (constitution → spec → plan → tasks). Superpowers executes implementation with TDD, verification, and review, invoked **explicitly** at named lifecycle phases. Codex and Claude Code share the same repo-local protocol.
+
+No daemon. No service. No database. No second workflow engine. No custom discipline beyond native Superpowers.
 
 > The design intent is documented in the [Spec Kit vs Superpowers comparison article](https://dev.to/truongpx396/spec-kit-vs-superpowers-a-comprehensive-comparison-practical-guide-to-combining-both-52jj) — this extension is the minimal wiring that lets the two tools cooperate.
 
 ---
+
+## At a glance
+
+| If you want... | The bridge gives you... |
+|---|---|
+| Spec Kit artifacts to remain canonical | Spec Kit keeps owning `spec.md`, `plan.md`, and `tasks.md`. |
+| Superpowers discipline without replanning | `tasks.md` is handed to native Superpowers execution, verification, review, and branch-finishing skills. |
+| Codex and Claude Code to cooperate | A shared `.specify/superpowers-handoff.json` contract with identical bridge skills for both agents. |
+| Windows and Linux coverage | One ZIP ships bash and Windows PowerShell flavors, with release gates for both. |
+| Marketplace-friendly confidence | `bridge-status --readiness`, package validation, deterministic release ZIPs, and published SHA evidence. |
+| Minimal operational footprint | 3 commands, 5 hooks, 6 small state scripts per shell flavor, and no runtime service. |
+
+Install the current stable release:
+
+```bash
+specify extension add speckit-superpowers-bridge \
+  --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip
+```
 
 ## Why speckit-superpowers-bridge
 
