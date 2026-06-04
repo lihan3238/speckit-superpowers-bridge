@@ -116,6 +116,23 @@ EOF
 printf '# Stub spec (test fixture)\n' >"$TEMP_FEATURE_ABS/spec.md"
 printf '# Stub plan (test fixture)\n' >"$TEMP_FEATURE_ABS/plan.md"
 
+# Seed a handoff so guard-command.sh has bridge state to summarize in a clean checkout.
+SETUP_OUT="$(mktemp)"
+SETUP_ERR="$(mktemp)"
+set +e
+bash "$UPDATE_SCRIPT" \
+    --status ready \
+    --feature-directory "$TEMP_FEATURE_REL" \
+    --actor claude \
+    >"$SETUP_OUT" 2>"$SETUP_ERR"
+SETUP_EXIT=$?
+set -e
+if [ "$SETUP_EXIT" -ne 0 ]; then
+    printf 'setup update-handoff.sh stderr:\n%s\n' "$(cat "$SETUP_ERR")" >&2
+    fail "setup update-handoff.sh --status ready --feature-directory $TEMP_FEATURE_REL --actor claude exited $SETUP_EXIT (expected 0)"
+fi
+rm -f "$SETUP_OUT" "$SETUP_ERR"
+
 # ---------------------------------------------------------------------------
 # Assertion helper: validate the [bridge state] block against captured stdout
 # ---------------------------------------------------------------------------
