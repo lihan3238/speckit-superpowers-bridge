@@ -205,9 +205,9 @@ $officialSections
     Set-Content -LiteralPath (Join-Path $root ".gitattributes") -Value $GitAttributesContent -Encoding UTF8
     Set-Content -LiteralPath (Join-Path $workflowDir "release.yml") -Value $WorkflowContent -Encoding UTF8
     $runbookText = if ($ReleaseRunbookUsesOfficialSubmission) {
-        "# Release Runbook`n`n## Step 16 — Submit upstream catalog update`n`nUse the official Extension Submission issue template. Do not open a direct pull request that edits extensions/catalog.community.json.`n"
+        "# Release Runbook`n`n## Step 16 - Submit upstream catalog update`n`nUse the official Extension Submission issue template. Do not open a direct pull request that edits extensions/catalog.community.json.`n"
     } else {
-        "# Release Runbook`n`n## Step 16 — Submit upstream PR`n`nPaste into extensions/catalog.community.json and open a PR.`n"
+        "# Release Runbook`n`n## Step 16 - Submit upstream PR`n`nPaste into extensions/catalog.community.json and open a PR.`n"
     }
     Set-Content -LiteralPath (Join-Path $docsDir "release-runbook.md") -Value $runbookText -Encoding UTF8
     Set-Content -LiteralPath (Join-Path $root "README.md") -Value "# README`n" -Encoding UTF8

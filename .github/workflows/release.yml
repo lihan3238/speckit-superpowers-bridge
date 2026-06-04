@@ -118,11 +118,21 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            --title "$GITHUB_REF_NAME" \
-            --notes-file release-notes.md \
-            "dist/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip" \
-            "dist/speckit-superpowers-bridge.zip"
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release edit "$GITHUB_REF_NAME" \
+              --title "$GITHUB_REF_NAME" \
+              --notes-file release-notes.md
+            gh release upload "$GITHUB_REF_NAME" \
+              --clobber \
+              "dist/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip" \
+              "dist/speckit-superpowers-bridge.zip"
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              --title "$GITHUB_REF_NAME" \
+              --notes-file release-notes.md \
+              "dist/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip" \
+              "dist/speckit-superpowers-bridge.zip"
+          fi
 
       - name: Summary
         shell: pwsh

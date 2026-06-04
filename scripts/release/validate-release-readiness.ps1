@@ -317,7 +317,7 @@ if (-not (Test-Path -LiteralPath $releaseRunbook -PathType Leaf)) {
     if ($runbookBody -notmatch 'Extension Submission') {
         Add-Problem $problems "docs/release-runbook.md: upstream catalog step must use the official Extension Submission issue template"
     }
-    if ($runbookBody -match '## Step 16\s+—\s+Submit upstream PR' -or
+    if ($runbookBody -match '## Step 16.*Submit upstream PR' -or
         $runbookBody -match 'direct pull request that edits `?extensions/catalog\.community\.json`?\s+is allowed') {
         Add-Problem $problems "docs/release-runbook.md: must not instruct maintainers to directly PR-edit the official catalog"
     }
