@@ -203,16 +203,24 @@ specify extension add speckit-superpowers-bridge --from https://github.com/lihan
 extension 目录。
 
 如果 fresh `specify init --here ... --force` 重新生成了本地安装态，需要重新注册桥，
-使用本地 dev path：
+请从目标 extension 目录之外的临时副本安装：
 
 ```bash
-specify extension add --dev ./.specify/extensions/speckit-superpowers-bridge
+tmp="$(mktemp -d)"
+cp -a ./.specify/extensions/speckit-superpowers-bridge "$tmp"/
+specify extension add --dev "$tmp/speckit-superpowers-bridge"
 ```
+
+不要在这个源码 checkout 里直接把
+`./.specify/extensions/speckit-superpowers-bridge` 作为 `--dev` source 传入。
+Spec Kit 会安装到同一个目标路径，source 和 destination 会重合。
 
 PowerShell 等价命令：
 
 ```powershell
-specify extension add --dev .\.specify\extensions\speckit-superpowers-bridge
+$tmp = New-Item -ItemType Directory -Path ([System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), [System.Guid]::NewGuid().ToString()))
+Copy-Item .\.specify\extensions\speckit-superpowers-bridge $tmp.FullName -Recurse
+specify extension add --dev (Join-Path $tmp.FullName "speckit-superpowers-bridge")
 ```
 
 发布 ZIP 只用于独立消费项目，或 sibling release-verification sandbox

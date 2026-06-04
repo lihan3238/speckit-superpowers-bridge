@@ -15,6 +15,9 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
   local source, so contributors should not install the published ZIP back into
   the same checkout unless intentionally testing replacement behavior. Updated
   the version-pinned install example to v1.0.0.
+- Documented the safe Spec Kit 0.9.x dev-registration path for this source repo:
+  register from a temporary copy outside the in-repo target extension directory
+  to avoid source=destination replacement.
 
 ## [1.0.0] - 2026-06-04
 

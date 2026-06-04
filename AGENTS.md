@@ -60,9 +60,11 @@ also the product source in this repository. Do not install the published ZIP
 back into this same checkout unless intentionally testing replacement behavior;
 it uses the same extension ID and target directory. If local install metadata
 needs refreshing after `specify init --here ... --force`, re-register the local
-source with `specify extension add --dev ./.specify/extensions/speckit-superpowers-bridge`
-from bash, or the equivalent PowerShell path. Test release ZIP installs in a
-separate consumer project or `../test_specify_superpower`.
+source from a temporary copy outside `.specify/extensions/speckit-superpowers-bridge/`
+(`specify extension add --dev <tmp>/speckit-superpowers-bridge`). Do not pass
+the in-repo target directory itself as the `--dev` source: Spec Kit 0.9.x removes
+the target before copying, so source=destination deletes the source tree. Test
+release ZIP installs in a separate consumer project or `../test_specify_superpower`.
 
 ### Running the smoke-test suite
 

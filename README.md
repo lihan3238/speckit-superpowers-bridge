@@ -203,16 +203,25 @@ do **not** install the published ZIP into the same checkout unless you
 intentionally want to replace the local extension tree with release contents.
 
 If a fresh `specify init --here ... --force` regenerated local install state and
-the bridge needs to be re-registered, use the local dev path instead:
+the bridge needs to be re-registered, install from a temporary copy outside the
+target extension directory:
 
 ```bash
-specify extension add --dev ./.specify/extensions/speckit-superpowers-bridge
+tmp="$(mktemp -d)"
+cp -a ./.specify/extensions/speckit-superpowers-bridge "$tmp"/
+specify extension add --dev "$tmp/speckit-superpowers-bridge"
 ```
+
+Do not pass `./.specify/extensions/speckit-superpowers-bridge` directly as the
+`--dev` source from this source checkout. Spec Kit installs to that same target
+path, so source and destination would be identical.
 
 PowerShell equivalent:
 
 ```powershell
-specify extension add --dev .\.specify\extensions\speckit-superpowers-bridge
+$tmp = New-Item -ItemType Directory -Path ([System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), [System.Guid]::NewGuid().ToString()))
+Copy-Item .\.specify\extensions\speckit-superpowers-bridge $tmp.FullName -Recurse
+specify extension add --dev (Join-Path $tmp.FullName "speckit-superpowers-bridge")
 ```
 
 Use the published ZIP only in a separate consumer project or in the sibling

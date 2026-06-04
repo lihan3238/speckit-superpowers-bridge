@@ -63,6 +63,7 @@ docs/*
 .specify/workflows/*/workflow.yml
 .specify/extensions/.registry
 .specify/extensions/.cache/
+.specify/extensions/*/.specify-dev/
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Python venv shells at repo root. Some tools (uv, `python -m venv .`) drop
@@ -122,3 +123,9 @@ pyvenv.cfg
 .claude/skills/speckit-specify/
 .agents/skills/speckit-constitution/
 .agents/skills/speckit-specify/
+
+# Spec Kit 0.9.x extension command skills generated from this bridge's command
+# files. The hand-authored short bridge peer remains tracked at
+# .{agents,claude}/skills/speckit-superpowers-bridge/SKILL.md.
+.claude/skills/speckit-speckit-superpowers-bridge-*/
+.agents/skills/speckit-speckit-superpowers-bridge-*/
