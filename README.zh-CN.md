@@ -3,12 +3,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/lihan3238/speckit-superpowers-bridge">
-    <strong>speckit-superpowers-bridge</strong>
-  </a>
-</p>
-
-<p align="center">
   <em>Spec Kit 写 WHAT。Superpowers 执行 HOW。这个桥只负责 handoff。</em>
 </p>
 
