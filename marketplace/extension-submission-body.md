@@ -30,7 +30,7 @@ https://github.com/lihan3238/speckit-superpowers-bridge
 
 https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip
 
-Version-pinned artifact after publish:
+Version-pinned artifact:
 
 https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.0/speckit-superpowers-bridge-v1.0.0.zip
 
@@ -131,7 +131,7 @@ This extension is developed with AI coding assistants. Claude Code and Codex wer
 - [x] Valid `extension.yml` manifest included.
 - [x] README.md with installation and usage instructions included.
 - [x] LICENSE file included.
-- [x] GitHub release created with version tag: pending until `v1.0.0` publish step completes.
+- [x] GitHub release created with version tag: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v1.0.0
 - [x] All command files exist and are properly formatted.
 - [x] Extension ID follows naming conventions: lowercase with hyphens.
 

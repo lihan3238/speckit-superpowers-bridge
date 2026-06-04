@@ -175,10 +175,10 @@
 - [x] T054 [US5] Run final `scripts/release/validate-release-readiness.ps1 -Version 1.0.0` and record the result in `specs/013-v1-0-release-hardening/verification.md`.
 - [x] T055 [US5] Run final `scripts/release/test-validate-release-readiness.ps1` and record the result in `specs/013-v1-0-release-hardening/verification.md`.
 - [x] T056 [US5] Run final `scripts/release/build-extension-zip.ps1 -Version 1.0.0` and record final artifact SHA256 in `specs/013-v1-0-release-hardening/verification.md`.
-- [ ] T057 [US5] Tag and publish `v1.0.0` following `docs/release-runbook.md` and record release URL plus stable alias verification in `specs/013-v1-0-release-hardening/verification.md`.
-- [ ] T058 [US5] Prepare or open the upstream Spec Kit catalog submission using `marketplace/extension-submission-body.md` and record the issue or PR link in `specs/013-v1-0-release-hardening/verification.md`.
+- [x] T057 [US5] Tag and publish `v1.0.0` following `docs/release-runbook.md` and record release URL plus stable alias verification in `specs/013-v1-0-release-hardening/verification.md`.
+- [x] T058 [US5] Prepare or open the upstream Spec Kit catalog submission using `marketplace/extension-submission-body.md` and record the issue or PR link in `specs/013-v1-0-release-hardening/verification.md`.
 
-T057 and T058 are intentionally deferred until the maintainer authorizes remote tag/release and upstream catalog side effects.
+T057 and T058 completed after maintainer authorization: release `v1.0.0` is published and upstream catalog update issue is open.
 
 **Checkpoint**: Release evidence and distribution material are truthful, reproducible, and aligned with the shipped artifact.
 

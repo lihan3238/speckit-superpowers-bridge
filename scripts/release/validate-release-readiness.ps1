@@ -46,6 +46,18 @@ function Get-ExtensionId {
     return $match.Groups[1].Value
 }
 
+function Test-IsoUtcTimestamp {
+    param([object]$Value)
+
+    if ($null -eq $Value) {
+        return $false
+    }
+    if ($Value -is [datetime]) {
+        return $Value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ") -match '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
+    }
+    return ([string]$Value) -match '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
+}
+
 function Assert-ZipContents {
     param(
         [string]$ZipPath,
@@ -202,10 +214,10 @@ if (-not (Test-Path -LiteralPath $catalog)) {
             Add-Problem $problems "catalog-entry.json: missing official catalog field '$fieldName'"
         }
     }
-    if ($null -ne $entry.created_at -and $entry.created_at -notmatch '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$') {
+    if ($null -ne $entry.created_at -and -not (Test-IsoUtcTimestamp -Value $entry.created_at)) {
         Add-Problem $problems "catalog-entry.json: created_at must be an ISO-8601 UTC timestamp"
     }
-    if ($null -ne $entry.updated_at -and $entry.updated_at -notmatch '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$') {
+    if ($null -ne $entry.updated_at -and -not (Test-IsoUtcTimestamp -Value $entry.updated_at)) {
         Add-Problem $problems "catalog-entry.json: updated_at must be an ISO-8601 UTC timestamp"
     }
     # download_url: as of v0.6.0 (feature 011), this is PERMANENTLY decoupled

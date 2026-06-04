@@ -45,12 +45,14 @@ specs/*/checklists/protocol-quality.md
 # Maintainer-only docs (FR-020): release notes, runbooks, working drafts.
 # Kept on the maintainer's local disk; not shipped in the repo.
 # Exception: docs/demo/ holds README demo assets (tape sources + rendered
-# GIFs) that the README references — those MUST ship with the repo.
+# GIFs) that the README references, and docs/release-runbook.md is a tracked
+# release gate input used by CI.
 # Pattern uses docs/* (not docs/) so the negation below can re-include
 # docs/demo/; git refuses to descend into a fully-ignored parent dir.
 # ─────────────────────────────────────────────────────────────────────────────
 docs/*
 !docs/demo/
+!docs/release-runbook.md
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Spec Kit install-time generated state (003 v0.4.2 FR-006). Each developer's
