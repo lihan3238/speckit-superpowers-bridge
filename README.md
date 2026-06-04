@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="https://raw.githubusercontent.com/lihan3238/speckit-superpowers-bridge/main/assets/social/github-social-preview.png" alt="speckit-superpowers-bridge: Spec Kit writes WHAT. Superpowers enforces HOW." width="960" />
+</p>
+
+<p align="center">
   <a href="https://github.com/lihan3238/speckit-superpowers-bridge">
     <strong>speckit-superpowers-bridge</strong>
   </a>
@@ -52,7 +56,7 @@ Spec Kit is excellent at producing durable design artifacts (constitution, spec,
 
 Superpowers is excellent at *execution* discipline (TDD, systematic debugging, subagent-driven development, verification, code review, finishing a development branch), but it natively expects to drive design through its own `brainstorming` and `writing-plans` skills, not from a Spec Kit `tasks.md`.
 
-The bridge is the thinnest possible glue that lets the two cooperate without either side colonizing the other's role: a single `superpowers-handoff.json` state file, five hardcoded guard rules, four cross-platform state scripts, and one orchestrator skill that invokes native Superpowers in order against the Spec Kit `tasks.md`. **No matrix, no audits, no validation pass, no parity check, no custom DSL — just the smallest contract that makes the cycle work.**
+The bridge is the thinnest possible glue that lets the two cooperate without either side colonizing the other's role: a single `superpowers-handoff.json` state file, five hardcoded guard rules, six small scripts per shell flavor, and one orchestrator skill that invokes native Superpowers in order against the Spec Kit `tasks.md`. **No runtime matrix, no audit loop, no implementation validation pass, no command-parity subsystem, no custom DSL — just the smallest contract that makes the cycle work.**
 
 ## Quick Start
 
@@ -79,7 +83,10 @@ What this does, in 7 steps:
 ## 1.0.x Readiness and Support
 
 v1.0.0 is a stable protocol release: no new workflow engine, no daemon, no service, no database, and no replacement for native Spec Kit or Superpowers behavior. The release adds stricter package/readiness checks and evidence for the supported platforms and agents.
+
 v1.0.1 is a documentation and development-checkout cleanup patch on the same protocol surface.
+
+v1.0.2 is a discoverability and launch-asset patch: README hero image, social cards, marketplace wording, and small contributor-doc fixes; runtime bridge behavior is unchanged.
 
 | Target | Status | Evidence |
 |---|---|---|
@@ -231,7 +238,7 @@ release-verification sandbox `../test_specify_superpower`.
 **Version-pinned install** (for reproducible installs of a specific release):
 
 ```powershell
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.1/speckit-superpowers-bridge-v1.0.1.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.2/speckit-superpowers-bridge-v1.0.2.zip
 ```
 
 </details>
@@ -348,23 +355,23 @@ See `AGENTS.md` for the master cross-agent protocol; `CLAUDE.md` for Claude-spec
 | handoff JSON from an older install has v3 fields | Pre-0.3.0 handoff with `autonomous_mode` / `resume_context` / `archive_history` | No action needed. The 0.3.0+ bridge reads these tolerantly and silently drops them on the next write. |
 
 > [!WARNING]
-> **WSL users: do NOT set `git config --global http.proxy`.** Use the per-call env-var pattern from `CLAUDE.md` (`https_proxy=http://10.88.0.6:10808 git push ...`). A global proxy config bakes the address into git config and breaks on every machine where that proxy is unreachable. The bridge's release runbook and smoke suite assume the env-var-per-call pattern.
+> **WSL users: do NOT set `git config --global http.proxy`.** Use the per-call env-var pattern from `AGENTS.md` (`https_proxy=http://10.77.0.11:10808 git push ...`). A global proxy config bakes the address into git config and breaks on every machine where that proxy is unreachable. The bridge's release runbook and smoke suite assume the env-var-per-call pattern.
 
 </details>
 
 <details>
 <summary><strong>Maintenance and versioning</strong></summary>
 
-This release (v1.0.1) is verified against:
+This release (v1.0.2) is verified against:
 
 - **Spec Kit** `0.9.3` on Linux bash; Windows sandbox also passed the bridge runtime floor with Spec Kit CLI `0.8.10`
 - **Superpowers** `5.1.0`
 - **Codex CLI** `0.137.0`
 - **Claude Code** `2.1.162`
 
-Verified metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned additive schema refreshed once per bridge release. v1.0.1 records bridge, upstream tool, platform, and real-agent rows; missing or blocked rows are not advertised as verified.
+Verified metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned additive schema refreshed once per bridge release. v1.0.2 records bridge, upstream tool, platform, and real-agent rows; missing or blocked rows are not advertised as verified.
 
-When upstream tools ship a new release that breaks the bridge, we either patch the four cross-platform state scripts or pin the documented compatible versions in `CHANGELOG.md`.
+When upstream tools ship a new release that breaks the bridge, we either patch the bridge scripts or pin the documented compatible versions in `CHANGELOG.md`.
 
 Spec Kit `0.9.x` moved coding-agent context updates into the bundled `agent-context` extension. The bridge runtime does not depend on that extension, so `requires.speckit_version` stays at `>=0.8.10`; this repository tracks `agent-context` only to keep its own Spec Kit project bootstrap current.
 
@@ -380,7 +387,7 @@ Spec Kit `0.9.x` moved coding-agent context updates into the bundled `agent-cont
 
 - **Spec Kit owns WHAT.** Constitution, spec, clarify, plan, tasks, checklists, analysis. These are durable design artifacts under `.specify/` and `specs/`.
 - **Superpowers owns HOW.** TDD, debugging, executing-plans, requesting-code-review, verification-before-completion, finishing-a-development-branch. These are implementation discipline skills invoked at lifecycle phases.
-- **The bridge orchestrates native skills and does not provide custom discipline.** It contributes only: generated extension command skills, four small state scripts in PowerShell and bash flavors (`update-handoff`, `guard-command`, `auto-archive-handoff`, `bridge-state` shared helper, `common-actor-resolution`), and 5 hardcoded boundary rules. No matrix, no audits, no validation pass, no parity check.
+- **The bridge orchestrates native skills and does not provide custom discipline.** It contributes only: generated extension command skills, six small scripts in PowerShell and bash flavors (`update-handoff`, `guard-command`, `auto-archive-handoff`, `bridge-state`, `bridge-status`, `common-actor-resolution`), and 5 hardcoded boundary rules. No runtime matrix, no audit loop, no implementation validation pass, no command-parity subsystem.
 
 </details>
 

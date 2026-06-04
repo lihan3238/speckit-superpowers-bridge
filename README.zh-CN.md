@@ -1,4 +1,8 @@
 <p align="center">
+  <img src="https://raw.githubusercontent.com/lihan3238/speckit-superpowers-bridge/main/assets/social/github-social-preview.png" alt="speckit-superpowers-bridge: Spec Kit 写 WHAT。Superpowers 执行 HOW。" width="960" />
+</p>
+
+<p align="center">
   <a href="https://github.com/lihan3238/speckit-superpowers-bridge">
     <strong>speckit-superpowers-bridge</strong>
   </a>
@@ -52,7 +56,7 @@ Spec Kit 擅长产出耐久的设计 artifact（constitution、spec、plan、tas
 
 Superpowers 擅长「执行」纪律（TDD、systematic debugging、subagent-driven development、verification、code review、finishing a development branch），但它原生预期通过自家的 `brainstorming` 与 `writing-plans` 技能驱动设计，而不是从 Spec Kit 的 `tasks.md` 出发。
 
-桥是让二者合作的最薄胶水，并且不让任何一方蚕食对方的角色：一个 `superpowers-handoff.json` 状态文件、五条硬编码 guard 规则、四个跨平台状态脚本、一个编排 SKILL，按顺序在 Spec Kit `tasks.md` 上调用原生 Superpowers。**没有 matrix、没有 audit、没有 validation pass、没有 parity check、没有自定义 DSL —— 只有让循环跑起来的最小契约。**
+桥是让二者合作的最薄胶水，并且不让任何一方蚕食对方的角色：一个 `superpowers-handoff.json` 状态文件、五条硬编码 guard 规则、每种 shell flavor 六个小脚本、一个编排 SKILL，按顺序在 Spec Kit `tasks.md` 上调用原生 Superpowers。**没有 runtime matrix、没有 audit loop、没有 implementation validation pass、没有 command-parity subsystem、没有自定义 DSL —— 只有让循环跑起来的最小契约。**
 
 ## Quick Start
 
@@ -79,7 +83,10 @@ specify extension add speckit-superpowers-bridge \
 ## 1.0.x readiness 与支持矩阵
 
 v1.0.0 是稳定协议 release：不引入新的 workflow engine、不引入 daemon/service/database，也不替代 Spec Kit 或 Superpowers 的原生行为。本版本加强 package/readiness 检查，并记录受支持平台与 Agent 的真实证据。
+
 v1.0.1 是同一协议面上的文档与开发 checkout 清理补丁。
+
+v1.0.2 是展示与发布资产补丁：README 顶图、社交卡片、marketplace 文案和贡献者文档小修；bridge runtime 行为不变。
 
 | 目标 | 状态 | 证据 |
 |---|---|---|
@@ -230,7 +237,7 @@ specify extension add --dev (Join-Path $tmp.FullName "speckit-superpowers-bridge
 **固定版本安装**（用来可复现地安装某个精确版本）：
 
 ```powershell
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.1/speckit-superpowers-bridge-v1.0.1.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.2/speckit-superpowers-bridge-v1.0.2.zip
 ```
 
 </details>
@@ -347,23 +354,23 @@ v0.2.x 中存在的 6 个元命令（`audit`、`validate`、`parity`、`recommen
 | 老安装写的 handoff JSON 含 v3 字段 | 0.3.0 前的 handoff 里有 `autonomous_mode` / `resume_context` / `archive_history` | 无需操作。0.3.0+ 桥会容忍读、下次写入时静默丢弃。 |
 
 > [!WARNING]
-> **WSL 用户：**不要**设置 `git config --global http.proxy`。** 使用 `CLAUDE.md` 中记录的 per-call env-var 方案（`https_proxy=http://10.88.0.6:10808 git push ...`）。全局 proxy 配置会把代理地址烤进 git config，在任何代理不可达的机器上都会出错。桥的 release runbook 和 smoke 套件都默认 env-var-per-call 写法。
+> **WSL 用户：**不要**设置 `git config --global http.proxy`。** 使用 `AGENTS.md` 中记录的 per-call env-var 方案（`https_proxy=http://10.77.0.11:10808 git push ...`）。全局 proxy 配置会把代理地址烤进 git config，在任何代理不可达的机器上都会出错。桥的 release runbook 和 smoke 套件都默认 env-var-per-call 写法。
 
 </details>
 
 <details>
 <summary><strong>维护与版本（Maintenance and versioning）</strong></summary>
 
-本版本（v1.0.1）针对以下版本验证：
+本版本（v1.0.2）针对以下版本验证：
 
 - **Spec Kit** `0.9.3`（Linux bash）；Windows sandbox 也在 bridge runtime floor 对应的 Spec Kit CLI `0.8.10` 上通过
 - **Superpowers** `5.1.0`
 - **Codex CLI** `0.137.0`
 - **Claude Code** `2.1.162`
 
-verified metadata 记录在 [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) —— 项目自有、只做增量扩展的 schema，每次桥 release 刷新一次。v1.0.1 记录 bridge、上游工具、平台和真实 Agent 行；缺失或 blocked 的行不会被宣传为 verified。
+verified metadata 记录在 [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) —— 项目自有、只做增量扩展的 schema，每次桥 release 刷新一次。v1.0.2 记录 bridge、上游工具、平台和真实 Agent 行；缺失或 blocked 的行不会被宣传为 verified。
 
-当上游工具的新版破坏了桥，我们要么修补四个跨平台状态脚本，要么在 `CHANGELOG.md` 中钉住已验证的兼容版本。
+当上游工具的新版破坏了桥，我们要么修补桥脚本，要么在 `CHANGELOG.md` 中钉住已验证的兼容版本。
 
 Spec Kit `0.9.x` 已把 coding-agent context 更新迁移到 bundled `agent-context` 扩展。桥的运行时不依赖这个扩展，所以 `requires.speckit_version` 仍保持 `>=0.8.10`；本仓库跟踪 `agent-context` 只是为了让自身的 Spec Kit project bootstrap 保持最新。
 
@@ -379,7 +386,7 @@ Spec Kit `0.9.x` 已把 coding-agent context 更新迁移到 bundled `agent-cont
 
 - **Spec Kit 拥有 WHAT。** Constitution、spec、clarify、plan、tasks、checklists、analysis 都是 `.specify/` 与 `specs/` 下的耐久设计 artifact。
 - **Superpowers 拥有 HOW。** TDD、debugging、executing-plans、requesting-code-review、verification-before-completion、finishing-a-development-branch，是在生命周期阶段调用的实现纪律技能。
-- **桥编排原生技能，不提供自定义纪律。** 它只贡献：Spec Kit 生成的 extension command skills、PowerShell 和 bash 两种 flavor 的四个小状态脚本（`update-handoff`、`guard-command`、`auto-archive-handoff`、`bridge-state` 共享 helper、`common-actor-resolution`），以及 5 条硬编码边界规则。没有 matrix、没有 audit、没有 validation pass、没有 parity check。
+- **桥编排原生技能，不提供自定义纪律。** 它只贡献：Spec Kit 生成的 extension command skills、PowerShell 和 bash 两种 flavor 的六个小脚本（`update-handoff`、`guard-command`、`auto-archive-handoff`、`bridge-state`、`bridge-status`、`common-actor-resolution`），以及 5 条硬编码边界规则。没有 runtime matrix、没有 audit loop、没有 implementation validation pass、没有 command-parity subsystem。
 
 </details>
 

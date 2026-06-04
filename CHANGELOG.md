@@ -8,6 +8,23 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-06-04
+
+### Added
+
+- Added imagegen-generated launch cards under `assets/social/` for README,
+  GitHub social preview, OpenGraph/community shares, Product Hunt-style gallery
+  posts, and square community thumbnails.
+- Added a README hero image so the repository presents a clearer first-screen
+  identity on GitHub and in community links.
+
+### Changed
+
+- Tightened release/marketplace wording for the v1.0.x patch line while keeping
+  the v1.0.0 stable protocol surface unchanged.
+- Corrected the WSL proxy example in README files to match the current
+  project-local proxy guidance.
+
 ## [1.0.1] - 2026-06-04
 
 ### Changed

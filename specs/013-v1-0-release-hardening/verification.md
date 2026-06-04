@@ -8,6 +8,25 @@
 - Built at: `2026-06-04T09:26:17Z`
 - Built from: bash-first release builder on `013-v1-0-release-hardening`; deterministic ZIP output and normalized ZIP modes verified by `tests/test-release-package.sh`.
 
+## v1.0.1 Patch Release Addendum
+
+- Version: 1.0.1
+- Release URL: `https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v1.0.1`
+- Workflow run: `https://github.com/lihan3238/speckit-superpowers-bridge/actions/runs/26945331881`
+- Versioned ZIP: `https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.1/speckit-superpowers-bridge-v1.0.1.zip`
+- Stable alias ZIP: `https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip`
+- SHA256: `f3ca8569a92c31e4771abd68f14f23e31727eca84b639476a0fd6b27eb11a18f`
+- Scope: documentation and source-repo development-install cleanup only; bridge runtime behavior, command count, hook count, handoff compatibility, platform support, and real-agent evidence remain on the v1.0.0 stable protocol surface.
+
+## v1.0.2 Patch Release Addendum
+
+- Version: 1.0.2
+- Local release-equivalent ZIP: `dist/speckit-superpowers-bridge-v1.0.2.zip`
+- Stable alias ZIP: `dist/speckit-superpowers-bridge.zip`
+- SHA256: `6637d5740d795a3a3a4e03f45d5452e4d2b73d20ea2bf8a2ac6e89d24bfe486d`
+- Built at: `2026-06-04T11:04:33Z`
+- Scope: documentation, README hero image, imagegen-generated social cards, marketplace wording, and WSL proxy guidance cleanup only; bridge runtime behavior, command count, hook count, handoff compatibility, platform support, and real-agent evidence remain on the v1.0.0 stable protocol surface.
+
 ## Platform Matrix
 
 | Platform | Environment | Script flavor | Install source | Smoke | Sandbox cycle | Readiness | Result | Notes |

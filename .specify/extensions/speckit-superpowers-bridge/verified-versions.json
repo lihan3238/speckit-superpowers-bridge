@@ -1,10 +1,10 @@
 {
-  "verified_at": "2026-06-04T10:06:39Z",
+  "verified_at": "2026-06-04T11:04:33Z",
   "spec_kit_version": "0.9.3",
   "superpowers_version": "5.1.0",
   "codex_cli_version": "0.137.0",
   "claude_code_version": "2.1.162",
-  "bridge_version": "1.0.1",
+  "bridge_version": "1.0.2",
   "platforms": [
     {
       "name": "Linux bash",
@@ -41,5 +41,5 @@
       "notes": "Bounded noninteractive Claude Code verification exercised manifest inspection, status/readiness, guard, handoff transitions, and evidence writing inside the sandbox."
     }
   ],
-  "notes": "v1.0.1 is a documentation and development-checkout cleanup patch on the v1.0.0 stable protocol evidence: version metadata is synchronized, release readiness checks namespace/catalog/package drift, Linux and Windows package sandbox rows passed, and bounded real Codex plus Claude Code rows passed. Existing guard, handoff, archive, status, execute, command count, hook count, and extension runtime floor remain compatible with the 0.7.2 baseline."
+  "notes": "v1.0.2 is a documentation, social-card, and release-submission polish patch on the v1.0.0 stable protocol evidence: version metadata is synchronized, release readiness checks namespace/catalog/package drift, Linux and Windows package sandbox rows passed, and bounded real Codex plus Claude Code rows passed. Existing guard, handoff, archive, status, execute, command count, hook count, and extension runtime floor remain compatible with the 0.7.2 baseline."
 }
