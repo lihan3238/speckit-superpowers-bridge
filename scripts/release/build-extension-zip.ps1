@@ -55,7 +55,7 @@ Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $zip = [System.IO.Compression.ZipFile]::Open($outZip, [System.IO.Compression.ZipArchiveMode]::Create)
 try {
-    $files = Get-ChildItem -LiteralPath $stageRoot -Recurse -File
+    $files = Get-ChildItem -LiteralPath $stageRoot -Recurse -File -Force
     $stageRootFull = (Resolve-Path -LiteralPath $stageRoot).Path.TrimEnd('\', '/')
     foreach ($file in $files) {
         $fileFull = (Resolve-Path -LiteralPath $file.FullName).Path

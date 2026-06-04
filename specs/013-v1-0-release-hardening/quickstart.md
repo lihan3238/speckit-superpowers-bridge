@@ -25,7 +25,10 @@ Before the public tag exists, build a release-equivalent ZIP:
 
 ```powershell
 .\scripts\release\validate-release-readiness.ps1 -Version 1.0.0
-.\scripts\release\build-extension-zip.ps1 -Version 1.0.0
+```
+
+```bash
+bash scripts/release/build-extension-zip.sh --version 1.0.0
 ```
 
 Record:
@@ -128,7 +131,12 @@ From PowerShell:
 ```powershell
 .\scripts\release\validate-release-readiness.ps1 -Version 1.0.0
 .\scripts\release\test-validate-release-readiness.ps1
-.\scripts\release\build-extension-zip.ps1 -Version 1.0.0
+```
+
+Then build through the bash path used by CI:
+
+```bash
+bash scripts/release/build-extension-zip.sh --version 1.0.0
 ```
 
 Confirm `verification.md` contains:

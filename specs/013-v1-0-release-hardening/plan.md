@@ -100,6 +100,7 @@ specs/013-v1-0-release-hardening/
 
 scripts/
 ├── release/
+│   ├── build-extension-zip.sh
 │   ├── build-extension-zip.ps1
 │   ├── test-validate-release-readiness.ps1
 │   └── validate-release-readiness.ps1

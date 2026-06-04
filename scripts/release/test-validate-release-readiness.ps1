@@ -18,7 +18,7 @@ function New-FakeRepo {
         [int]$PowerShellCount = 6,
         [int]$BashCount = 6,
         [string]$GitAttributesContent = "*.sh text eol=lf`n*.ps1 text eol=crlf`n",
-        [string]$WorkflowContent = "name: Release`nsteps:`n  - run: bash tests/run-all.sh`n",
+        [string]$WorkflowContent = "name: Release`nsteps:`n  - run: bash scripts/release/build-extension-zip.sh --version 9.9.9`n  - run: bash tests/run-all.sh`n",
         [bool]$IncludeVerifiedVersions = $true,
         [bool]$IncludeCodexRow = $true,
         [bool]$IncludeClaudeRow = $true,
@@ -204,6 +204,9 @@ $officialSections
     Set-Content -LiteralPath (Join-Path $root "CHANGELOG.md") -Value $changelog -Encoding UTF8
     Set-Content -LiteralPath (Join-Path $root ".gitattributes") -Value $GitAttributesContent -Encoding UTF8
     Set-Content -LiteralPath (Join-Path $workflowDir "release.yml") -Value $WorkflowContent -Encoding UTF8
+    New-Item -ItemType Directory -Force -Path (Join-Path $root "scripts/release") | Out-Null
+    Set-Content -LiteralPath (Join-Path $root "scripts/release/build-extension-zip.sh") -Value "#!/usr/bin/env bash`n" -Encoding UTF8
+    Set-Content -LiteralPath (Join-Path $root "scripts/release/build-extension-zip.ps1") -Value "param([string]`$Version)`n" -Encoding UTF8
     $runbookText = if ($ReleaseRunbookUsesOfficialSubmission) {
         "# Release Runbook`n`n## Step 16 - Submit upstream catalog update`n`nUse the official Extension Submission issue template. Do not open a direct pull request that edits extensions/catalog.community.json.`n"
     } else {
@@ -386,6 +389,12 @@ $cases = @(
         Repo = { New-FakeRepo -Version $targetVersion -WorkflowContent "name: Release`nsteps:`n  - shell: pwsh`n    run: Get-ChildItem tests/*.ps1`n" }
         ExpectFail = $true
         ExpectsInOutput = @("release.yml", "tests/*.ps1")
+    },
+    @{
+        Name = "release workflow uses PowerShell package builder -> fail naming bash builder"
+        Repo = { New-FakeRepo -Version $targetVersion -WorkflowContent "name: Release`nsteps:`n  - shell: pwsh`n    run: ./scripts/release/build-extension-zip.ps1 -Version 9.9.9`n" }
+        ExpectFail = $true
+        ExpectsInOutput = @("release.yml", "build-extension-zip.sh")
     },
     @{
         Name = "release runbook direct catalog PR -> fail naming official template"

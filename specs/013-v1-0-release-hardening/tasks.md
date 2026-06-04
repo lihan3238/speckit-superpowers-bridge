@@ -73,7 +73,7 @@
 - [x] T016 [US1] Update `.specify/extensions/speckit-superpowers-bridge/verified-versions.json` with bridge `1.0.0`, current upstream versions, platform rows, and notes for any blocked row.
 - [x] T017 [US1] Add a `## [1.0.0] - 2026-06-04` release section to `CHANGELOG.md` covering stable protocol positioning, compatibility gates, readiness diagnostics, real-agent verification, and demo truthfulness.
 - [x] T018 [US1] Extend `scripts/release/validate-release-readiness.ps1` to validate `verified-versions.json`, command namespace alignment, hook namespace alignment, catalog id alignment, package contents when a ZIP path is provided, and release workflow test references.
-- [x] T019 [US1] Update `scripts/release/build-extension-zip.ps1` only if needed to include new 1.0.0 evidence files without changing ZIP root layout or stable alias behavior.
+- [x] T019 [US1] Update release ZIP builders only if needed to include new 1.0.0 evidence files without changing ZIP root layout or stable alias behavior.
 - [x] T020 [US1] Record the no-heavy-runtime and vendor-managed-skill audit result in `specs/013-v1-0-release-hardening/verification.md`.
 
 **Checkpoint**: 1.0.0 metadata and release-readiness validation are internally consistent, and the bridge remains thin.
@@ -97,7 +97,7 @@
 - [x] T024 [US2] Update `.github/workflows/release.yml` to run current Linux bash tests on Ubuntu and focused Windows PowerShell release smoke checks on Windows.
 - [x] T025 [US2] Update `docs/release-runbook.md` with the mandatory Linux bash and native Windows PowerShell 5.1+ release gate sequence.
 - [x] T026 [US2] Update `.gitattributes` only if inspection shows missing or incorrect `*.sh text eol=lf` or `*.ps1 text eol=crlf` rules.
-- [x] T027 [US2] Build a release-equivalent ZIP with `scripts/release/build-extension-zip.ps1` and record its path and SHA256 in `specs/013-v1-0-release-hardening/verification.md`.
+- [x] T027 [US2] Build a release-equivalent ZIP with the CI-preferred `scripts/release/build-extension-zip.sh` path and record its path and SHA256 in `specs/013-v1-0-release-hardening/verification.md`.
 - [x] T028 [US2] Run `bash tests/run-all.sh` on Linux bash and record command output summary in `specs/013-v1-0-release-hardening/verification.md`.
 - [x] T029 [US2] Run `tests/test-release-powershell.ps1` from native Windows PowerShell 5.1+ and record command output summary in `specs/013-v1-0-release-hardening/verification.md`.
 - [x] T030 [US2] Install the packaged artifact into `../test_specify_superpower/` through the Linux bash path and record sandbox results in `specs/013-v1-0-release-hardening/sandbox-verification.md`.
@@ -174,7 +174,7 @@
 - [x] T053 [US5] Update `marketplace/catalog-entry.json`, `marketplace/extensions-readme-row.md`, and `marketplace/extension-submission-body.md` with 1.0.0 support matrix, capability counts, stable alias policy, and verification summary.
 - [x] T054 [US5] Run final `scripts/release/validate-release-readiness.ps1 -Version 1.0.0` and record the result in `specs/013-v1-0-release-hardening/verification.md`.
 - [x] T055 [US5] Run final `scripts/release/test-validate-release-readiness.ps1` and record the result in `specs/013-v1-0-release-hardening/verification.md`.
-- [x] T056 [US5] Run final `scripts/release/build-extension-zip.ps1 -Version 1.0.0` and record final artifact SHA256 in `specs/013-v1-0-release-hardening/verification.md`.
+- [x] T056 [US5] Run final `bash scripts/release/build-extension-zip.sh --version 1.0.0` and record final artifact SHA256 in `specs/013-v1-0-release-hardening/verification.md`.
 - [x] T057 [US5] Tag and publish `v1.0.0` following `docs/release-runbook.md` and record release URL plus stable alias verification in `specs/013-v1-0-release-hardening/verification.md`.
 - [x] T058 [US5] Prepare or open the upstream Spec Kit catalog submission using `marketplace/extension-submission-body.md` and record the issue or PR link in `specs/013-v1-0-release-hardening/verification.md`.
 

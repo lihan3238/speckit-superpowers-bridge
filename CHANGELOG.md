@@ -24,6 +24,7 @@ Stable protocol release candidate for the Spec Kit + Superpowers bridge. This re
 - Bumped bridge release metadata to `1.0.0` in `extension.yml`, `marketplace/catalog-entry.json`, and `verified-versions.json`; the marketplace `download_url` remains the stable latest-release alias introduced in v0.6.0.
 - Preserved the existing public bridge surface: 3 commands, 5 hooks, both script flavors, v1 handoff compatibility, and the `requires.speckit_version` runtime floor of `>=0.8.10`.
 - Documented the 1.0.0 evidence model around mandatory Linux bash, native Windows PowerShell 5.1+, real Codex, and real Claude Code verification rows. Missing rows stay blockers rather than being advertised as support claims.
+- The release workflow now builds the extension ZIP, extracts release notes, and writes the release summary through bash on Ubuntu. Windows PowerShell remains a focused compatibility gate and fallback script flavor, not the primary package-build path.
 
 ### Compatibility
 
@@ -33,7 +34,7 @@ Stable protocol release candidate for the Spec Kit + Superpowers bridge. This re
 ### Validation
 
 - Release readiness validator self-tests cover version, catalog, namespace, workflow inventory, `.gitattributes`, and package-flavor drift.
-- Package smoke checks include no-heavy-runtime and vendor-managed generated-skill protections so the bridge does not become a separate workflow engine or mutate generated Spec Kit command skills.
+- Package smoke checks include deterministic bash ZIP build verification, no-heavy-runtime checks, and vendor-managed generated-skill protections so the bridge does not become a separate workflow engine or mutate generated Spec Kit command skills.
 - Real sandbox, Codex, Claude Code, final artifact hash, release workflow, and demo-truth evidence are required before tagging or publishing can be claimed complete.
 
 ## [0.7.2] - 2026-06-02

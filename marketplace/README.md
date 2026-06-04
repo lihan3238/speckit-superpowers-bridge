@@ -19,39 +19,40 @@ Per the upstream [EXTENSION-PUBLISHING-GUIDE](https://github.com/github/spec-kit
 **Manual pre-tag steps (do these all in one commit on `main`):**
 
 1. Bump `.specify/extensions/speckit-superpowers-bridge/extension.yml` -> `extension.version: "X.Y.Z"`.
-2. Bump `marketplace/catalog-entry.json` -> `"version": "X.Y.Z"` and `"download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/vX.Y.Z/speckit-superpowers-bridge-vX.Y.Z.zip"`.
+2. Bump `marketplace/catalog-entry.json` -> `"version": "X.Y.Z"` and leave `download_url` on the stable latest-release alias.
 3. Add a `## [X.Y.Z] - <date>` section to `CHANGELOG.md` (this becomes the GitHub release notes).
 4. Commit + push to `main`.
 5. Verify locally before tagging:
    ```powershell
-   pwsh scripts/release/validate-release-readiness.ps1 -Version X.Y.Z
+   .\scripts\release\validate-release-readiness.ps1 -Version X.Y.Z
    ```
    The validator checks version/download/changelog alignment plus script-flavor parity and shell-script LF rules. Exit 0 = ready.
 
 **Tag the release:**
 
-```powershell
+```bash
 git tag -a vX.Y.Z -m "vX.Y.Z - <one-line description>"
 git push origin vX.Y.Z
 ```
 
 **Automated on tag push** (`.github/workflows/release.yml`):
 
-1. Validate release readiness (same 4 checks as the local validator).
-2. Run all 4 bridge smoke tests (`tests/test-*.sh`).
-3. Run release-tooling self-tests (`scripts/release/test-*.ps1`).
-4. Build the ZIP via `scripts/release/build-extension-zip.ps1`.
-5. Extract `[X.Y.Z]` section from `CHANGELOG.md` as release notes.
-6. `gh release create` with notes, the versioned ZIP, and the stable `speckit-superpowers-bridge.zip` alias attached.
-7. Print SHA256, versioned asset URL, and latest-alias URL in the workflow's GitHub Step Summary.
+1. Validate release readiness.
+2. Run the Linux bash smoke suite (`bash tests/run-all.sh`).
+3. Run the focused Windows PowerShell bridge smoke (`tests/test-release-powershell.ps1`).
+4. Run release-tooling self-tests (`scripts/release/test-validate-release-readiness.ps1`).
+5. Build the ZIP via the CI-preferred `scripts/release/build-extension-zip.sh`.
+6. Extract `[X.Y.Z]` section from `CHANGELOG.md` as release notes.
+7. Create or update the GitHub release with notes, the versioned ZIP, and the stable `speckit-superpowers-bridge.zip` alias attached.
+8. Print SHA256, versioned asset URL, and latest-alias URL in the workflow's GitHub Step Summary.
 
 The workflow is sequential - any failure stops the release before the asset is published. Local dry-run is supported: each script can be invoked manually with the same arguments the workflow uses.
 
 **Manual post-release step (cross-repo, intentionally not automated):**
 
-8. Open a catalog-submission issue at github/spec-kit via the **[Extension Submission template](https://github.com/github/spec-kit/issues/new?template=extension_submission.yml)**. If the extension is already listed, state that this is an **existing-entry update** and include the current accepted issue/PR links for traceability.
-9. Use `marketplace/extension-submission-body.md` as the issue body, paste `catalog-entry.json` into the "Proposed Catalog Entry" section, and copy the vX.Y.Z ZIP SHA256 from the GitHub release asset into the testing details.
-10. The Spec Kit maintainer reviews and updates `catalog.community.json` directly. **Do NOT open a PR against `catalog.community.json`** - the upstream guide explicitly requires issue-based submissions.
+9. Open a catalog-submission issue at github/spec-kit via the **[Extension Submission template](https://github.com/github/spec-kit/issues/new?template=extension_submission.yml)**. If the extension is already listed, state that this is an **existing-entry update** and include the current accepted issue/PR links for traceability.
+10. Use `marketplace/extension-submission-body.md` as the issue body, paste `catalog-entry.json` into the "Proposed Catalog Entry" section, and copy the vX.Y.Z ZIP SHA256 from the GitHub release asset into the testing details.
+11. The Spec Kit maintainer reviews and updates `catalog.community.json` directly. **Do NOT open a PR against `catalog.community.json`** - the upstream guide explicitly requires issue-based submissions.
 
 ## Catalog update policy
 
@@ -83,7 +84,7 @@ As of v0.5.0, **v0.4.2** is the minimum supported direct-upgrade source. Users o
 
 ## Why hand-built ZIP (not auto-archive)?
 
-Some canonical catalog entries use the GitHub auto-generated archive at `archive/refs/tags/vX.Y.Z.zip`. Those repos place `extension.yml` at the repo root. **Our repo doesn't**: the bridge content lives under `.specify/extensions/speckit-superpowers-bridge/` because the repo is also a Spec Kit dev environment used to dogfood the bridge on itself. The hand-built ZIP from `scripts/release/build-extension-zip.ps1` produces a standard extension ZIP tree (extension.yml at top, plus commands/, scripts/, LICENSE, README) so the catalog install path works without restructuring the source repo.
+Some canonical catalog entries use the GitHub auto-generated archive at `archive/refs/tags/vX.Y.Z.zip`. Those repos place `extension.yml` at the repo root. **Our repo doesn't**: the bridge content lives under `.specify/extensions/speckit-superpowers-bridge/` because the repo is also a Spec Kit dev environment used to dogfood the bridge on itself. The hand-built ZIP from `scripts/release/build-extension-zip.sh` produces a standard extension ZIP tree (extension.yml at top, plus commands/, scripts/, LICENSE, README) so the catalog install path works without restructuring the source repo. `scripts/release/build-extension-zip.ps1` remains as a Windows fallback, but CI builds through bash.
 
 ## Cross-platform ZIP
 

@@ -289,6 +289,17 @@ if (-not (Test-Path -LiteralPath $gitAttributes)) {
 $releaseWorkflow = Join-Path $RepoRoot ".github/workflows/release.yml"
 if (Test-Path -LiteralPath $releaseWorkflow) {
     $workflowBody = Get-Content -LiteralPath $releaseWorkflow -Raw
+    $bashBuilder = Join-Path $RepoRoot "scripts/release/build-extension-zip.sh"
+    if (-not (Test-Path -LiteralPath $bashBuilder -PathType Leaf)) {
+        Add-Problem $problems "release.yml: bash package builder scripts/release/build-extension-zip.sh is missing"
+    }
+    if ($workflowBody -notmatch 'scripts/release/build-extension-zip\.sh') {
+        Add-Problem $problems "release.yml: release package build must use scripts/release/build-extension-zip.sh"
+    }
+    if ($workflowBody -match 'scripts/release/build-extension-zip\.ps1') {
+        Add-Problem $problems "release.yml: release package build must not use scripts/release/build-extension-zip.ps1; use scripts/release/build-extension-zip.sh"
+    }
+
     if ($workflowBody -match 'tests/\*\.ps1') {
         $testsDir = Join-Path $RepoRoot "tests"
         $psTests = @()

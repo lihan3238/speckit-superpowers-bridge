@@ -7,7 +7,7 @@
 
 - Confirm branch is `main` or a release branch.
 - `git status` reports no unrelated dirty files that would be included in the release commit.
-- Required scripts present: `tests/run-all.sh`, `tests/test-release-package.sh`, `tests/test-release-powershell.ps1`, `scripts/release/validate-release-readiness.ps1`, `scripts/release/test-validate-release-readiness.ps1`, and `scripts/release/build-extension-zip.ps1`.
+- Required scripts present: `tests/run-all.sh`, `tests/test-release-package.sh`, `tests/test-release-powershell.ps1`, `scripts/release/validate-release-readiness.ps1`, `scripts/release/test-validate-release-readiness.ps1`, `scripts/release/build-extension-zip.sh`, and the Windows fallback `scripts/release/build-extension-zip.ps1`.
 - Native Windows PowerShell 5.1+ is available for the Windows gate. WSL bash is valid Linux evidence only; it does not satisfy the Windows row.
 
 ## Step 1 — Bump version
@@ -76,11 +76,14 @@ Run this from a native Windows PowerShell 5.1+ console, not from WSL bash:
 
 **Verify**: stdout ends `release-powershell-tests-ok`. A `[bridge] WARNING:` line during the synthetic `complete` transition is expected when the fixture still has one unchecked task.
 
-## Step 7 — Run release-tooling self-test and build dry run
+## Step 7 — Run release-tooling self-test and bash build dry run
 
 ```powershell
 .\scripts\release\test-validate-release-readiness.ps1
-.\scripts\release\build-extension-zip.ps1 -Version <N.N.N>
+```
+
+```bash
+bash scripts/release/build-extension-zip.sh --version <N.N.N>
 ```
 
 **Verify**: validator self-test ends `validate-release-readiness-tests-ok`; build output reports both `dist/speckit-superpowers-bridge-v<N.N.N>.zip` and `dist/speckit-superpowers-bridge.zip`, plus SHA256.
@@ -120,7 +123,7 @@ If `vhs`, `ttyd`, and `ffmpeg` are available, regenerate demos from a real sandb
 
 ## Step 12 — Commit and tag
 
-```powershell
+```bash
 git add -A
 git commit -m "release: v<N.N.N>"
 git tag -a v<N.N.N> -m "Release v<N.N.N>"
@@ -130,7 +133,7 @@ git tag -a v<N.N.N> -m "Release v<N.N.N>"
 
 ## Step 13 — Push tag
 
-```powershell
+```bash
 git push origin main --tags
 ```
 
@@ -138,8 +141,8 @@ git push origin main --tags
 
 ## Step 14 — Confirm release ZIP is reachable
 
-```powershell
-Invoke-WebRequest -Method Head -Uri "https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v<N.N.N>/speckit-superpowers-bridge-v<N.N.N>.zip"
+```bash
+curl -fsLI "https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v<N.N.N>/speckit-superpowers-bridge-v<N.N.N>.zip" | head -3
 ```
 
 **Verify**: returns HTTP `200`.

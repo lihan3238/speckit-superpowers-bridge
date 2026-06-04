@@ -34,6 +34,7 @@ assert_file "LICENSE"
 assert_file ".gitattributes"
 
 command -v jq >/dev/null 2>&1 || fail "jq is required for package smoke checks"
+command -v python3 >/dev/null 2>&1 || fail "python3 is required for package smoke checks"
 
 cmd_count="$(find "$BRIDGE_DIR/commands" -maxdepth 1 -type f -name '*.md' | wc -l)"
 [ "$cmd_count" -eq 3 ] || fail "expected exactly 3 bridge command files, got $cmd_count"
@@ -55,6 +56,30 @@ done
 
 grep -Eq '^\*\.sh[[:space:]]+text[[:space:]]+eol=lf\b' "$REPO_ROOT/.gitattributes" || fail ".gitattributes missing '*.sh text eol=lf'"
 grep -Eq '^\*\.ps1[[:space:]]+text[[:space:]]+eol=crlf\b' "$REPO_ROOT/.gitattributes" || fail ".gitattributes missing '*.ps1 text eol=crlf'"
+
+version="$(
+    python3 - "$BRIDGE_DIR/extension.yml" <<'PY'
+from pathlib import Path
+import re
+import sys
+
+text = Path(sys.argv[1]).read_text(encoding="utf-8")
+match = re.search(r"(?m)^\s{2,}version:\s*['\"]?([^'\"\s#]+)", text)
+if not match:
+    raise SystemExit("extension.yml version not found")
+print(match.group(1))
+PY
+)"
+if [ -x "$REPO_ROOT/scripts/release/build-extension-zip.sh" ]; then
+    bash "$REPO_ROOT/scripts/release/build-extension-zip.sh" --version "$version" >/tmp/speckit-bridge-build-a.out
+    sha_a="$(sha256sum "$REPO_ROOT/dist/speckit-superpowers-bridge-v$version.zip" | awk '{print $1}')"
+    sleep 2
+    bash "$REPO_ROOT/scripts/release/build-extension-zip.sh" --version "$version" >/tmp/speckit-bridge-build-b.out
+    sha_b="$(sha256sum "$REPO_ROOT/dist/speckit-superpowers-bridge-v$version.zip" | awk '{print $1}')"
+    [ "$sha_a" = "$sha_b" ] || fail "bash release ZIP build is not deterministic: $sha_a vs $sha_b"
+else
+    fail "scripts/release/build-extension-zip.sh must exist and be executable"
+fi
 
 readiness_output="$(bash "$BRIDGE_DIR/scripts/bash/bridge-status.sh" --readiness --actor codex)"
 printf '%s\n' "$readiness_output" | grep -Fq '[bridge readiness]' || fail "readiness output missing header"

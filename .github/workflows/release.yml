@@ -87,32 +87,37 @@ jobs:
         run: ./scripts/release/validate-release-readiness.ps1 -Version '${{ steps.ver.outputs.version }}'
 
       - name: Build extension ZIP
-        shell: pwsh
-        run: ./scripts/release/build-extension-zip.ps1 -Version '${{ steps.ver.outputs.version }}'
-
-      - name: Validate release package
-        shell: pwsh
-        run: ./scripts/release/validate-release-readiness.ps1 -Version '${{ steps.ver.outputs.version }}' -PackageZip 'dist/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip'
+        shell: bash
+        run: bash scripts/release/build-extension-zip.sh --version '${{ steps.ver.outputs.version }}'
 
       - name: Run package smoke
         shell: bash
         run: bash tests/test-release-package.sh
 
-      - name: Extract release notes from CHANGELOG
+      - name: Validate release package
         shell: pwsh
+        run: ./scripts/release/validate-release-readiness.ps1 -Version '${{ steps.ver.outputs.version }}' -PackageZip 'dist/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip'
+
+      - name: Extract release notes from CHANGELOG
+        shell: bash
         run: |
-          $v = '${{ steps.ver.outputs.version }}'
-          $body = Get-Content CHANGELOG.md -Raw
-          $pattern = "(?ms)^##\s*\[$([regex]::Escape($v))\][^\r\n]*\r?\n(.*?)(?=^##\s*\[|\Z)"
-          $m = [regex]::Match($body, $pattern)
-          if (-not $m.Success) {
-            Write-Output "::error::No '## [$v]' section in CHANGELOG.md"
-            exit 1
-          }
-          $notes = $m.Groups[1].Value.Trim()
-          Set-Content -LiteralPath release-notes.md -Value $notes -Encoding UTF8
-          Write-Output "Notes (first 300 chars):"
-          Write-Output ($notes.Substring(0, [Math]::Min(300, $notes.Length)))
+          python3 - '${{ steps.ver.outputs.version }}' <<'PY'
+          from pathlib import Path
+          import re
+          import sys
+
+          version = sys.argv[1]
+          body = Path("CHANGELOG.md").read_text(encoding="utf-8")
+          pattern = rf"(?ms)^##\s*\[{re.escape(version)}\][^\n]*\n(.*?)(?=^##\s*\[|\Z)"
+          match = re.search(pattern, body)
+          if not match:
+              print(f"::error::No '## [{version}]' section in CHANGELOG.md")
+              raise SystemExit(1)
+          notes = match.group(1).strip()
+          Path("release-notes.md").write_text(notes + "\n", encoding="utf-8")
+          print("Notes (first 300 chars):")
+          print(notes[:300])
+          PY
 
       - name: Create GitHub release with ZIP asset
         env:
@@ -135,21 +140,17 @@ jobs:
           fi
 
       - name: Summary
-        shell: pwsh
+        shell: bash
         run: |
-          $sha = (Get-FileHash -LiteralPath "dist/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip" -Algorithm SHA256).Hash.ToLower()
-          $url = "https://github.com/${{ github.repository }}/releases/download/$env:GITHUB_REF_NAME/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip"
-          $latestUrl = "https://github.com/${{ github.repository }}/releases/latest/download/speckit-superpowers-bridge.zip"
-          $summary = @"
-          ## Release published
-
-          - Tag: $env:GITHUB_REF_NAME
-          - Asset URL: $url
-          - Latest alias URL: $latestUrl
-          - SHA256: $sha
-
-          ### Next manual step (cross-repo)
-
-          Open a clean Extension Submission issue at github/spec-kit with the new version metadata. Body template lives at marketplace/extension-submission-body.md.
-          "@
-          $summary | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          sha="$(sha256sum "dist/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip" | awk '{print $1}')"
+          url="https://github.com/${{ github.repository }}/releases/download/$GITHUB_REF_NAME/speckit-superpowers-bridge-v${{ steps.ver.outputs.version }}.zip"
+          latest_url="https://github.com/${{ github.repository }}/releases/latest/download/speckit-superpowers-bridge.zip"
+          {
+            printf '## Release published\n\n'
+            printf -- '- Tag: %s\n' "$GITHUB_REF_NAME"
+            printf -- '- Asset URL: %s\n' "$url"
+            printf -- '- Latest alias URL: %s\n' "$latest_url"
+            printf -- '- SHA256: %s\n\n' "$sha"
+            printf '### Next manual step (cross-repo)\n\n'
+            printf 'Open a clean Extension Submission issue at github/spec-kit with the new version metadata. Body template lives at marketplace/extension-submission-body.md.\n'
+          } >> "$GITHUB_STEP_SUMMARY"
