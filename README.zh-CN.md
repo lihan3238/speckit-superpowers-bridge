@@ -120,7 +120,7 @@ readiness 报告是只读的：检查 script flavor、required tools、command n
 | **Superspec** | spec-first workflow | plugin-managed implementation flow | 因 Agent 而异 | 更高 —— doctor/status 思路值得吸收，但 1.0.0 安装失败也暴露 catalog id / namespace 漂移风险 |
 | **SuperB** | 以 Superpowers 为中心的规划 | 以 Superpowers 为中心的实现 | 是 | 更高 —— 编排更丰富，但生命周期 ownership 超出本桥目标 |
 | **Comet（rpamis/comet，OpenSpec + Superpowers）** | OpenSpec change/spec | Superpowers，经 Comet 的 state machine | 是（多平台 npm 安装器） | 中等 —— Comet 自己有 `.yaml` + guard 脚本 |
-| **cc-sdd（rhuss/cc-sdd）** | Spec Kit（紧贴上游） | Spec Kit 命令上以 opt-in *trait* 形式注入 Superpowers 质量门 | 以 Claude Code 为先（trait 是 CC 插件叠加层） | 中等 —— `.specify/sdd-traits.json` + 捆绑的 trait 扩展与生命周期 hook |
+| **cc-spex（rhuss/cc-spex，原 cc-sdd）** | Spec Kit（紧贴上游，定期同步） | Spec Kit 的显式规划 + 精选的 Superpowers 阶段（引导式 brainstorming、spec/plan 中间评审、多子代理深度评审），以原生 spec-kit 扩展形式提供 | 以 Claude Code 为主 | 中等 —— 叠加在 spec-kit 流程上的 opt-in 扩展 |
 | **speckit-superpowers-bridge**（本项目） | Spec Kit（厂商所有） | Superpowers（厂商所有） | 是（Codex + Claude Code，契约相同） | **极薄** —— 1 个 guard 脚本、1 个 handoff JSON、0 套新的状态机 |
 
 桥的招牌是 **兼容上游成长 + 极度轻量**。每个 release 都会过宪法 [Principle VI Native-First gate](.specify/memory/constitution.md)：上游是否已经做了这件事？上游是否是解决这件事的正确位置？只要任一答案是「是」，桥就**不**加这个功能。
