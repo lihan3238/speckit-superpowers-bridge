@@ -120,6 +120,7 @@ How the bridge differs from doing nothing, doing only one side, or using a peer 
 | **Superspec** | Spec-first workflow | Plugin-managed implementation flow | varies by agent | higher — useful doctor/status ideas, but 1.0.0 install failures showed catalog id / namespace drift risk |
 | **SuperB** | Superpowers-centered planning | Superpowers-centered implementation | yes | higher — richer orchestration, but more lifecycle ownership than this bridge wants |
 | **Comet (rpamis/comet, OpenSpec + Superpowers)** | OpenSpec change/spec | Superpowers via Comet's state machine | yes (multi-platform npm installer) | medium — Comet has its own `.yaml` + guard scripts |
+| **cc-sdd (rhuss/cc-sdd)** | Spec Kit (stays close to upstream) | Spec Kit commands with Superpowers injected as opt-in quality-gate *traits* | Claude Code-first (traits are CC plugin overlays) | medium — `.specify/sdd-traits.json` + bundled trait extensions and lifecycle hooks |
 | **speckit-superpowers-bridge** (this) | Spec Kit (vendor-owned) | Superpowers (vendor-owned) | yes (Codex + Claude Code, identical contract) | **extremely thin** — 1 guard script, 1 handoff JSON, 0 new state machinery |
 
 The bridge's brand is **compatible with upstream growth + extremely lightweight**. Every release is graded against the constitution's [Principle VI Native-First gate](.specify/memory/constitution.md): does upstream already do this? Is upstream the right place to fix this? If either answer is "yes", the bridge does NOT add the feature.
