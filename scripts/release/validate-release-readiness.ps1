@@ -381,7 +381,7 @@ if (-not (Test-Path -LiteralPath $submissionBody -PathType Leaf)) {
             Add-Problem $problems "extension-submission-body.md: missing official submission section '$requiredSection'"
         }
     }
-    if ($submissionText -notmatch "(?ms)Proposed Catalog Entry.*`"speckit-superpowers-bridge`".*`"version`":\s*`"$([regex]::Escape($Version))`".*`"verified`":\s*false.*`"created_at`":\s*`"2026-05-15T00:00:00Z`".*`"updated_at`":\s*`"2026-06-04T00:00:00Z`"") {
+    if ($submissionText -notmatch "(?ms)Proposed Catalog Entry.*`"speckit-superpowers-bridge`".*`"version`":\s*`"$([regex]::Escape($Version))`".*`"verified`":\s*false.*`"created_at`":\s*`"2026-05-15T00:00:00Z`".*`"updated_at`":\s*`"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z`"") {
         Add-Problem $problems "extension-submission-body.md: Proposed Catalog Entry is missing official catalog fields for the 1.0.0 update"
     }
 }
