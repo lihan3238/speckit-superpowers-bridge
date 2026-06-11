@@ -49,14 +49,14 @@
 
 - [x] T010 [US3] Bump version to 1.0.3 in .specify/extensions/speckit-superpowers-bridge/extension.yml and marketplace/catalog-entry.json (`download_url` unchanged — stable latest-release alias), and add the `[1.0.3]` CHANGELOG.md entry (Added: category/effect manifest fields; Changed: 0.10.x docs alignment + evidence refresh; Compatibility: runtime floor unchanged `>=0.8.10`)
 - [x] T011 [US3] Run full local release gate: `bash tests/run-all.sh` (6/6) plus the release validation script and `tests/test-release-package.sh` against a freshly built v1.0.3 ZIP in dist/ (build via the repo's existing packaging path); fix any validator findings
-- [ ] T012 [US3] Commit, push branch, open PR to main, merge after review, tag `v1.0.3`, publish the GitHub release with the v1.0.3 ZIP asset, and verify the stable alias URL `releases/latest/download/speckit-superpowers-bridge.zip` serves the new ZIP
-- [ ] T013 [US3] Execute quickstart.md §4 end-user sandbox verification in ../test_specify_superpower (fresh `specify init` on 0.10.2, install from published release URL, one full guard→handoff→status→archive cycle); record outcomes, versions, and dates in specs/014-speckit-0-10-x-alignment/verification.md
+- [x] T012 [US3] Commit, push branch, open PR to main, merge after review, tag `v1.0.3`, publish the GitHub release with the v1.0.3 ZIP asset, and verify the stable alias URL `releases/latest/download/speckit-superpowers-bridge.zip` serves the new ZIP
+- [x] T013 [US3] Execute quickstart.md §4 end-user sandbox verification in ../test_specify_superpower (fresh `specify init` on 0.10.2, install from published release URL, one full guard→handoff→status→archive cycle); record outcomes, versions, and dates in specs/014-speckit-0-10-x-alignment/verification.md
 
 **Checkpoint**: Release shipped with constitution-mandated sandbox evidence.
 
 ## Phase 6: Polish & Cross-Cutting Concerns
 
-- [ ] T014 Final consistency sweep: quickstart.md §§1–3 greps all clean on the release commit; mark handoff `complete` only after T013 evidence exists; consider upstream catalog version-bump PR (submission issue to github/spec-kit) as follow-up and note the decision in specs/014-speckit-0-10-x-alignment/verification.md
+- [x] T014 Final consistency sweep: quickstart.md §§1–3 greps all clean on the release commit; mark handoff `complete` only after T013 evidence exists; consider upstream catalog version-bump PR (submission issue to github/spec-kit) as follow-up and note the decision in specs/014-speckit-0-10-x-alignment/verification.md
 
 ## Dependencies
 

@@ -41,8 +41,34 @@
 
 ## US3 — Publication + end-user sandbox (T012–T013)
 
-(filled after release publication)
+### T012 — Publication (PASS, 2026-06-12)
+
+- PR #6 (014 branch → main) merged; tag `v1.0.3` initially on merge `a41e01f`.
+- **Release-gate failure caught by CI** (first tag run): `extensions-readme-row.md` and `extension-submission-body.md` still carried v1.0.2 content, and `validate-release-readiness.ps1` pinned the proposed-catalog `updated_at` to the literal v1.0.2 date. Fixed in PR #7 (marketplace material refreshed to v1.0.3 incl. `category`/`effect` in the proposed catalog entry; validator relaxed to accept any ISO-8601 `updated_at`, `created_at` stays pinned). Tag re-pointed to merge `6e320a2`, force-pushed; release workflow **completed success**.
+- Release published with both assets: `speckit-superpowers-bridge-v1.0.3.zip` + stable alias `speckit-superpowers-bridge.zip` (74,910 bytes each).
+- Stable alias verified: `releases/latest/download/speckit-superpowers-bridge.zip` → 302 → `v1.0.3` asset.
+- Published asset SHA256: `a1ae35620aeb36aca36fa43860cd8dd4fbd167c5c44028c2b2d2e7c7a1927510` — **identical to the local pre-publication build** (deterministic packaging confirmed; marketplace/ files are not part of the ZIP).
+
+### T013 — End-user sandbox cycle (PASS, 2026-06-12)
+
+Sandbox: `../test_specify_superpower/v1-0-3-linux-20260611T194136Z`, Spec Kit CLI 0.10.2, fresh `specify init --here --integration claude --script sh --force`.
+
+| Step | Result |
+|---|---|
+| Install from published release URL (`specify extension add speckit-superpowers-bridge --from .../releases/latest/download/...`) | PASS — v1.0.3, 3 commands / 5 hooks, Enabled. Note: 0.10.2 requires the `--from` flag form; a bare URL positional arg is treated as a catalog id. Trust prompt confirmed interactively. |
+| `specify extension info` | Category: process, Effect: read-write displayed (read from installed manifest) |
+| `bridge-status.sh --readiness` | ready on tools/namespace/package/agents; expected "no handoff file" warning pre-cycle; Next: /speckit-specify |
+| Guard allow (`speckit.plan`, no active handoff) | PASS — allowed |
+| Handoff `ready` → `executing` | PASS — incl. correct `blocked` auto-transition when spec.md/plan.md were missing, then `executing` once artifacts existed (artifact-presence validation works) |
+| Guard deny (`speckit.implement` while `executing`) | PASS — "blocked while superpowers handoff is executing" |
+| `bridge-status.sh` drift detection | PASS — flagged tasks.md sha256 drift after task checked off |
+| Handoff `complete` (+ drift warning) → `auto-archive` | PASS — snapshot created, status back to `ready`, `feature_directory` cleared |
+| Event log | 11 events appended to `.specify/bridge-events.jsonl` |
+
+One non-blocking observation: `specify extension info` header shows "(v1.0.2)" from the community-catalog metadata (upstream catalog not yet bumped) while the installed extension itself is v1.0.3 — exactly what the upstream catalog-update submission resolves.
 
 ## T014 — Final sweep
 
-(filled at completion)
+- quickstart.md §1 grep clean on release commit (intentional migration-notes mentions only); §2 fields verified in both manifest and catalog entry; §3 evidence rows present; smoke suite 6/6 on the release commit (CI: release workflow success on `6e320a2`).
+- Upstream catalog update: **submitted** as Extension Submission issue [github/spec-kit#2945](https://github.com/github/spec-kit/issues/2945) using `marketplace/extension-submission-body.md` (v1.0.3), per the official template flow (no direct catalog PR) — same path as the merged v1.0.2 update (#2848 → PR #2852).
+- Handoff transitioned to `complete` after this evidence was recorded.
