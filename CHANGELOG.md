@@ -8,6 +8,41 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.0.3] - 2026-06-12
+
+### Added
+
+- Declared the new first-class `category: process` and `effect: read-write`
+  fields (introduced in Spec Kit 0.10.2's extension schema) in the bridge's
+  `extension.yml` and `marketplace/catalog-entry.json`, matching the values
+  upstream already assigned to the bridge entry in `catalog.community.json`.
+  Backward compatible: validators at the `>=0.8.10` runtime floor ignore
+  unknown manifest fields (verified against the 0.8.10 validator source and a
+  0.10.2 round-trip install).
+
+### Changed
+
+- Re-verified the bridge end-to-end on Spec Kit CLI `0.10.2` (Linux bash /
+  WSL2): source repo re-bootstrapped, full 6-test smoke suite passed
+  unchanged, end-user sandbox cycle from the published release artifact.
+  Refreshed `verified-versions.json` and README badges/claims accordingly;
+  dated Windows PowerShell and real-agent rows from v1.0.0 are retained
+  because the corresponding bytes did not change in this release.
+- Updated AGENTS.md bootstrap guidance for Spec Kit 0.10.0's init-time
+  breaking changes: the git extension is now opt-in (`specify extension add
+  git` after `specify init`; `--no-git` removed), legacy `--ai` /
+  `--ai-skills` / `--ai-commands-dir` flags were removed in favor of
+  `--integration`, and `init-options.json` renamed `branch_numbering` →
+  `feature_numbering` (bridge scripts never read this field).
+
+### Compatibility
+
+- Protocol surface unchanged: 3 commands, 5 hooks, both script flavors,
+  handoff v1 schema, guard rules, and the `requires.speckit_version` runtime
+  floor of `>=0.8.10` all carry over from v1.0.2 untouched.
+- `marketplace/catalog-entry.json.download_url` remains the stable
+  latest-release alias (policy unchanged since v0.6.0).
+
 ## [1.0.2] - 2026-06-04
 
 ### Added

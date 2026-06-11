@@ -9,7 +9,7 @@
 <p align="center">
   <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" /></a>
   <a href="https://github.com/lihan3238/speckit-superpowers-bridge/releases"><img alt="Bridge version" src="https://img.shields.io/github/v/release/lihan3238/speckit-superpowers-bridge?style=flat-square&label=bridge" /></a>
-  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.9.3" src="https://img.shields.io/badge/Spec_Kit-verified_0.9.3-success?style=flat-square" /></a>
+  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.10.2" src="https://img.shields.io/badge/Spec_Kit-verified_0.10.2-success?style=flat-square" /></a>
   <a href="https://github.com/obra/superpowers"><img alt="Superpowers verified 5.1.0" src="https://img.shields.io/badge/Superpowers-verified_5.1.0-success?style=flat-square" /></a>
   <a href="https://github.com/github/spec-kit/blob/main/docs/community/extensions.md"><img alt="Spec Kit Marketplace listed" src="https://img.shields.io/badge/Spec_Kit_Marketplace-listed-blueviolet?style=flat-square" /></a>
 </p>
@@ -81,6 +81,8 @@ v1.0.0 is a stable protocol release: no new workflow engine, no daemon, no servi
 v1.0.1 is a documentation and development-checkout cleanup patch on the same protocol surface.
 
 v1.0.2 is a discoverability and launch-asset patch: README hero image, social cards, marketplace wording, and small contributor-doc fixes; runtime bridge behavior is unchanged.
+
+v1.0.3 is a Spec Kit 0.10.x compatibility-alignment patch: re-verified on Spec Kit CLI `0.10.2`, declares the new `category`/`effect` manifest fields, and refreshes bootstrap docs for 0.10.0's opt-in git extension; runtime bridge behavior is unchanged.
 
 | Target | Status | Evidence |
 |---|---|---|
@@ -233,7 +235,7 @@ release-verification sandbox `../test_specify_superpower`.
 **Version-pinned install** (for reproducible installs of a specific release):
 
 ```powershell
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.2/speckit-superpowers-bridge-v1.0.2.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.3/speckit-superpowers-bridge-v1.0.3.zip
 ```
 
 </details>
@@ -357,14 +359,14 @@ See `AGENTS.md` for the master cross-agent protocol; `CLAUDE.md` for Claude-spec
 <details>
 <summary><strong>Maintenance and versioning</strong></summary>
 
-This release (v1.0.2) is verified against:
+This release (v1.0.3) is verified against:
 
-- **Spec Kit** `0.9.3` on Linux bash; Windows sandbox also passed the bridge runtime floor with Spec Kit CLI `0.8.10`
+- **Spec Kit** `0.10.2` on Linux bash; Windows PowerShell evidence retained from v1.0.0 (the `ps` script flavor is byte-identical), where the sandbox passed the bridge runtime floor with Spec Kit CLI `0.8.10`
 - **Superpowers** `5.1.0`
 - **Codex CLI** `0.137.0`
 - **Claude Code** `2.1.162`
 
-Verified metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned additive schema refreshed once per bridge release. v1.0.2 records bridge, upstream tool, platform, and real-agent rows; missing or blocked rows are not advertised as verified.
+Verified metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned additive schema refreshed once per bridge release. v1.0.3 records bridge, upstream tool, platform, and real-agent rows; missing or blocked rows are not advertised as verified.
 
 When upstream tools ship a new release that breaks the bridge, we either patch the bridge scripts or pin the documented compatible versions in `CHANGELOG.md`.
 

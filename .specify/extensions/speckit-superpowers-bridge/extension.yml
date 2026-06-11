@@ -3,13 +3,15 @@ schema_version: "1.0"
 extension:
   id: speckit-superpowers-bridge
   name: "Superpowers Implementation Bridge"
-  version: "1.0.2"
+  version: "1.0.3"
   description: "Thin orchestrator between Spec Kit (design) and Superpowers (implementation). Cross-agent."
   author: "lihan3238"
   repository: "https://github.com/lihan3238/speckit-superpowers-bridge"
   homepage: "https://github.com/lihan3238/speckit-superpowers-bridge"
   documentation: "https://github.com/lihan3238/speckit-superpowers-bridge#readme"
   license: MIT
+  category: process
+  effect: read-write
 
 requires:
   speckit_version: ">=0.8.10"
