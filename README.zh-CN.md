@@ -9,7 +9,7 @@
 <p align="center">
   <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" /></a>
   <a href="https://github.com/lihan3238/speckit-superpowers-bridge/releases"><img alt="Bridge version" src="https://img.shields.io/github/v/release/lihan3238/speckit-superpowers-bridge?style=flat-square&label=bridge" /></a>
-  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.9.3" src="https://img.shields.io/badge/Spec_Kit-verified_0.9.3-success?style=flat-square" /></a>
+  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.10.2" src="https://img.shields.io/badge/Spec_Kit-verified_0.10.2-success?style=flat-square" /></a>
   <a href="https://github.com/obra/superpowers"><img alt="Superpowers verified 5.1.0" src="https://img.shields.io/badge/Superpowers-verified_5.1.0-success?style=flat-square" /></a>
   <a href="https://github.com/github/spec-kit/blob/main/docs/community/extensions.md"><img alt="Spec Kit Marketplace listed" src="https://img.shields.io/badge/Spec_Kit_Marketplace-listed-blueviolet?style=flat-square" /></a>
 </p>
@@ -82,6 +82,8 @@ v1.0.1 是同一协议面上的文档与开发 checkout 清理补丁。
 
 v1.0.2 是展示与发布资产补丁：README 顶图、社交卡片、marketplace 文案和贡献者文档小修；bridge runtime 行为不变。
 
+v1.0.3 是 Spec Kit 0.10.x 兼容对齐补丁：在 Spec Kit CLI `0.10.2` 上重新验证、声明新的 `category`/`effect` manifest 字段、并按 0.10.0 的 git 扩展 opt-in 变化刷新 bootstrap 文档；bridge runtime 行为不变。
+
 | 目标 | 状态 | 证据 |
 |---|---|---|
 | Linux bash | 已验证 | 完整 bash smoke suite + release artifact sandbox cycle。 |
@@ -120,6 +122,7 @@ readiness 报告是只读的：检查 script flavor、required tools、command n
 | **Superspec** | spec-first workflow | plugin-managed implementation flow | 因 Agent 而异 | 更高 —— doctor/status 思路值得吸收，但 1.0.0 安装失败也暴露 catalog id / namespace 漂移风险 |
 | **SuperB** | 以 Superpowers 为中心的规划 | 以 Superpowers 为中心的实现 | 是 | 更高 —— 编排更丰富，但生命周期 ownership 超出本桥目标 |
 | **Comet（rpamis/comet，OpenSpec + Superpowers）** | OpenSpec change/spec | Superpowers，经 Comet 的 state machine | 是（多平台 npm 安装器） | 中等 —— Comet 自己有 `.yaml` + guard 脚本 |
+| **cc-spex（rhuss/cc-spex，原 cc-sdd）** | Spec Kit（紧贴上游，定期同步） | Spec Kit 的显式规划 + 精选的 Superpowers 阶段（引导式 brainstorming、spec/plan 中间评审、多子代理深度评审），以原生 spec-kit 扩展形式提供 | 以 Claude Code 为主 | 中等 —— 叠加在 spec-kit 流程上的 opt-in 扩展 |
 | **speckit-superpowers-bridge**（本项目） | Spec Kit（厂商所有） | Superpowers（厂商所有） | 是（Codex + Claude Code，契约相同） | **极薄** —— 1 个 guard 脚本、1 个 handoff JSON、0 套新的状态机 |
 
 桥的招牌是 **兼容上游成长 + 极度轻量**。每个 release 都会过宪法 [Principle VI Native-First gate](.specify/memory/constitution.md)：上游是否已经做了这件事？上游是否是解决这件事的正确位置？只要任一答案是「是」，桥就**不**加这个功能。
@@ -231,7 +234,7 @@ specify extension add --dev (Join-Path $tmp.FullName "speckit-superpowers-bridge
 **固定版本安装**（用来可复现地安装某个精确版本）：
 
 ```powershell
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.2/speckit-superpowers-bridge-v1.0.2.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.3/speckit-superpowers-bridge-v1.0.3.zip
 ```
 
 </details>
@@ -355,14 +358,14 @@ v0.2.x 中存在的 6 个元命令（`audit`、`validate`、`parity`、`recommen
 <details>
 <summary><strong>维护与版本（Maintenance and versioning）</strong></summary>
 
-本版本（v1.0.2）针对以下版本验证：
+本版本（v1.0.3）针对以下版本验证：
 
-- **Spec Kit** `0.9.3`（Linux bash）；Windows sandbox 也在 bridge runtime floor 对应的 Spec Kit CLI `0.8.10` 上通过
+- **Spec Kit** `0.10.2`（Linux bash）；Windows PowerShell 证据沿用 v1.0.0（`ps` 脚本 flavor 字节级未变），当时 sandbox 在 bridge runtime floor 对应的 Spec Kit CLI `0.8.10` 上通过
 - **Superpowers** `5.1.0`
 - **Codex CLI** `0.137.0`
 - **Claude Code** `2.1.162`
 
-verified metadata 记录在 [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) —— 项目自有、只做增量扩展的 schema，每次桥 release 刷新一次。v1.0.2 记录 bridge、上游工具、平台和真实 Agent 行；缺失或 blocked 的行不会被宣传为 verified。
+verified metadata 记录在 [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) —— 项目自有、只做增量扩展的 schema，每次桥 release 刷新一次。v1.0.3 记录 bridge、上游工具、平台和真实 Agent 行；缺失或 blocked 的行不会被宣传为 verified。
 
 当上游工具的新版破坏了桥，我们要么修补桥脚本，要么在 `CHANGELOG.md` 中钉住已验证的兼容版本。
 

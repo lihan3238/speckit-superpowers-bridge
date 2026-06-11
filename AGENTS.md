@@ -1,7 +1,7 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/013-v1-0-release-hardening/plan.md
+at specs/014-speckit-0-10-x-alignment/plan.md
 <!-- SPECKIT END -->
 
 > **Canonical project instructions**, readable by any AGENTS.md-aware tool
@@ -33,8 +33,17 @@ This repo supports two equivalent dev environments. Pick whichever matches your 
 
 | Environment | Required tools | Default script flavor | One-time bootstrap (after clone) |
 |---|---|---|---|
-| Windows PowerShell 5.1+ | `git`, `pwsh`, `gh`, `jq`, `specify` CLI 0.9.1+ for repo bootstrap (bridge runtime floor remains `>=0.8.10`) | `ps` | `specify init --here --integration claude --script ps --force` |
-| WSL2 Ubuntu bash 5.2+ (incl. checkouts under `/mnt/c/...`) | `git`, `bash`, `gh`, `jq`, `specify` CLI 0.9.1+ for repo bootstrap (bridge runtime floor remains `>=0.8.10`) | `sh` | `specify init --here --integration claude --script sh --force` |
+| Windows PowerShell 5.1+ | `git`, `pwsh`, `gh`, `jq`, `specify` CLI 0.10.1+ (verified 0.10.2) for repo bootstrap (bridge runtime floor remains `>=0.8.10`) | `ps` | `specify init --here --integration claude --script ps --force` then `specify extension add git` |
+| WSL2 Ubuntu bash 5.2+ (incl. checkouts under `/mnt/c/...`) | `git`, `bash`, `gh`, `jq`, `specify` CLI 0.10.1+ (verified 0.10.2) for repo bootstrap (bridge runtime floor remains `>=0.8.10`) | `sh` | `specify init --here --integration claude --script sh --force` then `specify extension add git` |
+
+**Spec Kit 0.10.0 migration notes**: the git extension is now opt-in —
+`specify init` no longer auto-installs it (and the old `--no-git` flag was
+removed), hence the explicit `specify extension add git` step above; skip it
+only if `specify extension list` already shows git (e.g. a pre-0.10 install).
+The legacy `--ai`, `--ai-skills`, and `--ai-commands-dir` init flags were
+removed in favor of `--integration <key>`. `init-options.json` renamed
+`branch_numbering` → `feature_numbering` (deprecated-but-honored on read);
+bridge scripts never read this field, so bridge behavior is unaffected.
 
 The bootstrap regenerates `.specify/scripts/<flavor>/` and the vendor-managed
 `.{claude,agents}/skills/speckit-{analyze,checklist,clarify,constitution,implement,plan,specify,tasks,taskstoissues,git-commit,git-feature,git-initialize,git-remote,git-validate,agent-context-update}/`
