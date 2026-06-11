@@ -1,6 +1,49 @@
 <!--
 SYNC IMPACT REPORT
 ==================
+Version change: 1.3.0 -> 1.4.0
+Bump rationale: Add a new subsection "Patch-Tier Features" under
+"Development Workflow & Quality Gates". The v1.0.3 (014) retrospective
+showed the full spec-template ceremony (prioritized user stories,
+per-story independent-test criteria, self-authored requirements
+checklist) consumed the majority of that feature's token budget while
+serving ~8 file edits with zero new bridge surface; the self-graded
+checklist added no information. This amendment defines an explicit
+lighter tier for such features without weakening any gate that has
+demonstrated value (Constitution Check, tasks.md contract, smoke suite,
+End-User Verification Sandbox). Materially expanded normative guidance:
+MINOR per semver.
+
+Modified sections:
+  - "## Development Workflow & Quality Gates": added subsection
+    "### Patch-Tier Features".
+
+Added sections: one new workflow subsection (Patch-Tier Features).
+Removed sections: none.
+Renamed sections: none.
+
+Templates requiring updates:
+  - .specify/templates/spec-template.md           - no change required:
+    template stays full-tier by default; patch-tier features omit
+    optional sections per the new subsection's explicit license.
+  - .specify/templates/plan-template.md           - no change required:
+    Constitution Check remains mandatory at both tiers; the existing
+    release/native-first gate callouts are tier-independent.
+  - .specify/templates/tasks-template.md          - no change required.
+  - .claude/skills/speckit-*                      - vendor-managed; no edit.
+  - .agents/skills/speckit-*                      - vendor-managed; no edit.
+  - AGENTS.md                                     - UPDATED in the same
+    change set: patch-tier summary added to the bridge protocol section.
+
+Follow-up TODOs:
+  - First patch-tier feature after this amendment should note in its
+    PR description which spec sections were omitted, to give reviewers
+    a calibration point for the tier boundary.
+-->
+
+<!--
+PRIOR SYNC IMPACT REPORT (v1.2.0 -> v1.3.0)
+==================
 Version change: 1.2.0 -> 1.3.0
 Bump rationale: Add a new core principle "VI. Native-First Compatibility
 (Trust Upstream Growth)" that formalizes a stance the project has been
@@ -223,6 +266,54 @@ ecosystem matures.
   ("does upstream already do this?" / "is upstream the right place to
   fix this?").
 
+### Patch-Tier Features
+
+A feature qualifies as **patch-tier** when ALL of the following hold:
+
+- (a) it adds NO new bridge surface (no new command, hook, script,
+  state file, or convention beyond the existing contract);
+- (b) it changes no protocol, schema, or guard semantics; and
+- (c) it targets a PATCH version bump or a docs-only change.
+
+Patch-tier features MAY use a reduced artifact shape; full-tier remains
+the default for anything that adds surface or touches protocol, and
+when qualification is in doubt the feature MUST be treated as full-tier.
+
+Patch-tier licenses (each MAY, not MUST):
+
+- `spec.md` MAY use a spec-lite shape: Context, Functional
+  Requirements, Success Criteria, and Out of Scope are sufficient;
+  prioritized user-story scaffolding and per-story acceptance
+  scenarios are optional.
+- `plan.md` MAY merge phases; a separate `research.md` is needed only
+  where a real unknown exists (an upstream behavior change, an
+  unverified compatibility claim), not as a ceremony step.
+- The feature MUST skip the self-authored spec-quality checklist
+  (`checklists/requirements.md`): a checklist graded by its own author
+  in the same session adds no information. Checklists remain valuable
+  — and remain available — when a second party (human or different
+  agent) performs the review.
+
+Tier-independent obligations (unchanged at patch-tier):
+
+- The Constitution Check in `plan.md` MUST still pass before research
+  and after design.
+- `tasks.md` remains the only implementation contract and MUST be
+  generated through Spec Kit.
+- The full smoke suite MUST stay green at every commit.
+- Any feature that ships a release artifact MUST still pass the
+  End-User Verification Sandbox gate before its handoff transitions to
+  `complete`.
+
+**Rationale**: The v1.0.3 retrospective showed full spec ceremony
+consuming the majority of a small feature's budget while the
+informative artifacts (research notes, verification evidence) were a
+fraction of the output. Gates earn their cost when they can fail and
+catch something — the sandbox gate and release validators have each
+caught real defects; a self-graded checklist has not. Defining the
+lighter tier explicitly keeps the savings inside the constitution's
+authority instead of accumulating as ad-hoc skipping.
+
 ### End-User Verification Sandbox
 
 The sibling directory `..\test_specify_superpower` (relative to this
@@ -286,4 +377,4 @@ spec-completion stage where fixing it costs hours, not days.
 - Use `AGENTS.md` for runtime cross-agent guidance and `CLAUDE.md` for
   Claude-specific supplements.
 
-**Version**: 1.3.0 | **Ratified**: 2026-05-14 | **Last Amended**: 2026-05-17
+**Version**: 1.4.0 | **Ratified**: 2026-05-14 | **Last Amended**: 2026-06-12

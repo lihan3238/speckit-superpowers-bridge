@@ -10,6 +10,8 @@ at specs/014-speckit-0-10-x-alignment/plan.md
 > here, not there. The SPECKIT marker block above is vendor-managed by
 > `specify init` in both files; do not hand-edit it.
 
+lihan-cards mode: engineering
+
 ## Primary Design Reference
 
 The canonical "north star" for this bridge's overall design direction is:
@@ -117,6 +119,7 @@ release ZIP installs in a separate consumer project or `../test_specify_superpow
 - `AGENTS.md` is the master bridge protocol and the canonical source for all shared project rules. `CLAUDE.md` is a one-line `@AGENTS.md` import (plus the Spec Kit vendor-managed marker block) and adds no Claude-specific supplement — anything Claude-relevant lives here.
 - Do not hand-edit official generated `.agents/skills/speckit-*` or `.claude/skills/speckit-*`; put bridge-specific behavior in separate `speckit-superpowers-bridge` skills.
 - Only one agent may own writes to Spec Kit control artifacts for an active feature at a time. Other agents may review only until ownership changes or the handoff is marked `blocked` for repair.
+- **Patch-tier features** (constitution v1.4.0 §"Patch-Tier Features"): a feature that adds no new bridge surface, changes no protocol/schema/guard semantics, and targets a PATCH bump or docs-only change MAY use spec-lite (Context + FR + SC + Out of Scope), MAY merge plan phases, and MUST skip the self-authored `checklists/requirements.md`. Constitution Check, the tasks.md contract, green smoke suite, and the release sandbox gate stay mandatory. When in doubt, treat as full-tier.
 
 ## Auto-archive transitions
 
@@ -148,6 +151,37 @@ As of v0.5.0, every `update-handoff` and `guard-command` invocation prints a `[b
 ## Install-time registries are local state, not tracked
 
 `.specify/workflows/workflow-registry.json`, `.specify/workflows/*/workflow.yml`, and `.specify/extensions/.registry` are install-time generated state — each developer's `specify extension add` / `specify extension list` recreates them locally. As of v0.4.2 (003-bridge-cross-platform-scripts cleanup tail) they are gitignored and removed from the index; contributors who clone the repo will not see them on disk until first install, which is the intended workflow. Do not `git add -f` these files into the index.
+
+## Release version-bump checklist
+
+Every release MUST bump ALL of these files in the same release commit — the
+tag-triggered release gate (`validate-release-readiness.ps1`) validates each
+one and fails the workflow on any miss (v1.0.3 failed its first tag run
+because the two `marketplace/` files still carried the prior version):
+
+1. `.specify/extensions/speckit-superpowers-bridge/extension.yml` — `extension.version`
+2. `marketplace/catalog-entry.json` — `version` + `updated_at` (`download_url` stays the stable alias; never edit it)
+3. `CHANGELOG.md` — new `## [X.Y.Z]` section
+4. `.specify/extensions/speckit-superpowers-bridge/verified-versions.json` — `bridge_version` + refreshed evidence rows
+5. `README.md` + `README.zh-CN.md` — version badges, maintenance section, version-pinned install example
+6. `marketplace/extensions-readme-row.md` — version string in the support summary
+7. `marketplace/extension-submission-body.md` — `### Version`, baseline, support matrix, Proposed Catalog Entry (incl. `updated_at`)
+
+If the release gate fails on a tag: fix on a branch, merge to main, then
+re-point the tag (`git tag -f vX.Y.Z <merge-sha> && git push -f origin vX.Y.Z`)
+to re-run the workflow. The ZIP is deterministic and excludes `marketplace/`,
+so a marketplace-only fix does not change the published asset SHA256.
+
+After publication, submit the upstream catalog update as a github/spec-kit
+**Extension Submission issue** using `marketplace/extension-submission-body.md`
+as the body (precedent: v1.0.2 → issue #2848 → upstream PR #2852; v1.0.3 →
+issue #2945). Do not open a direct PR against `extensions/catalog.community.json`;
+upstream maintainers pin the version-specific download URL themselves.
+
+Spec Kit 0.10.x install notes for sandbox verification: `specify extension add`
+requires the `--from <url>` flag form (a bare URL positional is treated as a
+catalog id), and the install prompts interactively for trust confirmation
+(`echo y |` for automation).
 
 ## End-user verification sandbox
 

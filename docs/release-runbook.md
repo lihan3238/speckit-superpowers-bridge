@@ -10,7 +10,19 @@
 - Required scripts present: `tests/run-all.sh`, `tests/test-release-package.sh`, `tests/test-release-powershell.ps1`, `scripts/release/validate-release-readiness.ps1`, `scripts/release/test-validate-release-readiness.ps1`, `scripts/release/build-extension-zip.sh`, and the Windows fallback `scripts/release/build-extension-zip.ps1`.
 - Native Windows PowerShell 5.1+ is available for the Windows gate. WSL bash is valid Linux evidence only; it does not satisfy the Windows row.
 
-## Step 1 — Bump version
+## Step 1 — Bump version (all seven file groups)
+
+The tag-triggered release gate validates every file below and fails the
+workflow on any miss (v1.0.3's first tag run failed on stale `marketplace/`
+files). Bump ALL of them in the same release commit:
+
+1. `.specify/extensions/speckit-superpowers-bridge/extension.yml` — `extension.version`
+2. `marketplace/catalog-entry.json` — `version` + `updated_at`
+3. `CHANGELOG.md` — new section (Step 2)
+4. `.specify/extensions/speckit-superpowers-bridge/verified-versions.json` — `bridge_version` + evidence rows (Step 3)
+5. `README.md` + `README.zh-CN.md` — version badges, maintenance section, version-pinned install example
+6. `marketplace/extensions-readme-row.md` — version string in the support summary
+7. `marketplace/extension-submission-body.md` — `### Version`, verified baseline, support matrix, Release Validation Summary, Submission Requirements release link, Proposed Catalog Entry (`version` + `updated_at`)
 
 Edit `.specify/extensions/speckit-superpowers-bridge/extension.yml`:
 
@@ -28,7 +40,7 @@ Edit `marketplace/catalog-entry.json`:
 
 Leave `marketplace/catalog-entry.json.download_url` alone; it permanently points at the GitHub latest-release alias.
 
-**Verify**: `grep -E '^  version:' .specify/extensions/speckit-superpowers-bridge/extension.yml` reports the new value, and `jq -r '.version' marketplace/catalog-entry.json` reports the same value.
+**Verify**: `grep -E '^  version:' .specify/extensions/speckit-superpowers-bridge/extension.yml` reports the new value, `jq -r '.version' marketplace/catalog-entry.json` reports the same value, and `grep -rn '<previous-version>' README.md README.zh-CN.md marketplace/extensions-readme-row.md marketplace/extension-submission-body.md` returns no live-claim hits (historical "New in vX" feature notes are fine).
 
 ## Step 2 — Update CHANGELOG
 
@@ -107,6 +119,11 @@ Use the sibling sandbox `..\test_specify_superpower` (Windows) / `../test_specif
 - Linux bash: install from `dist/speckit-superpowers-bridge-v<N.N.N>.zip`, then run guard, handoff, status/readiness, archive, and bash smoke commands.
 - Windows PowerShell: install the same ZIP from native Windows PowerShell 5.1+, then run the equivalent PowerShell flavor checks.
 
+Spec Kit 0.10.x install notes: `specify extension add` requires the
+`--from <path-or-url>` flag form (a bare URL/path positional is treated as a
+catalog id) and prompts interactively for trust confirmation (`echo y |` for
+non-interactive runs).
+
 **Verify**: the feature verification file records one passing Linux row and one passing Windows row with install source, ZIP SHA256, smoke result, sandbox result, readiness result, and any deviation.
 
 ## Step 10 — Verify real agents
@@ -138,6 +155,17 @@ git push origin main --tags
 ```
 
 **Verify**: GitHub Releases page shows the new tag listed. Wait for GitHub to build the release ZIP (a few minutes if a GitHub Actions workflow exists; otherwise the maintainer attaches the ZIP manually).
+
+**If the tag-triggered release gate fails**: fix on a branch, merge to main,
+then re-point the tag and force-push to re-run the workflow:
+
+```bash
+git tag -f v<N.N.N> <merge-sha>
+git push -f origin v<N.N.N>
+```
+
+The build is deterministic and `marketplace/` is excluded from the ZIP, so a
+marketplace-only fix does not change the published asset SHA256.
 
 ## Step 14 — Confirm release ZIP is reachable
 
