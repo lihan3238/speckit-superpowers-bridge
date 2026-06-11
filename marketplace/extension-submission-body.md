@@ -12,7 +12,7 @@ Superpowers Implementation Bridge
 
 ### Version
 
-1.0.2
+1.0.3
 
 ### Description
 
@@ -32,7 +32,7 @@ https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download
 
 Version-pinned artifact:
 
-https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.2/speckit-superpowers-bridge-v1.0.2.zip
+https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.3/speckit-superpowers-bridge-v1.0.3.zip
 
 The catalog `download_url` intentionally remains the stable latest-release alias. Since v0.6.0 every release uploads both the versioned ZIP and `speckit-superpowers-bridge.zip`; future catalog updates should bump only `version` unless the distribution policy changes.
 
@@ -56,10 +56,10 @@ https://github.com/lihan3238/speckit-superpowers-bridge/blob/main/CHANGELOG.md
 
 >=0.8.10
 
-Verified release baseline for v1.0.2:
+Verified release baseline for v1.0.3:
 
-- Spec Kit `0.9.3` on Linux bash.
-- Spec Kit CLI `0.8.10` on native Windows PowerShell for bridge runtime floor coverage.
+- Spec Kit `0.10.2` on Linux bash.
+- Spec Kit CLI `0.8.10` on native Windows PowerShell for bridge runtime floor coverage (retained from v1.0.0; `ps` script flavor byte-identical).
 - Superpowers `5.1.0`.
 - Codex CLI `0.137.0`.
 - Claude Code `2.1.162`.
@@ -92,31 +92,29 @@ bridge, superpowers, cross-agent, tdd, workflow
 - Supports Codex and Claude Code through the same handoff contract.
 - New in v1.0.0: release readiness checks for version, catalog id, command namespace, hook namespace, package contents, workflow inventory, platform rows, agent rows, and evidence completeness.
 - New in v1.0.0: `bridge-status --readiness` / `bridge-status.ps1 -Readiness` read-only install health report covering script flavor, required tools, namespace, package files, bridge state, verified agent metadata, and next action.
-- New in v1.0.1: source-repo development instructions now use a temporary external dev source for `specify extension add --dev`, avoiding source=destination replacement in Spec Kit 0.9.x.
-- New in v1.0.1: Spec Kit 0.9.x generated `.specify-dev` command material and canonical `speckit-speckit-superpowers-bridge-*` skills are documented as local install state, not product source.
-- New in v1.0.2: README hero image and imagegen-generated social cards make the project easier to recognize on GitHub, plugin listings, OpenGraph shares, Product Hunt-style launch posts, and square community posts.
-- New in v1.0.2: README proxy guidance and marketplace wording were tightened while keeping the runtime bridge protocol unchanged.
+- New in v1.0.3: re-verified end-to-end on Spec Kit CLI `0.10.2` (Linux bash); declares the new first-class `category: process` / `effect: read-write` manifest fields introduced by Spec Kit 0.10.2, backward compatible with the `>=0.8.10` runtime floor.
+- New in v1.0.3: bootstrap documentation aligned with Spec Kit 0.10.0 init changes (git extension now opt-in, legacy `--ai*` flags removed, `branch_numbering` → `feature_numbering`).
 
 ### Support Matrix
 
 | Target | Result | Evidence |
 |---|---|---|
-| Linux bash | PASS | `bash tests/run-all.sh` plus final-package sandbox install cycle. |
-| Windows PowerShell 5.1+ | PASS | `tests/test-release-powershell.ps1` plus final-package native PowerShell sandbox install cycle. |
-| Codex | PASS | Bounded `codex exec` sandbox verification with `codex-cli 0.137.0`. |
-| Claude Code | PASS | Bounded `claude -p` sandbox verification with Claude Code `2.1.162`. |
+| Linux bash | PASS | `bash tests/run-all.sh` on Spec Kit 0.10.2 plus final-package sandbox install cycle. |
+| Windows PowerShell 5.1+ | PASS | `tests/test-release-powershell.ps1` plus final-package native PowerShell sandbox install cycle (v1.0.0 evidence retained; `ps` flavor byte-identical in v1.0.3). |
+| Codex | PASS | Bounded `codex exec` sandbox verification with `codex-cli 0.137.0` (v1.0.0 evidence retained; protocol unchanged). |
+| Claude Code | PASS | Bounded `claude -p` sandbox verification with Claude Code `2.1.162`; v1.0.3 Linux sandbox cycle additionally driven interactively on Spec Kit 0.10.2. |
 
 ### Release Validation Summary
 
-- `scripts/release/validate-release-readiness.ps1 -Version 1.0.2 -PackageZip dist/speckit-superpowers-bridge-v1.0.2.zip` passes.
+- `scripts/release/validate-release-readiness.ps1 -Version 1.0.3 -PackageZip dist/speckit-superpowers-bridge-v1.0.3.zip` passes.
 - `scripts/release/test-validate-release-readiness.ps1` passes, including negative fixtures for namespace drift, stale marketplace metadata, missing package flavor, missing agent rows, missing platform rows, and missing workflow evidence.
 - `bash tests/run-all.sh` passes.
-- `tests/test-release-powershell.ps1` passes under native Windows PowerShell 5.1.
-- Final v1.0.2 ZIP SHA256: `6637d5740d795a3a3a4e03f45d5452e4d2b73d20ea2bf8a2ac6e89d24bfe486d` for both the versioned ZIP and the stable latest alias.
+- `tests/test-release-powershell.ps1` passes under Windows PowerShell.
+- Final v1.0.3 ZIP SHA256 is recorded in the GitHub release notes for both the versioned ZIP and the stable latest alias.
 
 ### Lightweight Positioning
 
-v1.0.2 remains the same stable protocol release surface as v1.0.0, not a workflow rewrite. The bridge does not introduce a daemon, service, database, custom DSL, independent state machine, or parallel task runner. It borrows useful ideas from Superspec, SuperB, and Comet at the diagnostic/documentation level (readiness checks, evidence rows, namespace validation, truthful demos), but keeps runtime ownership with upstream Spec Kit and Superpowers.
+v1.0.3 remains the same stable protocol release surface as v1.0.0, not a workflow rewrite. The bridge does not introduce a daemon, service, database, custom DSL, independent state machine, or parallel task runner. It borrows useful ideas from Superspec, SuperB, and Comet at the diagnostic/documentation level (readiness checks, evidence rows, namespace validation, truthful demos), but keeps runtime ownership with upstream Spec Kit and Superpowers.
 
 ### AI-Assistance Disclosure
 
@@ -135,7 +133,7 @@ This extension is developed with AI coding assistants. Claude Code and Codex wer
 - [x] Valid `extension.yml` manifest included.
 - [x] README.md with installation and usage instructions included.
 - [x] LICENSE file included.
-- [x] GitHub release created with version tag: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v1.0.2
+- [x] GitHub release created with version tag: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v1.0.3
 - [x] All command files exist and are properly formatted.
 - [x] Extension ID follows naming conventions: lowercase with hyphens.
 
@@ -143,18 +141,18 @@ This extension is developed with AI coding assistants. Claude Code and Codex wer
 
 Tested on:
 
-- Linux bash / WSL2 with Spec Kit `0.9.3`.
-- Native Windows PowerShell 5.1 with Spec Kit runtime floor coverage through CLI `0.8.10`.
+- Linux bash / WSL2 with Spec Kit `0.10.2`.
+- Native Windows PowerShell 5.1 with Spec Kit runtime floor coverage through CLI `0.8.10` (v1.0.0 evidence; `ps` flavor byte-identical in v1.0.3).
 - Codex CLI `0.137.0`.
 - Claude Code `2.1.162`.
 
 Test scenarios:
 
-1. Installed the final release ZIP into a clean Linux sandbox from the localhost-served release artifact.
-2. Installed the final release ZIP into a clean native Windows PowerShell sandbox from the same artifact.
-3. Ran `bridge-status --readiness` / `bridge-status.ps1 -Readiness`.
-4. Exercised guard, ready, executing, complete, and auto-archive handoff transitions.
-5. Ran bounded real-agent verification with Codex and Claude Code in the sandbox.
+1. Re-bootstrapped the source repo on Spec Kit CLI 0.10.2 and ran the full bash smoke suite (6/6).
+2. Round-tripped the updated manifest (`category`/`effect`) through the Spec Kit 0.10.2 validator in a scratch project.
+3. Installed the v1.0.3 release ZIP into a clean Linux sandbox from the published release URL.
+4. Ran `bridge-status --readiness`.
+5. Exercised guard, ready, executing, complete, and auto-archive handoff transitions.
 6. Ran package, release-readiness, Linux bash, and Windows PowerShell smoke gates.
 
 ### Example Usage
@@ -184,13 +182,15 @@ Claude Code users invoke the same bridge contract as:
     "id": "speckit-superpowers-bridge",
     "description": "Thin orchestrator between Spec Kit (design) and Superpowers (implementation). Cross-agent.",
     "author": "lihan3238",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip",
     "repository": "https://github.com/lihan3238/speckit-superpowers-bridge",
     "homepage": "https://github.com/lihan3238/speckit-superpowers-bridge",
     "documentation": "https://github.com/lihan3238/speckit-superpowers-bridge#readme",
     "changelog": "https://github.com/lihan3238/speckit-superpowers-bridge/blob/main/CHANGELOG.md",
     "license": "MIT",
+    "category": "process",
+    "effect": "read-write",
     "requires": {
       "speckit_version": ">=0.8.10",
       "tools": [
@@ -226,7 +226,7 @@ Claude Code users invoke the same bridge contract as:
     "downloads": 0,
     "stars": 0,
     "created_at": "2026-05-15T00:00:00Z",
-    "updated_at": "2026-06-04T00:00:00Z"
+    "updated_at": "2026-06-12T00:00:00Z"
   }
 }
 ```
