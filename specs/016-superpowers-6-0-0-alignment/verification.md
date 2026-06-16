@@ -90,13 +90,56 @@ extension-submission-body `### Version` + Proposed Catalog Entry) are all
 satisfiable on these bytes. `validate-release-readiness.ps1` runs in CI on tag
 push (no `pwsh` in this WSL env) and is part of the deferred release step.
 
-## Deferred to the maintainer's release/tag step (chosen "stop before tag" scope)
+## Release & published-artifact verification (DONE — 2026-06-17)
 
-- `git tag v1.1.0` → release gate (`validate-release-readiness.ps1`) → publish versioned ZIP + stable alias.
-- **Published-v1.1.0** end-user sandbox cycle via `specify extension add … --from <release URL>` (the networked install step; the offline runtime cycle above already exercised the same bytes). Per constitution §"End-User Verification Sandbox", this is why **016's handoff is intentionally NOT driven to `complete` this session** — the published-artifact gate completes at release time.
-- Upstream github/spec-kit Extension Submission issue using `marketplace/extension-submission-body.md`.
+The "stop before tag" scope was lifted by Lihan; the release flow was executed.
+
+### Tag + release gate — PASS
+
+- Tagged `v1.1.0` on main merge commit `216b711`; pushed.
+- Release workflow run `27644362797` (`.github/workflows/release.yml`):
+  Linux + Windows gates (`validate-release-readiness.ps1` → `tests/run-all.sh`
+  → release self-tests) → **completed success**.
+- Release `v1.1.0` published, not draft / not prerelease, with both assets:
+  `speckit-superpowers-bridge-v1.1.0.zip` (77,294 B) and the stable alias
+  `speckit-superpowers-bridge.zip` (77,294 B).
+- Stable alias verified: `releases/latest/download/speckit-superpowers-bridge.zip`
+  → 302 → `releases/download/v1.1.0/speckit-superpowers-bridge.zip`.
+
+### End-User Verification Sandbox cycle — PASS (constitution gate)
+
+Sandbox: `../test_specify_superpower/v1-1-0-linux-20260616T200149Z`, fresh
+`specify init --here --integration claude --script sh --force` (CLI 0.10.2),
+Superpowers 6.0.0 live.
+
+| Step | Result |
+|---|---|
+| Install from published release URL (`specify extension add speckit-superpowers-bridge --from .../releases/latest/download/...`, trust prompt `echo y`) | PASS — **v1.1.0**, 3 commands / 5 hooks, Enabled |
+| `specify extension info` | PASS — Category: process, Effect: read-write (read from installed manifest) |
+| Handoff `ready` (feature_directory set) | PASS — Pending tasks: 1 |
+| Guard `speckit.plan` @ready | PASS — ALLOW (rc=0) |
+| Handoff `ready → executing` | PASS — Actor claude → codex |
+| Guard `speckit.implement` @executing | PASS — DENY (rc=1) |
+| Guard `speckit.constitution` @executing | PASS — DENY (rc=1) |
+| Guard `speckit.specify` @executing | PASS — ALLOW (rc=0) — "allow any other speckit.*" rule |
+| Handoff `complete` (+ drift warning for 1 unchecked task) | PASS — exit 0, WARNING emitted |
+| Auto-archive | PASS — snapshot written; 14 events in bridge-events.jsonl |
+
+All five hardcoded guard rules + the full handoff lifecycle + `[bridge state]`
+output + drift warning + auto-archive were exercised against the **published
+v1.1.0 artifact installed from the release URL**, with Superpowers 6.0.0 live.
+
+> Test-harness note: the first cycle attempt resolved the bridge's `git`
+> repo-root to the enclosing scratch repo (the sandbox dir was created as a
+> subdirectory of an existing git repo); `git init` on the project dir fixed
+> root detection and the cycle passed. Not a bridge defect — expected
+> git-root behavior. The guard CLI flag is `--action` (an earlier `--command`
+> typo returned the script's usage exit code 2).
+
+### Remaining (maintainer-triggered)
+
+- Upstream github/spec-kit Extension Submission issue using `marketplace/extension-submission-body.md` (v1.1.0) — same path as v1.0.2 (#2848 → PR #2852) and v1.0.3 (#2945).
 
 The bridge SKILL/command/script bytes are byte-identical to v1.0.3 (only
-version-metadata + docs differ), and v1.0.3 already passed the published-artifact
-sandbox cycle on Spec Kit 0.10.2 (`specs/014` verification.md T013); that
-evidence transfers to v1.1.0.
+version-metadata + docs differ), and v1.0.3 also passed the published-artifact
+sandbox cycle on Spec Kit 0.10.2 (`specs/014` verification.md T013).
