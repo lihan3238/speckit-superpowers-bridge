@@ -8,6 +8,74 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-06-17
+
+Superpowers **6.0.0** compatibility-alignment + evidence refresh. The verified
+upstream baseline moves Superpowers **5.1.0 → 6.0.0** (a MAJOR upstream bump)
+with **zero bridge runtime change**: no command, hook, script, skill flow,
+guard rule, handoff-schema, or convention is touched. The bridge invokes
+Superpowers by skill *name* only — every name it uses is unchanged in 6.0.0 —
+and exchanges only Spec Kit `tasks.md`, whose consumer contract still holds.
+Per constitution Principle VI (Native-First / Trust Upstream Growth), the
+correct response to an upstream major is to add nothing; this release proves
+that with a source-diff + grep audit rather than assuming it.
+
+### Changed
+
+- Verified-against-Superpowers baseline `5.1.0` → `6.0.0` across
+  `verified-versions.json`, the README badges/maintenance sections (EN + zh-CN),
+  and the `marketplace/` material. MINOR bridge bump `1.0.3` → `1.1.0` to mark a
+  visible "verified against the Superpowers 6.x major line" milestone (same
+  shape as v0.6.0's 5.1.0 alignment — a metadata/evidence release, not a
+  workflow change).
+- `download_url` stays the stable latest-release alias (v0.6.0 policy);
+  `category: process` / `effect: read-write`, the `>=0.8.10` runtime floor,
+  command count (3), and hook count (5) are unchanged.
+
+### Upstream notes (informational)
+
+Superpowers 6.0.0's breaking and headline changes are all **internal to upstream
+skills** and transparent to the thin bridge (full analysis:
+`specs/016-superpowers-6-0-0-alignment/research.md`):
+
+- **`subagent-driven-development` review rewrite** — the two per-task reviewer
+  prompts (`spec-reviewer-prompt.md` + `code-quality-reviewer-prompt.md`) were
+  consolidated into a single `task-reviewer-prompt.md`, with new `task-brief` /
+  `review-package` helper scripts and one whole-branch final review. These are
+  files internal to the skill; the bridge dispatches the **skill by name** and
+  never the prompt files. **Bridge surface unaffected** (grep-verified clean).
+  Anyone who dispatched the old prompt files directly should switch to the new
+  one per the upstream release notes.
+- **Global worktree directory removed** — `using-git-worktrees` and
+  `finishing-a-development-branch` no longer use `~/.config/superpowers/worktrees/`;
+  worktrees now land in the project (`.worktrees/`). Internal to those skills;
+  the bridge dispatches them by name. **Bridge surface unaffected** — the new
+  worktree *location* is user-observable but requires no bridge change.
+- **Vendor-neutral prose + per-harness tool references** — skills rewrote
+  Claude-specific tool vocabulary and added references for Claude Code, Codex,
+  Copilot, Gemini, Pi, and Antigravity. The bridge already ships dual
+  `.claude` / `.agents` variants; the `.agents` prose is already harness-neutral.
+  **Bridge surface unaffected.**
+- **`writing-plans` adds Global Constraints + per-task Interfaces blocks** —
+  these are *produced* by `writing-plans`, which the bridge **disables** for an
+  active Spec Kit feature. The *consumers* (`executing-plans`,
+  `subagent-driven-development`) still load a plan-as-task-list and only *note*
+  constraints if present, so Spec Kit `tasks.md` still satisfies the contract.
+  **Bridge surface unaffected.**
+- **Three new harnesses (Kimi Code, Pi, Antigravity)** and an `evals/` testing
+  reorg — purely additive upstream. **No bridge impact.**
+
+### Verified
+
+- Full bash smoke suite **6/6 green** with Superpowers 6.0.0 installed
+  (`bash tests/run-all.sh`), including the release-package check against the
+  rebuilt v1.1.0 ZIP.
+- Bridge SKILL/command/script bytes are byte-identical to v1.0.3, which passed
+  the published-artifact end-user sandbox cycle on Spec Kit 0.10.2
+  (`specs/014-speckit-0-10-x-alignment/verification.md` T013); that evidence
+  transfers to v1.1.0. The published-v1.1.0 sandbox cycle and the upstream
+  catalog-update submission are deferred to the maintainer's release/tag step.
+
 ## [1.0.3] - 2026-06-12
 
 ### Added
