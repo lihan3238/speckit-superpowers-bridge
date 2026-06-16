@@ -138,7 +138,7 @@ v1.1.0 artifact installed from the release URL**, with Superpowers 6.0.0 live.
 
 ### Remaining (maintainer-triggered)
 
-- Upstream github/spec-kit Extension Submission issue using `marketplace/extension-submission-body.md` (v1.1.0) — same path as v1.0.2 (#2848 → PR #2852) and v1.0.3 (#2945).
+- Upstream github/spec-kit Extension Submission issue: **filed as [github/spec-kit#3009](https://github.com/github/spec-kit/issues/3009)** using `marketplace/extension-submission-body.md` (v1.1.0) — same path as v1.0.2 (#2848 → PR #2852) and v1.0.3 (#2945). Upstream maintainers pin the version-specific download URL.
 
 The bridge SKILL/command/script bytes are byte-identical to v1.0.3 (only
 version-metadata + docs differ), and v1.0.3 also passed the published-artifact
