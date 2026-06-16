@@ -6,4 +6,4 @@
   from the issue metadata.
 -->
 
-| Superpowers Implementation Bridge | Thin 1.0.3 bridge from Spec Kit design artifacts to Superpowers implementation discipline; verified on Linux bash (Spec Kit 0.10.2), Windows PowerShell, Codex, and Claude Code. | `process` | Read+Write | [speckit-superpowers-bridge](https://github.com/lihan3238/speckit-superpowers-bridge) |
+| Superpowers Implementation Bridge | Thin 1.1.0 bridge from Spec Kit design artifacts to Superpowers implementation discipline; verified against Superpowers 6.0.0 on Linux bash (Spec Kit 0.10.2), Windows PowerShell, Codex, and Claude Code. | `process` | Read+Write | [speckit-superpowers-bridge](https://github.com/lihan3238/speckit-superpowers-bridge) |

@@ -10,7 +10,7 @@
   <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" /></a>
   <a href="https://github.com/lihan3238/speckit-superpowers-bridge/releases"><img alt="Bridge version" src="https://img.shields.io/github/v/release/lihan3238/speckit-superpowers-bridge?style=flat-square&label=bridge" /></a>
   <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.10.2" src="https://img.shields.io/badge/Spec_Kit-verified_0.10.2-success?style=flat-square" /></a>
-  <a href="https://github.com/obra/superpowers"><img alt="Superpowers verified 5.1.0" src="https://img.shields.io/badge/Superpowers-verified_5.1.0-success?style=flat-square" /></a>
+  <a href="https://github.com/obra/superpowers"><img alt="Superpowers verified 6.0.0" src="https://img.shields.io/badge/Superpowers-verified_6.0.0-success?style=flat-square" /></a>
   <a href="https://github.com/github/spec-kit/blob/main/docs/community/extensions.md"><img alt="Spec Kit Marketplace listed" src="https://img.shields.io/badge/Spec_Kit_Marketplace-listed-blueviolet?style=flat-square" /></a>
 </p>
 
@@ -83,6 +83,8 @@ v1.0.1 是同一协议面上的文档与开发 checkout 清理补丁。
 v1.0.2 是展示与发布资产补丁：README 顶图、社交卡片、marketplace 文案和贡献者文档小修；bridge runtime 行为不变。
 
 v1.0.3 是 Spec Kit 0.10.x 兼容对齐补丁：在 Spec Kit CLI `0.10.2` 上重新验证、声明新的 `category`/`effect` manifest 字段、并按 0.10.0 的 git 扩展 opt-in 变化刷新 bootstrap 文档；bridge runtime 行为不变。
+
+v1.1.0 是 Superpowers 6.0.0 兼容对齐版本：将「已验证的 Superpowers 基线」从 `5.1.0` 推进到 `6.0.0`（上游 major 大版本），且 **bridge runtime 零改动**。Superpowers 6.0.0 的破坏性变更全部位于上游 skill 内部（`subagent-driven-development` 的 reviewer prompt 合并、worktree 改落到项目内 `.worktrees/`、prose 去厂商化、新增三个 harness），对仅按 skill 名调用上游的 thin bridge 透明。grep 佐证的影响分析见 [`specs/016-superpowers-6-0-0-alignment/research.md`](specs/016-superpowers-6-0-0-alignment/research.md)。
 
 | 目标 | 状态 | 证据 |
 |---|---|---|
@@ -234,7 +236,7 @@ specify extension add --dev (Join-Path $tmp.FullName "speckit-superpowers-bridge
 **固定版本安装**（用来可复现地安装某个精确版本）：
 
 ```powershell
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.0.3/speckit-superpowers-bridge-v1.0.3.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.1.0/speckit-superpowers-bridge-v1.1.0.zip
 ```
 
 </details>
@@ -358,14 +360,14 @@ v0.2.x 中存在的 6 个元命令（`audit`、`validate`、`parity`、`recommen
 <details>
 <summary><strong>维护与版本（Maintenance and versioning）</strong></summary>
 
-本版本（v1.0.3）针对以下版本验证：
+本版本（v1.1.0）针对以下版本验证：
 
 - **Spec Kit** `0.10.2`（Linux bash）；Windows PowerShell 证据沿用 v1.0.0（`ps` 脚本 flavor 字节级未变），当时 sandbox 在 bridge runtime floor 对应的 Spec Kit CLI `0.8.10` 上通过
-- **Superpowers** `5.1.0`
+- **Superpowers** `6.0.0`
 - **Codex CLI** `0.137.0`
 - **Claude Code** `2.1.162`
 
-verified metadata 记录在 [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) —— 项目自有、只做增量扩展的 schema，每次桥 release 刷新一次。v1.0.3 记录 bridge、上游工具、平台和真实 Agent 行；缺失或 blocked 的行不会被宣传为 verified。
+verified metadata 记录在 [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) —— 项目自有、只做增量扩展的 schema，每次桥 release 刷新一次。v1.1.0 记录 bridge、上游工具、平台和真实 Agent 行；缺失或 blocked 的行不会被宣传为 verified。
 
 当上游工具的新版破坏了桥，我们要么修补桥脚本，要么在 `CHANGELOG.md` 中钉住已验证的兼容版本。
 
