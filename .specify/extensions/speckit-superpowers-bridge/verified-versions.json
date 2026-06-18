@@ -1,6 +1,6 @@
 {
-  "verified_at": "2026-06-17T00:00:00Z",
-  "spec_kit_version": "0.10.2",
+  "verified_at": "2026-06-18T00:00:00Z",
+  "spec_kit_version": "0.11.1",
   "superpowers_version": "6.0.0",
   "codex_cli_version": "0.137.0",
   "claude_code_version": "2.1.162",
@@ -10,9 +10,9 @@
       "name": "Linux bash",
       "script_flavor": "sh",
       "status": "passed",
-      "spec_kit_version": "0.10.2",
-      "evidence": "specs/016-superpowers-6-0-0-alignment/verification.md#linux-bash",
-      "notes": "Re-verified against Superpowers 6.0.0 (2026-06-17): the 6.0.0 major bump was source-diffed vs 5.1.0 and grep-audited against the entire bridge surface (renamed reviewer-prompt files and the removed global worktree path return zero hits — research.md R2/R4); every Superpowers skill name the bridge invokes is unchanged in 6.0.0; the full 6-test bash smoke suite passed unchanged with Superpowers 6.0.0 installed. Bridge SKILL/command/script bytes are byte-identical to v1.0.3, which passed the published-artifact sandbox cycle on Spec Kit 0.10.2 (specs/014 verification.md T013); that evidence transfers to v1.1.0. The published-v1.1.0 sandbox cycle is deferred to the maintainer's release/tag step."
+      "spec_kit_version": "0.11.1",
+      "evidence": "specs/016-superpowers-6-0-0-alignment/verification.md#post-release-spec-kit-0111-spot-check--pass-2026-06-18",
+      "notes": "Re-verified on Spec Kit 0.11.1 (2026-06-18): local specify CLI was upgraded from the official github/spec-kit v0.11.1 tag; upstream release notes and source diff for 0.10.3 through 0.11.1 were audited against the bridge surface; workflow step catalog support and shell-step output_format: json are upstream workflow-engine capabilities and require no bridge adoption; workflow failed/aborted exit-code fixes, non-ASCII skill frontmatter preservation, installer self-install safety, and Windows Rich Live fixes require no bridge runtime or manifest change. Full 6-test bash smoke suite passed unchanged, and a scratch 0.11.1 project installed the v1.1.0 bridge via --dev; extension info showed Category: process, Effect: read-write, 3 commands, and 5 hooks. Superpowers 6.0.0 evidence from 2026-06-17 remains valid: every Superpowers skill name the bridge invokes is unchanged in 6.0.0, and bridge SKILL/command/script bytes are unchanged."
     },
     {
       "name": "Windows PowerShell",
@@ -38,8 +38,8 @@
       "status": "passed",
       "platform": "Linux bash / WSL2",
       "evidence": "../test_specify_superpower/v1-0-linux-20260604T072552Z/.specify/bridge-verification/claude-v1.0.0-rc.md",
-      "notes": "Bounded noninteractive Claude Code verification from v1.0.0 (2026-06-04) retained: bridge commands, hooks, and protocol are unchanged in v1.1.0. The Superpowers 6.0.0 surface audit + 6/6 smoke suite for v1.1.0 was driven by Claude Code (claude-opus-4-8) on Spec Kit 0.10.2 with Superpowers 6.0.0 live."
+      "notes": "Bounded noninteractive Claude Code verification from v1.0.0 (2026-06-04) retained: bridge commands, hooks, and protocol are unchanged in v1.1.0. The Superpowers 6.0.0 surface audit + 6/6 smoke suite for v1.1.0 was driven by Claude Code (claude-opus-4-8) on Spec Kit 0.10.2 with Superpowers 6.0.0 live; the 2026-06-18 Spec Kit 0.11.1 audit and smoke rerun changed no agent-facing bridge surface."
     }
   ],
-  "notes": "v1.1.0 is a Superpowers 6.0.0 compatibility-alignment + evidence-refresh release on the v1.0.0 stable protocol evidence: the verified-against-Superpowers baseline moves 5.1.0 -> 6.0.0 (a MAJOR upstream bump) with ZERO bridge runtime change. The 6.0.0 major's breaking changes are all internal to upstream skills (two reviewer prompts consolidated into one task-reviewer-prompt.md inside subagent-driven-development; global worktree dir removed in favor of project .worktrees/; vendor-neutral prose; three new harnesses) and transparent to the thin bridge, which invokes Superpowers by skill name only and consumes/produces only Spec Kit tasks.md. Guard rules, handoff v1 schema, command count (3), hook count (5), actor semantics, and the >=0.8.10 runtime floor are unchanged. Per constitution Principle VI (Native-First / Trust Upstream Growth), the correct response to an upstream major is to add nothing. Dated Windows PowerShell and agent rows from v1.0.0 are retained because the corresponding bytes did not change."
+  "notes": "v1.1.0 is a Superpowers 6.0.0 compatibility-alignment + evidence-refresh release on the v1.0.0 stable protocol evidence; the 2026-06-18 Spec Kit 0.11.1 maintenance pass refreshed the verified Spec Kit baseline without a bridge version bump. Spec Kit 0.11.1's relevant changes are upstream workflow/install/runtime fixes and require no bridge runtime change. Guard rules, handoff v1 schema, command count (3), hook count (5), actor semantics, and the >=0.8.10 runtime floor are unchanged. Per constitution Principle VI (Native-First / Trust Upstream Growth), the correct response to upstream growth that does not require bridge ownership is to add nothing. Dated Windows PowerShell and agent rows from v1.0.0 are retained because the corresponding bytes did not change."
 }

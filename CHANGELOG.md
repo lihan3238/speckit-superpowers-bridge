@@ -8,6 +8,27 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+### Changed
+
+- Re-verified the current v1.1.0 bridge surface on Spec Kit CLI `0.11.1`
+  without changing bridge runtime code or bumping the extension version. The
+  upstream `0.10.3` → `0.11.1` audit found no required bridge adoption:
+  workflow step catalog support and shell-step `output_format: json` are
+  upstream workflow-engine capabilities, the workflow failed/aborted exit-code
+  fix benefits Spec Kit directly, non-ASCII skill frontmatter preservation is
+  compatible with the existing bridge skills, and the extension self-install
+  deletion fix removes an installer hazard without changing the bridge package.
+
+### Verified
+
+- `specify --version` → `specify 0.11.1` after upgrading the local `uv tool`
+  install from the official `github/spec-kit` `v0.11.1` tag.
+- `bash tests/run-all.sh` → 6/6 PASS on Linux bash with Spec Kit `0.11.1`.
+- Scratch `specify init --here --integration claude --script sh --force` +
+  `specify extension add --dev <tmp>/speckit-superpowers-bridge --force`
+  installed the bridge as v1.1.0; `specify extension info` showed
+  `Category: process`, `Effect: read-write`, 3 commands, and 5 hooks.
+
 ## [1.1.0] - 2026-06-17
 
 Superpowers **6.0.0** compatibility-alignment + evidence refresh. The verified

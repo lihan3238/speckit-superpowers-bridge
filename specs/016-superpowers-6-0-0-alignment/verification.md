@@ -143,3 +143,21 @@ v1.1.0 artifact installed from the release URL**, with Superpowers 6.0.0 live.
 The bridge SKILL/command/script bytes are byte-identical to v1.0.3 (only
 version-metadata + docs differ), and v1.0.3 also passed the published-artifact
 sandbox cycle on Spec Kit 0.10.2 (`specs/014` verification.md T013).
+
+## Post-release Spec Kit 0.11.1 spot check — PASS (2026-06-18)
+
+This is a maintenance verification for the already-published v1.1.0 bridge
+surface, not a bridge version bump.
+
+| Check | Result |
+|---|---|
+| Upgrade local CLI | PASS — `uv tool install --force specify-cli --from git+https://github.com/github/spec-kit.git@v0.11.1`; `specify --version` → `specify 0.11.1` |
+| Upstream release audit | PASS — official Spec Kit release notes v0.10.3, v0.10.4, v0.11.0, and v0.11.1 reviewed; `git diff v0.10.2..v0.11.1` checked against bridge-owned files and runtime assumptions |
+| Bridge impact | PASS — workflow step catalog, shell-step `output_format: json`, workflow failed/aborted exit codes, non-ASCII skill frontmatter preservation, installer self-install safety, and Windows Rich Live fixes require no bridge command, hook, script, schema, or manifest change |
+| Local bootstrap refresh | PASS — source repo `specify init --here --integration claude --script sh --force` refreshed ignored install-state to 0.11.1; project-specific `plan-template.md`, `tasks-template.md`, and `CLAUDE.md` guard/marker customizations were retained |
+| Smoke suite | PASS — `bash tests/run-all.sh` → all 6 bash smoke tests passed under Spec Kit 0.11.1 |
+| Scratch extension round-trip | PASS — scratch `specify init --here --integration claude --script sh --force` followed by `specify extension add --dev <tmp>/speckit-superpowers-bridge --force`; `specify extension info speckit-superpowers-bridge` showed v1.1.0, Category: process, Effect: read-write, 3 commands, and 5 hooks |
+
+Conclusion: Spec Kit 0.11.1 is compatible with bridge v1.1.0. The plugin does
+not need a version bump, a raised `requires.speckit_version` floor, a new
+workflow step, or any guard/handoff protocol change.

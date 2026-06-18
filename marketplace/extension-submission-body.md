@@ -58,7 +58,7 @@ https://github.com/lihan3238/speckit-superpowers-bridge/blob/main/CHANGELOG.md
 
 Verified release baseline for v1.1.0:
 
-- Spec Kit `0.10.2` on Linux bash.
+- Spec Kit `0.11.1` on Linux bash.
 - Spec Kit CLI `0.8.10` on native Windows PowerShell for bridge runtime floor coverage (retained from v1.0.0; `ps` script flavor byte-identical).
 - Superpowers `6.0.0`.
 - Codex CLI `0.137.0`.
@@ -95,15 +95,16 @@ bridge, superpowers, cross-agent, tdd, workflow
 - New in v1.0.3: re-verified end-to-end on Spec Kit CLI `0.10.2` (Linux bash); declares the new first-class `category: process` / `effect: read-write` manifest fields introduced by Spec Kit 0.10.2, backward compatible with the `>=0.8.10` runtime floor.
 - New in v1.0.3: bootstrap documentation aligned with Spec Kit 0.10.0 init changes (git extension now opt-in, legacy `--ai*` flags removed, `branch_numbering` → `feature_numbering`).
 - New in v1.1.0: verified-against-Superpowers baseline moved `5.1.0` → `6.0.0` (a major upstream bump) with zero bridge runtime change. Superpowers 6.0.0's breaking changes are all internal to upstream skills (`subagent-driven-development` reviewer-prompt consolidation, worktrees relocating to project `.worktrees/`, vendor-neutral prose, three new harnesses) and transparent to the thin bridge, which invokes Superpowers by skill name only.
+- Post-v1.1.0 maintenance: re-verified the same v1.1.0 bridge surface on Spec Kit CLI `0.11.1`; no bridge version bump, manifest change, or runtime protocol change required.
 
 ### Support Matrix
 
 | Target | Result | Evidence |
 |---|---|---|
-| Linux bash | PASS | `bash tests/run-all.sh` (6/6) with Superpowers 6.0.0 installed on Spec Kit 0.10.2, plus the source-diff + grep surface audit (research.md). |
+| Linux bash | PASS | `bash tests/run-all.sh` (6/6) with Superpowers 6.0.0 installed on Spec Kit 0.11.1, plus the source-diff + grep surface audits. |
 | Windows PowerShell 5.1+ | PASS | `tests/test-release-powershell.ps1` plus final-package native PowerShell sandbox install cycle (v1.0.0 evidence retained; `ps` flavor byte-identical in v1.1.0). |
 | Codex | PASS | Bounded `codex exec` sandbox verification with `codex-cli 0.137.0` (v1.0.0 evidence retained; protocol unchanged, skill names identical across Superpowers 5.1.0/6.0.0). |
-| Claude Code | PASS | Bounded `claude -p` sandbox verification with Claude Code `2.1.162`; the v1.1.0 Superpowers 6.0.0 surface audit + smoke suite was driven by Claude Code on Spec Kit 0.10.2. |
+| Claude Code | PASS | Bounded `claude -p` sandbox verification with Claude Code `2.1.162`; the v1.1.0 Superpowers 6.0.0 surface audit was driven by Claude Code, and the Spec Kit 0.11.1 smoke suite reran with the same bridge surface. |
 
 ### Release Validation Summary
 
@@ -142,7 +143,7 @@ This extension is developed with AI coding assistants. Claude Code and Codex wer
 
 Tested on:
 
-- Linux bash / WSL2 with Spec Kit `0.10.2` and Superpowers `6.0.0` live.
+- Linux bash / WSL2 with Spec Kit `0.11.1` and Superpowers `6.0.0` live.
 - Native Windows PowerShell 5.1 with Spec Kit runtime floor coverage through CLI `0.8.10` (v1.0.0 evidence; `ps` flavor byte-identical in v1.1.0).
 - Codex CLI `0.137.0`.
 - Claude Code `2.1.162`.
@@ -150,11 +151,12 @@ Tested on:
 Test scenarios:
 
 1. Source-diffed the cached Superpowers 5.1.0 and 6.0.0 plugin trees and grep-audited the bridge surface; confirmed zero references to the renamed reviewer-prompt files and the removed global worktree path (research.md R2/R4).
-2. Ran the full bash smoke suite (6/6) with Superpowers 6.0.0 installed, including the release-package check against the rebuilt v1.1.0 ZIP.
-3. Confirmed the bridge SKILL/command/script bytes are byte-identical to v1.0.3, whose published-artifact sandbox cycle on Spec Kit 0.10.2 transfers to v1.1.0 (the published-v1.1.0 sandbox cycle is staged for the release/tag step).
-4. Ran `bridge-status --readiness`.
-5. Exercised guard, ready, executing, complete, and auto-archive handoff transitions (smoke-suite coverage).
-6. Ran package, release-readiness, Linux bash, and Windows PowerShell smoke gates.
+2. Ran the full bash smoke suite (6/6) with Superpowers 6.0.0 installed on Spec Kit 0.11.1, including the release-package check against the rebuilt v1.1.0 ZIP.
+3. Confirmed the bridge SKILL/command/script bytes are byte-identical to v1.0.3, whose published-artifact sandbox cycle on Spec Kit 0.10.2 transfers to v1.1.0 (the published-v1.1.0 sandbox cycle also passed after release).
+4. Installed the v1.1.0 bridge in a scratch Spec Kit 0.11.1 project via `--dev`; `extension info` showed Category: process, Effect: read-write, 3 commands, and 5 hooks.
+5. Ran `bridge-status --readiness`.
+6. Exercised guard, ready, executing, complete, and auto-archive handoff transitions (smoke-suite coverage).
+7. Ran package, release-readiness, Linux bash, and Windows PowerShell smoke gates.
 
 ### Example Usage
 

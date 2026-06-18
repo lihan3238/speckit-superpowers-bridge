@@ -9,7 +9,7 @@
 <p align="center">
   <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" /></a>
   <a href="https://github.com/lihan3238/speckit-superpowers-bridge/releases"><img alt="Bridge version" src="https://img.shields.io/github/v/release/lihan3238/speckit-superpowers-bridge?style=flat-square&label=bridge" /></a>
-  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.10.2" src="https://img.shields.io/badge/Spec_Kit-verified_0.10.2-success?style=flat-square" /></a>
+  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.11.1" src="https://img.shields.io/badge/Spec_Kit-verified_0.11.1-success?style=flat-square" /></a>
   <a href="https://github.com/obra/superpowers"><img alt="Superpowers verified 6.0.0" src="https://img.shields.io/badge/Superpowers-verified_6.0.0-success?style=flat-square" /></a>
   <a href="https://github.com/github/spec-kit/blob/main/docs/community/extensions.md"><img alt="Spec Kit Marketplace listed" src="https://img.shields.io/badge/Spec_Kit_Marketplace-listed-blueviolet?style=flat-square" /></a>
 </p>
@@ -85,6 +85,8 @@ v1.0.2 is a discoverability and launch-asset patch: README hero image, social ca
 v1.0.3 is a Spec Kit 0.10.x compatibility-alignment patch: re-verified on Spec Kit CLI `0.10.2`, declares the new `category`/`effect` manifest fields, and refreshes bootstrap docs for 0.10.0's opt-in git extension; runtime bridge behavior is unchanged.
 
 v1.1.0 is a Superpowers 6.0.0 compatibility-alignment release: the verified-against-Superpowers baseline moves `5.1.0` → `6.0.0` (a major upstream bump) with **zero bridge runtime change**. Superpowers 6.0.0's breaking changes are all internal to upstream skills (the `subagent-driven-development` reviewer-prompt consolidation, worktrees relocating to project `.worktrees/`, vendor-neutral prose, three new harnesses) and transparent to the thin bridge, which invokes Superpowers by skill name only. See [`specs/016-superpowers-6-0-0-alignment/research.md`](specs/016-superpowers-6-0-0-alignment/research.md) for the grep-backed impact analysis.
+
+Spec Kit 0.11.1 was audited and re-verified against the same v1.1.0 bridge surface: workflow step catalog support, shell-step `output_format: json`, workflow failure exit-code fixes, non-ASCII skill frontmatter preservation, and installer self-install safety require no bridge protocol, command, hook, or manifest change.
 
 | Target | Status | Evidence |
 |---|---|---|
@@ -363,12 +365,12 @@ See `AGENTS.md` for the master cross-agent protocol; `CLAUDE.md` for Claude-spec
 
 This release (v1.1.0) is verified against:
 
-- **Spec Kit** `0.10.2` on Linux bash; Windows PowerShell evidence retained from v1.0.0 (the `ps` script flavor is byte-identical), where the sandbox passed the bridge runtime floor with Spec Kit CLI `0.8.10`
+- **Spec Kit** `0.11.1` on Linux bash; Windows PowerShell evidence retained from v1.0.0 (the `ps` script flavor is byte-identical), where the sandbox passed the bridge runtime floor with Spec Kit CLI `0.8.10`
 - **Superpowers** `6.0.0`
 - **Codex CLI** `0.137.0`
 - **Claude Code** `2.1.162`
 
-Verified metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned additive schema refreshed once per bridge release. v1.1.0 records bridge, upstream tool, platform, and real-agent rows; missing or blocked rows are not advertised as verified.
+Verified metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned additive schema refreshed when a bridge release or upstream compatibility baseline changes. v1.1.0 records bridge, upstream tool, platform, and real-agent rows; missing or blocked rows are not advertised as verified.
 
 When upstream tools ship a new release that breaks the bridge, we either patch the bridge scripts or pin the documented compatible versions in `CHANGELOG.md`.
 

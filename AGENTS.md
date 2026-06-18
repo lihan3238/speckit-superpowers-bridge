@@ -35,8 +35,8 @@ This repo supports two equivalent dev environments. Pick whichever matches your 
 
 | Environment | Required tools | Default script flavor | One-time bootstrap (after clone) |
 |---|---|---|---|
-| Windows PowerShell 5.1+ | `git`, `pwsh`, `gh`, `jq`, `specify` CLI 0.10.1+ (verified 0.10.2) for repo bootstrap (bridge runtime floor remains `>=0.8.10`) | `ps` | `specify init --here --integration claude --script ps --force` then `specify extension add git` |
-| WSL2 Ubuntu bash 5.2+ (incl. checkouts under `/mnt/c/...`) | `git`, `bash`, `gh`, `jq`, `specify` CLI 0.10.1+ (verified 0.10.2) for repo bootstrap (bridge runtime floor remains `>=0.8.10`) | `sh` | `specify init --here --integration claude --script sh --force` then `specify extension add git` |
+| Windows PowerShell 5.1+ | `git`, `pwsh`, `gh`, `jq`, `specify` CLI 0.11.1 for repo bootstrap (bridge runtime floor remains `>=0.8.10`) | `ps` | `specify init --here --integration claude --script ps --force` then `specify extension add git` |
+| WSL2 Ubuntu bash 5.2+ (incl. checkouts under `/mnt/c/...`) | `git`, `bash`, `gh`, `jq`, `specify` CLI 0.11.1 for repo bootstrap (bridge runtime floor remains `>=0.8.10`; Linux bash verified on 0.11.1) | `sh` | `specify init --here --integration claude --script sh --force` then `specify extension add git` |
 
 **Spec Kit 0.10.0 migration notes**: the git extension is now opt-in —
 `specify init` no longer auto-installs it (and the old `--no-git` flag was
@@ -46,6 +46,13 @@ The legacy `--ai`, `--ai-skills`, and `--ai-commands-dir` init flags were
 removed in favor of `--integration <key>`. `init-options.json` renamed
 `branch_numbering` → `feature_numbering` (deprecated-but-honored on read);
 bridge scripts never read this field, so bridge behavior is unaffected.
+
+**Spec Kit 0.11.1 notes**: the new workflow step catalog and shell-step
+`output_format: json` are upstream workflow-engine capabilities; this bridge
+does not ship custom workflow steps and needs no manifest or runtime change.
+0.11.1 also fixes extension self-install source-directory deletion; keep using
+the temporary-copy `--dev` registration path below when validating against older
+0.9.x/0.10.x installs.
 
 The bootstrap regenerates `.specify/scripts/<flavor>/` and the vendor-managed
 `.{claude,agents}/skills/speckit-{analyze,checklist,clarify,constitution,implement,plan,specify,tasks,taskstoissues,git-commit,git-feature,git-initialize,git-remote,git-validate,agent-context-update}/`
@@ -178,7 +185,7 @@ as the body (precedent: v1.0.2 → issue #2848 → upstream PR #2852; v1.0.3 →
 issue #2945). Do not open a direct PR against `extensions/catalog.community.json`;
 upstream maintainers pin the version-specific download URL themselves.
 
-Spec Kit 0.10.x install notes for sandbox verification: `specify extension add`
+Spec Kit 0.11.1 install notes for sandbox verification: `specify extension add`
 requires the `--from <url>` flag form (a bare URL positional is treated as a
 catalog id), and the install prompts interactively for trust confirmation
 (`echo y |` for automation).
