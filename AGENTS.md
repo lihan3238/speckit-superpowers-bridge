@@ -10,8 +10,6 @@ at specs/014-speckit-0-10-x-alignment/plan.md
 > here, not there. The SPECKIT marker block above is vendor-managed by
 > `specify init` in both files; do not hand-edit it.
 
-lihan-cards mode: engineering
-
 ## Primary Design Reference
 
 The canonical "north star" for this bridge's overall design direction is:
