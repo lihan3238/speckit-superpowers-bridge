@@ -1,18 +1,18 @@
 {
-  "verified_at": "2026-06-18T00:00:00Z",
+  "verified_at": "2026-08-17T00:00:00Z",
   "spec_kit_version": "0.11.1",
   "superpowers_version": "6.0.0",
   "codex_cli_version": "0.137.0",
   "claude_code_version": "2.1.162",
-  "bridge_version": "1.1.0",
+  "bridge_version": "1.2.0",
   "platforms": [
     {
       "name": "Linux bash",
       "script_flavor": "sh",
       "status": "passed",
       "spec_kit_version": "0.11.1",
-      "evidence": "specs/016-superpowers-6-0-0-alignment/verification.md#post-release-spec-kit-0111-spot-check--pass-2026-06-18",
-      "notes": "Re-verified on Spec Kit 0.11.1 (2026-06-18): local specify CLI was upgraded from the official github/spec-kit v0.11.1 tag; upstream release notes and source diff for 0.10.3 through 0.11.1 were audited against the bridge surface; workflow step catalog support and shell-step output_format: json are upstream workflow-engine capabilities and require no bridge adoption; workflow failed/aborted exit-code fixes, non-ASCII skill frontmatter preservation, installer self-install safety, and Windows Rich Live fixes require no bridge runtime or manifest change. Full 6-test bash smoke suite passed unchanged, and a scratch 0.11.1 project installed the v1.1.0 bridge via --dev; extension info showed Category: process, Effect: read-write, 3 commands, and 5 hooks. Superpowers 6.0.0 evidence from 2026-06-17 remains valid: every Superpowers skill name the bridge invokes is unchanged in 6.0.0, and bridge SKILL/command/script bytes are unchanged."
+      "evidence": "specs/017-fire-implement-hooks/verification.md",
+      "notes": "v1.2.0 (2026-08-17): added before_implement/after_implement extension-hook dispatch to the execute command and both per-agent SKILL peers (instruction-only, no new script), with a skip-own-guard rule for hooks whose extension is speckit-superpowers-bridge; new tests/test-implement-hooks-dispatch.sh brings the suite to 7/7 green. Prior 0.11.1 re-verification (2026-06-18) remains valid: local specify CLI upgraded from the official github/spec-kit v0.11.1 tag; workflow step catalog support and shell-step output_format: json are upstream workflow-engine capabilities requiring no bridge adoption. Superpowers 6.0.0 evidence from 2026-06-17 remains valid: every Superpowers skill name the bridge invokes is unchanged in 6.0.0."
     },
     {
       "name": "Windows PowerShell",
@@ -20,7 +20,7 @@
       "status": "passed",
       "spec_kit_version": "0.8.10",
       "evidence": "specs/013-v1-0-release-hardening/sandbox-verification.md#windows-powershell",
-      "notes": "Native Windows PowerShell 5.1 evidence from v1.0.0 (2026-06-04) retained: the ps script flavor is byte-identical in v1.1.0, so prior validation remains the truthful evidence row. Windows Spec Kit CLI 0.8.10 required PYTHONUTF8=1 for clean Unicode install output."
+      "notes": "Native Windows PowerShell 5.1 evidence from v1.0.0 (2026-06-04) retained: the ps script flavor is byte-identical in v1.2.0 (the v1.2.0 change is instruction-only in execute.md + SKILL.md; no .ps1/.sh script changed), so prior validation remains the truthful evidence row. Windows Spec Kit CLI 0.8.10 required PYTHONUTF8=1 for clean Unicode install output."
     }
   ],
   "agents": [
@@ -30,7 +30,7 @@
       "status": "passed",
       "platform": "Linux bash / WSL2",
       "evidence": "../test_specify_superpower/v1-0-linux-20260604T072552Z/.specify/bridge-verification/codex-v1.0.0-rc.md",
-      "notes": "Bounded noninteractive Codex verification from v1.0.0 (2026-06-04) retained: bridge commands, hooks, and protocol are unchanged in v1.1.0. The bridge invokes Superpowers skills by name only and those names are identical across Superpowers 5.1.0 and 6.0.0."
+      "notes": "Bounded noninteractive Codex verification from v1.0.0 (2026-06-04) retained: bridge commands, hooks, and protocol are unchanged in v1.2.0 (the execute command gained instruction-only before/after-implement hook dispatch; no new command, hook, script, or schema). The bridge invokes Superpowers skills by name only and those names are identical across Superpowers 5.1.0 and 6.0.0."
     },
     {
       "name": "Claude Code",
@@ -38,8 +38,8 @@
       "status": "passed",
       "platform": "Linux bash / WSL2",
       "evidence": "../test_specify_superpower/v1-0-linux-20260604T072552Z/.specify/bridge-verification/claude-v1.0.0-rc.md",
-      "notes": "Bounded noninteractive Claude Code verification from v1.0.0 (2026-06-04) retained: bridge commands, hooks, and protocol are unchanged in v1.1.0. The Superpowers 6.0.0 surface audit + 6/6 smoke suite for v1.1.0 was driven by Claude Code (claude-opus-4-8) on Spec Kit 0.10.2 with Superpowers 6.0.0 live; the 2026-06-18 Spec Kit 0.11.1 audit and smoke rerun changed no agent-facing bridge surface."
+      "notes": "Bounded noninteractive Claude Code verification from v1.0.0 (2026-06-04) retained: bridge commands, hooks, and protocol are unchanged in v1.2.0 (the execute command gained instruction-only before/after-implement hook dispatch; no new command, hook, script, or schema). The Superpowers 6.0.0 surface audit + smoke suite for v1.1.0 was driven by Claude Code (claude-opus-4-8) on Spec Kit 0.10.2 with Superpowers 6.0.0 live; the v1.2.0 hook-dispatch change and 7-test smoke suite touched no agent-facing protocol."
     }
   ],
-  "notes": "v1.1.0 is a Superpowers 6.0.0 compatibility-alignment + evidence-refresh release on the v1.0.0 stable protocol evidence; the 2026-06-18 Spec Kit 0.11.1 maintenance pass refreshed the verified Spec Kit baseline without a bridge version bump. Spec Kit 0.11.1's relevant changes are upstream workflow/install/runtime fixes and require no bridge runtime change. Guard rules, handoff v1 schema, command count (3), hook count (5), actor semantics, and the >=0.8.10 runtime floor are unchanged. Per constitution Principle VI (Native-First / Trust Upstream Growth), the correct response to upstream growth that does not require bridge ownership is to add nothing. Dated Windows PowerShell and agent rows from v1.0.0 are retained because the corresponding bytes did not change."
+  "notes": "v1.2.0 adds plug-and-play before_implement/after_implement extension-hook dispatch to the execute command and both per-agent SKILL peers (instruction-only, mirroring Spec Kit's own implement command) so the bridge is a true drop-in for speckit.implement; the dispatch skips the bridge's own before_implement guard hook. No new command, hook, script, state file, or schema; guard rules, handoff v1 schema, command count (3), hook count (5), actor semantics, and the >=0.8.10 runtime floor are unchanged. The v1.1.0 Superpowers 6.0.0 alignment and the 2026-06-18 Spec Kit 0.11.1 maintenance pass remain valid baselines. Dated Windows PowerShell and agent rows from v1.0.0 are retained because the corresponding bytes did not change."
 }
