@@ -25,7 +25,7 @@ This file is populated during implementation and release. A row is marked PASS o
 | Targeted ShellCheck | PASS | `shellcheck -x update-handoff.sh`; release ZIP builder and package smoke also pass ShellCheck after removing GNU `sha256sum` dependence |
 | Full bash suite | PASS | `bash tests/run-all.sh` → `All 8 bash smoke tests passed.` |
 | Native Windows PowerShell smoke | PASS | Windows PowerShell `5.1.26100.9168`; `tests/test-release-powershell.ps1` → `release-powershell-tests-ok` |
-| macOS hosted gate | RERUN PENDING | first tag run `32092840757` reached the Issue #13 regression and exposed three test-only BSD/GNU assumptions (`/tmp` → `/private/tmp`, `stat -c`, `find -printf`); portable test fixes are on `fix/release-gate-1.2.0` |
+| macOS hosted gate | PASS | successful release run `32093305991` passed the full bash suite and Issue #13 regression on merge `38ac465`; initial run `32092840757` remains evidence that the gate caught three test-only BSD/GNU assumptions (`/tmp` → `/private/tmp`, `stat -c`, `find -printf`) before publication |
 | Release-readiness self-tests | PASS | native Windows PowerShell: 26 positive/negative cases → `validate-release-readiness-tests-ok` |
 | Release-readiness validator | PASS | native Windows PowerShell: source tree and candidate ZIP both → `Release readiness OK for version 1.2.0.` |
 | Deterministic candidate ZIP | PASS | two consecutive builds produced SHA256 `52372474ee8c6e36a96bb08e58bfe49d912d4d39a9e7ba767efea44ae8b500f0`; package smoke PASS |
@@ -34,18 +34,18 @@ This file is populated during implementation and release. A row is marked PASS o
 
 | Platform | Spec Kit | Artifact | Status | Notes |
 |---|---:|---|---|---|
-| WSL2 Linux bash | 0.16.4 | v1.2.0 public ZIP | PENDING | full bridge cycle + implement hooks |
-| Windows PowerShell 5.1+ | 0.16.4 target | v1.2.0 public ZIP | PENDING | full bridge cycle |
-| macOS bash | 0.16.4 target | v1.2.0 public ZIP | DEFERRED | no local native host; hosted source/runtime regression required and must not be described as a local sandbox run |
+| WSL2 Linux bash | 0.16.4 | v1.2.0 public ZIP | PASS | sandbox `../test_specify_superpower/v1-2-0-linux-20260818T025324Z`; mandatory pre/post hooks ran in order, executing-state guard denied `speckit.implement`, final state `complete` with zero pending tasks and no drift; local evidence `.specify/bridge-verification/v1.2.0-linux.md` |
+| Windows PowerShell 5.1+ | 0.16.4 | v1.2.0 public ZIP | PASS | native sandbox `..\test_specify_superpower\v1-2-0-windows-20260818T030242Z`; mandatory pre/post hooks ran in order, executing-state guard denied `speckit.implement`, final state `complete` with zero pending tasks and no drift; readiness core checks ready; local evidence `.specify\bridge-verification\v1.2.0-windows.md` |
+| macOS bash | 0.16.4 target | v1.2.0 public ZIP | DEFERRED | no local native host; successful hosted release run `32093305991` covers the full source suite and portable handoff regression, but is not represented as a local public-ZIP sandbox run |
 
 ## Release artifact
 
-- Tag: `v1.2.0` (pending)
-- Versioned URL: pending
-- Stable-alias URL: pending
+- Tag: [`v1.2.0`](https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v1.2.0), re-pointed to merge `38ac46555a3dcbd3b347a54b72811c4467166340` after the macOS test-only portability fix
+- Versioned URL: `https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.2.0/speckit-superpowers-bridge-v1.2.0.zip`
+- Stable-alias URL: `https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip`
 - Local candidate SHA256: `52372474ee8c6e36a96bb08e58bfe49d912d4d39a9e7ba767efea44ae8b500f0`
-- Published SHA256: pending
-- GitHub Actions run: pending
+- Published SHA256: `52372474ee8c6e36a96bb08e58bfe49d912d4d39a9e7ba767efea44ae8b500f0` for both byte-identical ZIP assets
+- GitHub Actions run: [`32093305991`](https://github.com/lihan3238/speckit-superpowers-bridge/actions/runs/32093305991) — Linux, Windows, macOS, and publish jobs PASS
 
 ## Coordination
 
@@ -67,6 +67,7 @@ failure.
 | Tool | Version |
 |---|---:|
 | Spec Kit CLI | 0.16.4 |
+| Spec Kit CLI (native Windows) | 0.16.4 |
 | Codex CLI | 0.147.0 |
 | Claude Code | 2.1.233 |
 | Bash | 5.2.21 |
@@ -78,11 +79,13 @@ failure.
 
 - The first macOS-hosted tag run failed in the test harness, not the shipped
   runtime: canonical `/private/tmp` output was compared with lexical `/tmp`,
-  and two older tests used GNU-only `stat`/`find` flags. The tag will be
-  re-pointed after the portable test fixes merge; it remains a publication
-  gate, not a local native-macOS sandbox claim.
-- WSL2 and Windows public-ZIP sandbox rows require the published v1.2.0 asset
-  and therefore remain pending until after the release workflow completes.
+  and two older tests used GNU-only `stat`/`find` flags. PR #16 corrected those
+  tests, the tag was re-pointed, and successful run `32093305991` passed every
+  platform job. Native macOS public-ZIP sandbox evidence remains honestly
+  deferred because no local macOS host is available.
+- WSL2 and native Windows public-ZIP sandbox cycles both pass against the
+  published SHA256. Each sandbox is a nested Git repository so bridge root
+  discovery cannot escape into the parent simulation directory.
 - Claude Code `2.1.233` integration files and project-owned skill parity are
   verified. A bounded live provider call did not complete under the workstation's
   current provider model mapping, so no new live-Claude behavioral claim is made.

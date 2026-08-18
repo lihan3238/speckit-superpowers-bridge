@@ -101,9 +101,9 @@
 ### Publication and public-artifact sandbox
 
 - [x] T029 [US3] Commit the release branch, push it, open a PR with Constitution/Native-First answers, wait for all available checks including macOS, review the final diff, and merge to `main`
-- [ ] T030 [US3] Tag merged `main` as `v1.2.0`, push the tag, wait for the release workflow, and verify both versioned and stable-alias ZIP assets plus published SHA256
-- [ ] T031 [US3] Install the public v1.2.0 ZIP in the WSL2 `../test_specify_superpower` sandbox, drive a full bridge cycle with synthetic implement hooks, and record the result in `specs/018-release-0-16-4-hardening/verification.md`
-- [ ] T032 [US3] Install the public v1.2.0 ZIP in the native Windows `..\test_specify_superpower` sandbox, drive a full bridge cycle, and record the result in `specs/018-release-0-16-4-hardening/verification.md`
+- [x] T030 [US3] Tag merged `main` as `v1.2.0`, push the tag, wait for the release workflow, and verify both versioned and stable-alias ZIP assets plus published SHA256
+- [x] T031 [US3] Install the public v1.2.0 ZIP in the WSL2 `../test_specify_superpower` sandbox, drive a full bridge cycle with synthetic implement hooks, and record the result in `specs/018-release-0-16-4-hardening/verification.md`
+- [x] T032 [US3] Install the public v1.2.0 ZIP in the native Windows `..\test_specify_superpower` sandbox, drive a full bridge cycle, and record the result in `specs/018-release-0-16-4-hardening/verification.md`
 - [ ] T033 [US3] Commit and push post-release verification evidence, close GitHub Issue #13 with release/evidence links, and submit the upstream github/spec-kit Extension Submission issue using `marketplace/extension-submission-body.md`
 
 **Checkpoint**: v1.2.0 is public, installable, evidence-backed, and coordinated upstream.
