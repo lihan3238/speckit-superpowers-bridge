@@ -64,6 +64,14 @@ official community-catalog entry at v1.1.0 until the post-release upstream
 submission lands; this is expected external-state lag, not a local install
 failure.
 
+## Final completion review
+
+- Working tree and branch: clean on `chore/v1.2.0-post-release-evidence` before final task bookkeeping; PR #17 is open, non-draft, mergeable, and reports a clean merge state. This repository has no pull-request-triggered workflow, so no hosted PR check is expected.
+- Remote release refs: `origin/main` and peeled `v1.2.0^{}` both resolve to `38ac46555a3dcbd3b347a54b72811c4467166340`.
+- Release assets: both `speckit-superpowers-bridge-v1.2.0.zip` and `speckit-superpowers-bridge.zip` are uploaded, 82,506 bytes each, with verified SHA256 `52372474ee8c6e36a96bb08e58bfe49d912d4d39a9e7ba767efea44ae8b500f0`.
+- Coordination state: repository Issue #13 is closed as completed, no repository issue remains open, and upstream catalog update issue `github/spec-kit#4180` is open.
+- Bridge state before the terminal transition: `executing`, actor `codex`, with only T034/T035 pending; artifact drift is limited to the expected `tasks.md` completion updates.
+
 ## Local tool baseline
 
 | Tool | Version |

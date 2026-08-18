@@ -114,8 +114,8 @@
 
 **Purpose**: Ensure the implementation contract and repository state are genuinely complete.
 
-- [ ] T034 Re-run `bash tests/run-all.sh` and release readiness after post-release evidence changes, confirm no non-deferred task remains unchecked in `specs/018-release-0-16-4-hardening/tasks.md`, and update `specs/018-release-0-16-4-hardening/verification.md`
-- [ ] T035 Review `git status`, remote `main`, release assets, PR/Issue state, and `.specify/superpowers-handoff.json`, then transition the handoff to `complete` only after all mandatory post-implement hooks succeed
+- [x] T034 Re-run `bash tests/run-all.sh` and release readiness after post-release evidence changes, confirm no non-deferred task remains unchecked in `specs/018-release-0-16-4-hardening/tasks.md`, and update `specs/018-release-0-16-4-hardening/verification.md`
+- [x] T035 Review `git status`, remote `main`, release assets, PR/Issue state, and `.specify/superpowers-handoff.json`, then transition the handoff to `complete` only after all mandatory post-implement hooks succeed
 
 ---
 
