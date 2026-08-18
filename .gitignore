@@ -96,6 +96,7 @@ pyvenv.cfg
 .claude/skills/speckit-analyze/
 .claude/skills/speckit-checklist/
 .claude/skills/speckit-clarify/
+.claude/skills/speckit-converge/
 .claude/skills/speckit-implement/
 .claude/skills/speckit-plan/
 .claude/skills/speckit-tasks/
@@ -109,6 +110,7 @@ pyvenv.cfg
 .agents/skills/speckit-analyze/
 .agents/skills/speckit-checklist/
 .agents/skills/speckit-clarify/
+.agents/skills/speckit-converge/
 .agents/skills/speckit-implement/
 .agents/skills/speckit-plan/
 .agents/skills/speckit-tasks/

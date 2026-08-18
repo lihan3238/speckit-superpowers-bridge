@@ -9,8 +9,8 @@
 <p align="center">
   <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" /></a>
   <a href="https://github.com/lihan3238/speckit-superpowers-bridge/releases"><img alt="Bridge version" src="https://img.shields.io/github/v/release/lihan3238/speckit-superpowers-bridge?style=flat-square&label=bridge" /></a>
-  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.11.1" src="https://img.shields.io/badge/Spec_Kit-verified_0.11.1-success?style=flat-square" /></a>
-  <a href="https://github.com/obra/superpowers"><img alt="Superpowers verified 6.0.0" src="https://img.shields.io/badge/Superpowers-verified_6.0.0-success?style=flat-square" /></a>
+  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.16.4" src="https://img.shields.io/badge/Spec_Kit-verified_0.16.4-success?style=flat-square" /></a>
+  <a href="https://github.com/obra/superpowers"><img alt="Superpowers verified 6.3.0" src="https://img.shields.io/badge/Superpowers-verified_6.3.0-success?style=flat-square" /></a>
   <a href="https://github.com/github/spec-kit/blob/main/docs/community/extensions.md"><img alt="Spec Kit Marketplace listed" src="https://img.shields.io/badge/Spec_Kit_Marketplace-listed-blueviolet?style=flat-square" /></a>
 </p>
 
@@ -33,7 +33,7 @@ No daemon. No service. No database. No second workflow engine. No custom discipl
 | Spec Kit artifacts to remain canonical | Spec Kit keeps owning `spec.md`, `plan.md`, and `tasks.md`. |
 | Superpowers discipline without replanning | `tasks.md` is handed to native Superpowers execution, verification, review, and branch-finishing skills. |
 | Codex and Claude Code to cooperate | A shared `.specify/superpowers-handoff.json` contract with identical bridge skills for both agents. |
-| Windows and Linux coverage | One ZIP ships bash and Windows PowerShell flavors, with release gates for both. |
+| Windows, Linux, and macOS coverage | One ZIP ships bash and Windows PowerShell flavors, with release gates for all three platforms. |
 | Marketplace-friendly confidence | `bridge-status --readiness`, package validation, deterministic release ZIPs, and published SHA evidence. |
 | Minimal operational footprint | 3 commands, 5 hooks, 6 small state scripts per shell flavor, and no runtime service. |
 
@@ -74,7 +74,7 @@ What this does, in 7 steps:
 > [!TIP]
 > Have only a vague idea? Run `superpowers:brainstorming` *before* `/speckit-specify`. The bridge guard allows it in the pre-spec window — the resulting design doc at `docs/superpowers/specs/<date>-<topic>-design.md` can be referenced in your `/speckit-specify` description so the LLM picks it up as context. See feature [010-prespec-brainstorming](specs/010-prespec-brainstorming/spec.md) for the documented lifecycle decision.
 
-## 1.0.x Readiness and Support
+## 1.x Readiness and Support
 
 v1.0.0 is a stable protocol release: no new workflow engine, no daemon, no service, no database, and no replacement for native Spec Kit or Superpowers behavior. The release adds stricter package/readiness checks and evidence for the supported platforms and agents.
 
@@ -86,16 +86,17 @@ v1.0.3 is a Spec Kit 0.10.x compatibility-alignment patch: re-verified on Spec K
 
 v1.1.0 is a Superpowers 6.0.0 compatibility-alignment release: the verified-against-Superpowers baseline moves `5.1.0` → `6.0.0` (a major upstream bump) with **zero bridge runtime change**. Superpowers 6.0.0's breaking changes are all internal to upstream skills (the `subagent-driven-development` reviewer-prompt consolidation, worktrees relocating to project `.worktrees/`, vendor-neutral prose, three new harnesses) and transparent to the thin bridge, which invokes Superpowers by skill name only. See [`specs/016-superpowers-6-0-0-alignment/research.md`](specs/016-superpowers-6-0-0-alignment/research.md) for the grep-backed impact analysis.
 
-v1.2.0 makes the bridge a true plug-and-play drop-in for `speckit.implement`: it now fires the same `before_implement` / `after_implement` extension hooks that `speckit.implement` fires (read from `.specify/extensions.yml`, mirroring Spec Kit's own `implement` command), so user and third-party hooks keep working. The dispatch skips the bridge's own `before_implement` guard hook (which blocks `speckit.implement`, not the bridge). No new command, hook, script, or state file — the dispatch is instruction-only. See [`specs/017-fire-implement-hooks/spec.md`](specs/017-fire-implement-hooks/spec.md).
+v1.2.0 makes the bridge a true plug-and-play drop-in for `speckit.implement`: it dispatches the same `before_implement` / `after_implement` extension hooks, emits Spec Kit's mandatory `EXECUTE_COMMAND:` directive, actually invokes and waits for each mandatory hook, and runs post-hooks before the handoff becomes `complete`. It also fixes Issue #13 by replacing GNU-only missing-path canonicalization in the bash handoff writer, so standard macOS installations need no GNU coreutils. No command, registered hook, state file, schema, or guard rule was added. See [`specs/018-release-0-16-4-hardening/spec.md`](specs/018-release-0-16-4-hardening/spec.md).
 
-Spec Kit 0.11.1 was audited and re-verified against the same v1.1.0 bridge surface: workflow step catalog support, shell-step `output_format: json`, workflow failure exit-code fixes, non-ASCII skill frontmatter preservation, and installer self-install safety require no bridge protocol, command, hook, or manifest change.
+Spec Kit 0.16.4 and Superpowers 6.3.0 are the current audited development baselines. The Spec Kit 0.11.1 → 0.16.4 range adds managed local-state policy, Python script flavors, agent-context hardening, git branch templates, Conventional Commit support, and agent-native runtime events; none supersedes the bridge's core-command hook composition or requires raising the `>=0.8.10` runtime floor. Superpowers 6.1.0 → 6.3.0 keeps all six skill names and the `tasks.md` consumption boundary used by the bridge.
 
 | Target | Status | Evidence |
 |---|---|---|
 | Linux bash | Verified | Full bash smoke suite plus release-artifact sandbox cycle. |
 | Windows PowerShell 5.1+ | Verified | Native PowerShell smoke plus release-artifact sandbox cycle. Set `PYTHONUTF8=1` if an older Windows Spec Kit CLI renders Rich symbols through a GBK console. |
-| Codex | Verified | Bounded sandbox run with `codex-cli 0.137.0`. |
-| Claude Code | Verified | Bounded sandbox run with Claude Code `2.1.162`. |
+| macOS bash | Release-gated | Native hosted macOS smoke and portability regression must pass before publication; no claim of a local published-artifact sandbox run. |
+| Codex | Verified | Current source and sandbox checks use Codex CLI `0.147.0`. |
+| Claude Code | Integration verified | Spec Kit-managed integration state and the project-owned Claude/Codex skill-parity contract pass on local Claude Code `2.1.233`; no new live-provider behavior claim. |
 
 Run the lightweight readiness check after install:
 
@@ -367,16 +368,16 @@ See `AGENTS.md` for the master cross-agent protocol; `CLAUDE.md` for Claude-spec
 
 This release (v1.2.0) is verified against:
 
-- **Spec Kit** `0.11.1` on Linux bash; Windows PowerShell evidence retained from v1.0.0 (the `ps` script flavor is byte-identical), where the sandbox passed the bridge runtime floor with Spec Kit CLI `0.8.10`
-- **Superpowers** `6.0.0`
-- **Codex CLI** `0.137.0`
-- **Claude Code** `2.1.162`
+- **Spec Kit** `0.16.4` for repository bootstrap, Linux bash verification, and the v1.2.0 release sandbox; runtime floor remains `>=0.8.10`
+- **Superpowers** `6.3.0`
+- **Codex CLI** `0.147.0`
+- **Claude Code** `2.1.233`
 
 Verified metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned additive schema refreshed when a bridge release or upstream compatibility baseline changes. v1.2.0 records bridge, upstream tool, platform, and real-agent rows; missing or blocked rows are not advertised as verified.
 
 When upstream tools ship a new release that breaks the bridge, we either patch the bridge scripts or pin the documented compatible versions in `CHANGELOG.md`.
 
-Spec Kit `0.9.x` moved coding-agent context updates into the bundled `agent-context` extension. The bridge runtime does not depend on that extension, so `requires.speckit_version` stays at `>=0.8.10`; this repository tracks `agent-context` only to keep its own Spec Kit project bootstrap current.
+Spec Kit `0.9.x` moved coding-agent context updates into the bundled `agent-context` extension. The bridge runtime does not depend on that extension, so `requires.speckit_version` stays at `>=0.8.10`; this repository tracks the current 0.16.4 `agent-context` and `git` sources only to keep its own Spec Kit project bootstrap current.
 
 > [!NOTE]
 > **From v0.6.0 onward**, the marketplace `download_url` is decoupled from the version. It permanently points at `https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip` and resolves via GitHub's `/releases/latest/` alias. Future bridge releases never edit `download_url`; only `version` is bumped in `marketplace/catalog-entry.json`. This removes a recurring per-release edit class and a drift surface — one of the smallest possible Principle-VI wins.

@@ -58,12 +58,75 @@ snapshot_timestamp() {
     printf '%s%sZ\n' "$base" "${nanos:0:3}"
 }
 
+# Portable equivalent of GNU missing-component canonicalization.
+# macOS ships BSD realpath without -m, so resolve path components in Bash and
+# use only the portable single-argument form of readlink for existing symlinks.
+canonicalize_missing_path() {
+    local input="$1"
+    [ -n "$input" ] || return 1
+
+    local absolute
+    if [[ "$input" = /* ]]; then
+        absolute="$input"
+    else
+        absolute="$PWD/$input"
+    fi
+
+    local resolved="/"
+    local part candidate target
+    local symlink_count=0
+    local -a pending=()
+    local -a target_parts=()
+    IFS='/' read -r -a pending <<< "$absolute"
+
+    while [ "${#pending[@]}" -gt 0 ]; do
+        part="${pending[0]}"
+        pending=("${pending[@]:1}")
+
+        case "$part" in
+            ""|.) continue ;;
+            ..)
+                if [ "$resolved" != "/" ]; then
+                    resolved="${resolved%/*}"
+                    [ -n "$resolved" ] || resolved="/"
+                fi
+                continue
+                ;;
+        esac
+
+        if [ "$resolved" = "/" ]; then
+            candidate="/$part"
+        else
+            candidate="$resolved/$part"
+        fi
+
+        if [ -L "$candidate" ]; then
+            symlink_count=$((symlink_count + 1))
+            if [ "$symlink_count" -gt 40 ]; then
+                printf 'Too many symbolic links while resolving path: %s\n' "$input" >&2
+                return 1
+            fi
+            target="$(readlink "$candidate")" || return 1
+            target_parts=()
+            IFS='/' read -r -a target_parts <<< "$target"
+            if [[ "$target" = /* ]]; then
+                resolved="/"
+            fi
+            pending=("${target_parts[@]}" "${pending[@]}")
+        else
+            resolved="$candidate"
+        fi
+    done
+
+    printf '%s\n' "$resolved"
+}
+
 project_path() {
     local path="$1"
     [ -n "$path" ] || return 0
     local full root
-    full="$(realpath -m "$path")"
-    root="$(realpath -m "$REPO_ROOT")"
+    full="$(canonicalize_missing_path "$path")"
+    root="$(canonicalize_missing_path "$REPO_ROOT")"
     case "$full" in
         "$root"/*) printf '%s\n' "${full#"$root"/}" ;;
         "$root") printf '.\n' ;;
@@ -108,9 +171,9 @@ feature_full=""
 feature_project=""
 if [ -n "${FEATURE_DIRECTORY//[[:space:]]/}" ]; then
     if [[ "$FEATURE_DIRECTORY" = /* ]]; then
-        feature_full="$(realpath -m "$FEATURE_DIRECTORY")"
+        feature_full="$(canonicalize_missing_path "$FEATURE_DIRECTORY")"
     else
-        feature_full="$(realpath -m "$REPO_ROOT/$FEATURE_DIRECTORY")"
+        feature_full="$(canonicalize_missing_path "$REPO_ROOT/$FEATURE_DIRECTORY")"
     fi
     feature_project="$(project_path "$feature_full")"
 fi
@@ -152,8 +215,8 @@ fi
 snapshot_id=""
 snapshot_path=""
 if [ -n "$snapshot_source_directory" ]; then
-    if [[ "$snapshot_source_directory" = /* ]]; then snapshot_path="$(realpath -m "$snapshot_source_directory")"
-    else snapshot_path="$(realpath -m "$REPO_ROOT/$snapshot_source_directory")"
+    if [[ "$snapshot_source_directory" = /* ]]; then snapshot_path="$(canonicalize_missing_path "$snapshot_source_directory")"
+    else snapshot_path="$(canonicalize_missing_path "$REPO_ROOT/$snapshot_source_directory")"
     fi
 elif [ -n "$feature_full" ]; then
     snapshot_path="$feature_full"

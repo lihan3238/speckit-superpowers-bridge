@@ -59,7 +59,17 @@ for name in README.md README.zh-CN.md LICENSE CHANGELOG.md .gitignore .gitattrib
     [ -f "$repo_root/$name" ] && cp "$repo_root/$name" "$stage_root/"
 done
 
-if ! grep -Eq "version:[[:space:]]*['\"]?$version['\"]?\\b" "$stage_root/extension.yml"; then
+declared_version="$(python3 - "$stage_root/extension.yml" <<'PY'
+from pathlib import Path
+import re
+import sys
+
+text = Path(sys.argv[1]).read_text(encoding="utf-8")
+match = re.search(r"(?m)^\s{2,}version:\s*['\"]?([^'\"\s#]+)", text)
+print(match.group(1) if match else "")
+PY
+)"
+if [ "$declared_version" != "$version" ]; then
     printf "extension.yml does not declare version '%s'. Bump it first.\n" "$version" >&2
     exit 1
 fi
@@ -94,7 +104,18 @@ with zipfile.ZipFile(out_zip) as zf:
 PY
 
 cp "$out_zip" "$latest_zip"
-sha="$(sha256sum "$out_zip" | awk '{print $1}')"
+sha="$(python3 - "$out_zip" <<'PY'
+from pathlib import Path
+import hashlib
+import sys
+
+digest = hashlib.sha256()
+with Path(sys.argv[1]).open("rb") as stream:
+    for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+        digest.update(chunk)
+print(digest.hexdigest())
+PY
+)"
 size="$(python3 - "$out_zip" <<'PY'
 from pathlib import Path
 import sys
