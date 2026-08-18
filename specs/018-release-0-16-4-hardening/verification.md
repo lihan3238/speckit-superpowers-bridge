@@ -29,6 +29,7 @@ This file is populated during implementation and release. A row is marked PASS o
 | Release-readiness self-tests | PASS | native Windows PowerShell: 26 positive/negative cases → `validate-release-readiness-tests-ok` |
 | Release-readiness validator | PASS | native Windows PowerShell: source tree and candidate ZIP both → `Release readiness OK for version 1.2.0.` |
 | Deterministic candidate ZIP | PASS | two consecutive builds produced SHA256 `52372474ee8c6e36a96bb08e58bfe49d912d4d39a9e7ba767efea44ae8b500f0`; package smoke PASS |
+| Post-release evidence rerun | PASS | after public-sandbox and coordination evidence changes: `bash tests/run-all.sh` → `All 8 bash smoke tests passed.`; native Windows `validate-release-readiness.ps1 -Version 1.2.0` → `Release readiness OK for version 1.2.0.` |
 
 ## Published artifact verification
 
@@ -51,8 +52,9 @@ This file is populated during implementation and release. A row is marked PASS o
 
 - PR #14: merged 2026-08-18 (`07c3c81`)
 - PR #15: merged 2026-08-18 (`a8736d0`), initial v1.2.0 release commit
-- Issue #13: OPEN as of 2026-08-18, pending published fix
-- Upstream Spec Kit catalog submission: pending post-release
+- PR #16: merged 2026-08-18 (`38ac465`), portable macOS test-gate fix and final tagged release commit
+- Issue #13: [CLOSED](https://github.com/lihan3238/speckit-superpowers-bridge/issues/13) on 2026-08-18 with v1.2.0, successful macOS-hosted run, and post-release evidence links
+- Upstream Spec Kit catalog submission: [github/spec-kit#4180](https://github.com/github/spec-kit/issues/4180), opened 2026-08-18 with the v1.2.0 support matrix and proposed catalog entry
 
 ### Local registry/catalog distinction
 
