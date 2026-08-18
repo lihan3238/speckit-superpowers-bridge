@@ -27,8 +27,19 @@ CLAUDE_DIR="$REPO_ROOT/.claude/skills"
 [ -d "$CODEX_DIR" ]  || fail "Missing directory: $CODEX_DIR"
 [ -d "$CLAUDE_DIR" ] || fail "Missing directory: $CLAUDE_DIR"
 
-mapfile -t codex_ids  < <(find "$CODEX_DIR"  -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
-mapfile -t claude_ids < <(find "$CLAUDE_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
+list_skill_ids() {
+    local root="$1" path
+    for path in "$root"/*/; do
+        [ -d "$path" ] || continue
+        basename "${path%/}"
+    done | sort
+}
+
+mapfile -t codex_ids  < <(list_skill_ids "$CODEX_DIR")
+mapfile -t claude_ids < <(list_skill_ids "$CLAUDE_DIR")
+
+[ "${#codex_ids[@]}" -gt 0 ] || fail "No Codex skill directories discovered"
+[ "${#claude_ids[@]}" -gt 0 ] || fail "No Claude skill directories discovered"
 
 declare -A codex_set claude_set
 for s in "${codex_ids[@]}";  do codex_set[$s]=1;  done

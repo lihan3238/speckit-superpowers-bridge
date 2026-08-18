@@ -25,7 +25,7 @@ This file is populated during implementation and release. A row is marked PASS o
 | Targeted ShellCheck | PASS | `shellcheck -x update-handoff.sh`; release ZIP builder and package smoke also pass ShellCheck after removing GNU `sha256sum` dependence |
 | Full bash suite | PASS | `bash tests/run-all.sh` → `All 8 bash smoke tests passed.` |
 | Native Windows PowerShell smoke | PASS | Windows PowerShell `5.1.26100.9168`; `tests/test-release-powershell.ps1` → `release-powershell-tests-ok` |
-| macOS hosted gate | PENDING | GitHub Actions run |
+| macOS hosted gate | RERUN PENDING | first tag run `32092840757` reached the Issue #13 regression and exposed three test-only BSD/GNU assumptions (`/tmp` → `/private/tmp`, `stat -c`, `find -printf`); portable test fixes are on `fix/release-gate-1.2.0` |
 | Release-readiness self-tests | PASS | native Windows PowerShell: 26 positive/negative cases → `validate-release-readiness-tests-ok` |
 | Release-readiness validator | PASS | native Windows PowerShell: source tree and candidate ZIP both → `Release readiness OK for version 1.2.0.` |
 | Deterministic candidate ZIP | PASS | two consecutive builds produced SHA256 `52372474ee8c6e36a96bb08e58bfe49d912d4d39a9e7ba767efea44ae8b500f0`; package smoke PASS |
@@ -50,6 +50,7 @@ This file is populated during implementation and release. A row is marked PASS o
 ## Coordination
 
 - PR #14: merged 2026-08-18 (`07c3c81`)
+- PR #15: merged 2026-08-18 (`a8736d0`), initial v1.2.0 release commit
 - Issue #13: OPEN as of 2026-08-18, pending published fix
 - Upstream Spec Kit catalog submission: pending post-release
 
@@ -75,8 +76,11 @@ failure.
 
 ## Known blockers and deferrals
 
-- The macOS-hosted row cannot pass until the tag-triggered release workflow
-  runs. It is a publication gate, not a local native-macOS sandbox claim.
+- The first macOS-hosted tag run failed in the test harness, not the shipped
+  runtime: canonical `/private/tmp` output was compared with lexical `/tmp`,
+  and two older tests used GNU-only `stat`/`find` flags. The tag will be
+  re-pointed after the portable test fixes merge; it remains a publication
+  gate, not a local native-macOS sandbox claim.
 - WSL2 and Windows public-ZIP sandbox rows require the published v1.2.0 asset
   and therefore remain pending until after the release workflow completes.
 - Claude Code `2.1.233` integration files and project-owned skill parity are
