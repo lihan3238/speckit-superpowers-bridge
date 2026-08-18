@@ -36,6 +36,20 @@ assert_file ".gitattributes"
 command -v jq >/dev/null 2>&1 || fail "jq is required for package smoke checks"
 command -v python3 >/dev/null 2>&1 || fail "python3 is required for package smoke checks"
 
+sha256_file() {
+    python3 - "$1" <<'PY'
+from pathlib import Path
+import hashlib
+import sys
+
+digest = hashlib.sha256()
+with Path(sys.argv[1]).open("rb") as stream:
+    for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+        digest.update(chunk)
+print(digest.hexdigest())
+PY
+}
+
 cmd_count="$(find "$BRIDGE_DIR/commands" -maxdepth 1 -type f -name '*.md' | wc -l)"
 [ "$cmd_count" -eq 3 ] || fail "expected exactly 3 bridge command files, got $cmd_count"
 for cmd in execute guard handoff; do
@@ -72,10 +86,10 @@ PY
 )"
 if [ -x "$REPO_ROOT/scripts/release/build-extension-zip.sh" ]; then
     bash "$REPO_ROOT/scripts/release/build-extension-zip.sh" --version "$version" >/tmp/speckit-bridge-build-a.out
-    sha_a="$(sha256sum "$REPO_ROOT/dist/speckit-superpowers-bridge-v$version.zip" | awk '{print $1}')"
+    sha_a="$(sha256_file "$REPO_ROOT/dist/speckit-superpowers-bridge-v$version.zip")"
     sleep 2
     bash "$REPO_ROOT/scripts/release/build-extension-zip.sh" --version "$version" >/tmp/speckit-bridge-build-b.out
-    sha_b="$(sha256sum "$REPO_ROOT/dist/speckit-superpowers-bridge-v$version.zip" | awk '{print $1}')"
+    sha_b="$(sha256_file "$REPO_ROOT/dist/speckit-superpowers-bridge-v$version.zip")"
     [ "$sha_a" = "$sha_b" ] || fail "bash release ZIP build is not deterministic: $sha_a vs $sha_b"
 else
     fail "scripts/release/build-extension-zip.sh must exist and be executable"

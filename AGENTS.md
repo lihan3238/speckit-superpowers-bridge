@@ -1,7 +1,7 @@
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/014-speckit-0-10-x-alignment/plan.md
+at specs/018-release-0-16-4-hardening/plan.md
 <!-- SPECKIT END -->
 
 > **Canonical project instructions**, readable by any AGENTS.md-aware tool
@@ -33,8 +33,8 @@ This repo supports two equivalent dev environments. Pick whichever matches your 
 
 | Environment | Required tools | Default script flavor | One-time bootstrap (after clone) |
 |---|---|---|---|
-| Windows PowerShell 5.1+ | `git`, `pwsh`, `gh`, `jq`, `specify` CLI 0.11.1 for repo bootstrap (bridge runtime floor remains `>=0.8.10`) | `ps` | `specify init --here --integration claude --script ps --force` then `specify extension add git` |
-| WSL2 Ubuntu bash 5.2+ (incl. checkouts under `/mnt/c/...`) | `git`, `bash`, `gh`, `jq`, `specify` CLI 0.11.1 for repo bootstrap (bridge runtime floor remains `>=0.8.10`; Linux bash verified on 0.11.1) | `sh` | `specify init --here --integration claude --script sh --force` then `specify extension add git` |
+| Windows PowerShell 5.1+ | `git`, `pwsh`, `gh`, `jq`, `specify` CLI 0.16.4 for repo bootstrap (bridge runtime floor remains `>=0.8.10`) | `ps` | `specify init --here --integration claude --script ps --extension git --extension agent-context --force` |
+| WSL2 Ubuntu bash 5.2+ (incl. checkouts under `/mnt/c/...`) | `git`, `bash`, `gh`, `jq`, `specify` CLI 0.16.4 for repo bootstrap (bridge runtime floor remains `>=0.8.10`; Linux bash verified on 0.16.4) | `sh` | `specify init --here --integration claude --script sh --extension git --extension agent-context --force` |
 
 **Spec Kit 0.10.0 migration notes**: the git extension is now opt-in —
 `specify init` no longer auto-installs it (and the old `--no-git` flag was
@@ -45,27 +45,37 @@ removed in favor of `--integration <key>`. `init-options.json` renamed
 `branch_numbering` → `feature_numbering` (deprecated-but-honored on read);
 bridge scripts never read this field, so bridge behavior is unaffected.
 
-**Spec Kit 0.11.1 notes**: the new workflow step catalog and shell-step
-`output_format: json` are upstream workflow-engine capabilities; this bridge
-does not ship custom workflow steps and needs no manifest or runtime change.
-0.11.1 also fixes extension self-install source-directory deletion; keep using
-the temporary-copy `--dev` registration path below when validating against older
-0.9.x/0.10.x installs.
+**Spec Kit 0.16.4 notes**: repository bootstrap now installs both explicitly
+used bundled extensions through repeatable `--extension` flags. The tracked
+`git` source includes branch templates/prefixes, Conventional Commit support,
+renamed branch scripts, and Python script flavor support. The tracked
+`agent-context` source includes multi-file configuration, self-seeding defaults,
+path-containment hardening, nested-plan discovery, and Python script flavor
+support. The bridge itself still ships only `ps` and `sh` flavors and keeps its
+runtime floor at `>=0.8.10`: the 0.11.1 through 0.16.4 changes do not alter the
+handoff schema, guard API, command namespace, or required bridge shell interface.
+Keep using the temporary-copy `--dev` registration path below when validating
+against older 0.9.x/0.10.x installs.
 
 The bootstrap regenerates `.specify/scripts/<flavor>/` and the vendor-managed
-`.{claude,agents}/skills/speckit-{analyze,checklist,clarify,constitution,implement,plan,specify,tasks,taskstoissues,git-commit,git-feature,git-initialize,git-remote,git-validate,agent-context-update}/`
+`.{claude,agents}/skills/speckit-{analyze,checklist,clarify,constitution,converge,implement,plan,specify,tasks,taskstoissues,git-commit,git-feature,git-initialize,git-remote,git-validate,agent-context-update}/`
 slash-command skill files — these are **gitignored** as install-time state
 (see `.gitignore` "Spec Kit install-time generated state" block and
 [`specs/009-wsl-dev-env-alignment/spec.md`](specs/009-wsl-dev-env-alignment/spec.md)
 Clarifications Q1+Q2 Policy for the rationale). Same idea for
 `.specify/init-options.json`, `.specify/integration.json`, and
 `.specify/integrations/*.manifest.json` — all per-developer install state.
+Spec Kit 0.16.1+ also manages `.specify/.gitignore`, which keeps
+`.specify/feature.json` and extension `local-config.yml` overrides machine-local;
+the policy file itself is tracked and shared.
 
 As of Spec Kit v0.9.1, coding-agent context updates live in the bundled
 `agent-context` extension. This source repo tracks `.specify/extensions/agent-context/`
 alongside the bundled `git` extension because `.specify/extensions.yml` references it;
 the per-agent `speckit-agent-context-update` skills remain generated install state
-and are gitignored.
+and are gitignored. The 0.16.4 multi-context configuration updates both the
+canonical `AGENTS.md` marker and the `CLAUDE.md` import marker without making
+either generated integration file project-authoritative.
 
 **Project deliverable** (committed, NEVER regenerated by `specify init`):
 `.claude/skills/speckit-superpowers-bridge/` and
@@ -84,7 +94,7 @@ release ZIP installs in a separate consumer project or `../test_specify_superpow
 
 ### Running the smoke-test suite
 
-- **WSL bash** (primary as of 009): `bash tests/run-all.sh` (or `for f in tests/test-*.sh; do bash "$f" || exit 1; done`). Full suite < 10 s.
+- **WSL bash** (primary as of 009): `bash tests/run-all.sh` (or `for f in tests/test-*.sh; do bash "$f" || exit 1; done`). The v1.2.0 source suite contains 8 tests and normally completes in seconds.
 - **Windows PowerShell**: prior to 009 the suite was `tests/test-*.ps1`; those files have been replaced by bash ports. PowerShell maintainers either invoke `bash tests/run-all.sh` from a WSL/git-bash shell or port the suite back to PowerShell as a future feature if needed.
 
 ### Common gotchas
@@ -183,7 +193,7 @@ as the body (precedent: v1.0.2 → issue #2848 → upstream PR #2852; v1.0.3 →
 issue #2945). Do not open a direct PR against `extensions/catalog.community.json`;
 upstream maintainers pin the version-specific download URL themselves.
 
-Spec Kit 0.11.1 install notes for sandbox verification: `specify extension add`
+Spec Kit 0.16.4 install notes for sandbox verification: `specify extension add`
 requires the `--from <url>` flag form (a bare URL positional is treated as a
 catalog id), and the install prompts interactively for trust confirmation
 (`echo y |` for automation).

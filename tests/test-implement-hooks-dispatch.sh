@@ -12,7 +12,11 @@
 #   1. every file references `before_implement` AND `after_implement`;
 #   2. every file carries the skip-own-guard rule (extension is
 #      `speckit-superpowers-bridge`) so the bridge does not fire its own guard
-#      hook (which blocks speckit.implement) and self-block.
+#      hook (which blocks speckit.implement) and self-block;
+#   3. mandatory hooks emit Spec Kit's EXECUTE_COMMAND directive, are actually
+#      invoked, and are awaited;
+#   4. after_implement runs before the handoff becomes complete, so a failed
+#      mandatory post-hook cannot leave a false-success state.
 
 set -euo pipefail
 
@@ -40,8 +44,23 @@ check_file() {
         || fail "$label: missing skip-own-guard rule (extension is speckit-superpowers-bridge)"
     grep -q 'before the handoff transitions to `executing`' "$f" \
         || fail "$label: missing before_implement ordering (fires before executing)"
-    grep -q 'after it transitions to `complete`' "$f" \
-        || fail "$label: missing after_implement ordering (fires after complete)"
+    grep -q 'EXECUTE_COMMAND: <dotted-command-id>' "$f" \
+        || fail "$label: missing Spec Kit mandatory-hook EXECUTE_COMMAND directive"
+    grep -q '\*\*Automatic Pre-Hook\*\*' "$f" \
+        || fail "$label: missing Spec Kit automatic pre-hook block"
+    grep -q '\*\*Automatic Hook\*\*' "$f" \
+        || fail "$label: missing Spec Kit automatic post-hook block"
+    grep -q 'Executing: `/<dotted-command-id>`' "$f" \
+        || fail "$label: missing automatic-hook executing line"
+    grep -q 'Actually invoke the rendered agent command and wait for its result' "$f" \
+        || fail "$label: missing actual invocation-and-wait requirement"
+    grep -q 'Dispatch `after_implement` before transitioning the handoff to `complete`' "$f" \
+        || fail "$label: missing post-hook-before-complete ordering"
+    grep -q 'If a mandatory `after_implement` hook fails, do not transition the handoff to `complete`' "$f" \
+        || fail "$label: missing mandatory post-hook failure-state guarantee"
+    if grep -q 'after it transitions to `complete`' "$f"; then
+        fail "$label: retains obsolete after-complete hook ordering"
+    fi
 }
 
 check_file "$EXECUTE_MD" "execute.md"

@@ -33,14 +33,14 @@ This skill is the **thin orchestrator** between Spec Kit (design) and Superpower
 6. At completion of all tasks, invoke `superpowers:verification-before-completion`.
 7. Invoke `superpowers:requesting-code-review`.
 8. Invoke `superpowers:finishing-a-development-branch`.
-9. Transition handoff to `complete` with the same platform flavor:
+9. Fire the `after_implement` extension hooks from `.specify/extensions.yml` (see "Extension hooks" below).
+10. Transition handoff to `complete` with the same platform flavor only after mandatory post-hooks succeed:
    ```powershell
    .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status complete -Actor claude
    ```
    ```bash
    bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/update-handoff.sh --status complete --actor claude
    ```
-10. Fire the `after_implement` extension hooks from `.specify/extensions.yml` (see "Extension hooks" below).
 
 ## Extension hooks (before_implement / after_implement)
 
@@ -58,11 +58,31 @@ third-party hooks stay plug-and-play:
 - Skip hooks with a non-empty `condition` (leave to upstream HookExecutor).
 - Fire each remaining hook via its `command`, dots→hyphens:
   `speckit.git.commit` → `/speckit-git-commit` (Claude Code) or
-  `$speckit-git-commit` (Codex). Mandatory (`optional: false`) hooks execute and
-  wait; optional (`optional: true`) hooks prompt the user first.
+  `$speckit-git-commit` (Codex). Optional (`optional: true`) hooks surface the
+  extension, command, description, prompt, and agent-native invocation, then
+  run only after confirmation.
+- For every mandatory hook (`optional: false`), emit Spec Kit's
+  phase-appropriate automatic-hook block before invocation:
+  ```text
+  ## Extension Hooks
 
-`before_implement` fires before the handoff transitions to `executing`;
-`after_implement` fires after it transitions to `complete`.
+  **Automatic Pre-Hook**: <extension>   # before_implement
+  **Automatic Hook**: <extension>       # after_implement
+  Executing: `/<dotted-command-id>`
+  EXECUTE_COMMAND: <dotted-command-id>
+  ```
+- Emit only the phase-appropriate automatic label, not both labels in one live
+  block. Keep the dotted ID in the directive; use the active agent's rendered
+  command form for the actual invocation.
+- Actually invoke the rendered agent command and wait for its result. Printing
+  the directive or invocation name without calling the command is not success.
+  A mandatory hook failure stops the lifecycle.
+
+`before_implement` fires before the handoff transitions to `executing`.
+Dispatch `after_implement` before transitioning the handoff to `complete`.
+If a mandatory `after_implement` hook fails, do not transition the handoff to `complete`;
+leave the non-complete state visible for recovery. Declining an optional hook
+does not fail implementation.
 
 ## Boundary rules (denied operations)
 

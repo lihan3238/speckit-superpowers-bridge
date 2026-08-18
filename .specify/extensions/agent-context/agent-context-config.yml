@@ -1,4 +1,12 @@
-context_file: CLAUDE.md
+# Coding Agent Context Extension Configuration
+
+# Keep both canonical project context surfaces synchronized. AGENTS.md owns the
+# shared rules; CLAUDE.md remains its one-line import plus the managed marker.
+context_file: ""
+context_files:
+  - AGENTS.md
+  - CLAUDE.md
+
 context_markers:
-  start: <!-- SPECKIT START -->
-  end: <!-- SPECKIT END -->
+  start: "<!-- SPECKIT START -->"
+  end: "<!-- SPECKIT END -->"

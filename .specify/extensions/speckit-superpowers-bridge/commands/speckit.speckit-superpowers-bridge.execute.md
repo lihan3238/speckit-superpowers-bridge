@@ -80,7 +80,7 @@ Fire these BEFORE transitioning the handoff to `executing`:
 
 ### After implementation (`after_implement`)
 
-Fire these AFTER transitioning the handoff to `complete`:
+Dispatch `after_implement` before transitioning the handoff to `complete`:
 
 1. Check `.specify/extensions.yml` for `hooks.after_implement`. If absent, skip.
 2. Apply the same filters as above (`enabled: false` → skip, non-empty
@@ -90,8 +90,35 @@ Fire these AFTER transitioning the handoff to `complete`:
 3. Fire each remaining hook via its `command` with the same per-agent rendering
    and the same mandatory/optional handling.
 
-`before_implement` fires before the handoff transitions to `executing`;
-`after_implement` fires after it transitions to `complete`.
+### Hook invocation contract
+
+For every mandatory hook, emit Spec Kit's phase-appropriate automatic-hook
+block before invocation:
+
+```text
+## Extension Hooks
+
+**Automatic Pre-Hook**: <extension>   # before_implement
+**Automatic Hook**: <extension>       # after_implement
+Executing: `/<dotted-command-id>`
+EXECUTE_COMMAND: <dotted-command-id>
+```
+
+Emit only the phase-appropriate automatic label, not both labels in one live
+block. The dotted ID remains in the directive; the actual invocation uses the
+active agent's rendered command form.
+
+Actually invoke the rendered agent command and wait for its result. Printing
+the directive or invocation name without calling the command is not success.
+If any mandatory hook fails, stop the lifecycle and surface the failure.
+
+`before_implement` fires before the handoff transitions to `executing`.
+Dispatch `after_implement` before transitioning the handoff to `complete`.
+If a mandatory `after_implement` hook fails, do not transition the handoff to `complete`;
+leave the non-complete state visible for recovery. Optional hooks still run
+only after surfacing the extension, command, description, prompt, and
+agent-native invocation and receiving user confirmation. Declining one does not
+fail implementation.
 
 ## Required Superpowers Discipline
 

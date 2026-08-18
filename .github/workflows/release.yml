@@ -64,11 +64,32 @@ jobs:
         shell: powershell
         run: .\scripts\release\test-validate-release-readiness.ps1
 
+  macos-gate:
+    name: macOS bash release gate
+    if: ${{ !contains(github.ref_name, '-') }}
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install supported Bash and jq
+        shell: bash
+        run: brew install bash jq
+
+      - name: Run macOS bash smoke and portability regression
+        shell: bash
+        run: |
+          export PATH="$(brew --prefix)/bin:$PATH"
+          bash --version | head -n 1
+          bash tests/run-all.sh
+          bash tests/test-update-handoff-portability.sh
+
   release:
     name: Build + publish release
     needs:
       - linux-gate
       - windows-gate
+      - macos-gate
     if: ${{ !contains(github.ref_name, '-') }}
     runs-on: ubuntu-latest
     steps:
