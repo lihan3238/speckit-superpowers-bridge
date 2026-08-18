@@ -86,6 +86,8 @@ v1.0.3 是 Spec Kit 0.10.x 兼容对齐补丁：在 Spec Kit CLI `0.10.2` 上重
 
 v1.1.0 是 Superpowers 6.0.0 兼容对齐版本：将「已验证的 Superpowers 基线」从 `5.1.0` 推进到 `6.0.0`（上游 major 大版本），且 **bridge runtime 零改动**。Superpowers 6.0.0 的破坏性变更全部位于上游 skill 内部（`subagent-driven-development` 的 reviewer prompt 合并、worktree 改落到项目内 `.worktrees/`、prose 去厂商化、新增三个 harness），对仅按 skill 名调用上游的 thin bridge 透明。grep 佐证的影响分析见 [`specs/016-superpowers-6-0-0-alignment/research.md`](specs/016-superpowers-6-0-0-alignment/research.md)。
 
+v1.2.0 让桥成为 `speckit.implement` 真正的即插即用替代：现在会触发与 `speckit.implement` 相同的 `before_implement` / `after_implement` 扩展 hook（从 `.specify/extensions.yml` 读取，镜像 Spec Kit 自带的 `implement` 命令），用户与第三方 hook 不再失效。该分发会跳过桥自身的 `before_implement` guard hook（它阻止的是 `speckit.implement`，而不是桥）。没有新增命令、hook、脚本或状态文件 —— 分发是纯指令式的。参见 [`specs/017-fire-implement-hooks/spec.md`](specs/017-fire-implement-hooks/spec.md)。
+
 Spec Kit 0.11.1 已按同一 v1.1.0 bridge surface 审计并重新验证：workflow step catalog、shell step 的 `output_format: json`、workflow 失败退出码修复、非 ASCII skill frontmatter 保留，以及 installer self-install 安全修复，都不要求 bridge 协议、命令、hook 或 manifest 变更。
 
 | 目标 | 状态 | 证据 |
@@ -238,7 +240,7 @@ specify extension add --dev (Join-Path $tmp.FullName "speckit-superpowers-bridge
 **固定版本安装**（用来可复现地安装某个精确版本）：
 
 ```powershell
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.1.0/speckit-superpowers-bridge-v1.1.0.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.2.0/speckit-superpowers-bridge-v1.2.0.zip
 ```
 
 </details>
@@ -362,14 +364,14 @@ v0.2.x 中存在的 6 个元命令（`audit`、`validate`、`parity`、`recommen
 <details>
 <summary><strong>维护与版本（Maintenance and versioning）</strong></summary>
 
-本版本（v1.1.0）针对以下版本验证：
+本版本（v1.2.0）针对以下版本验证：
 
 - **Spec Kit** `0.11.1`（Linux bash）；Windows PowerShell 证据沿用 v1.0.0（`ps` 脚本 flavor 字节级未变），当时 sandbox 在 bridge runtime floor 对应的 Spec Kit CLI `0.8.10` 上通过
 - **Superpowers** `6.0.0`
 - **Codex CLI** `0.137.0`
 - **Claude Code** `2.1.162`
 
-verified metadata 记录在 [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) —— 项目自有、只做增量扩展的 schema，在 bridge release 或上游兼容基线变化时刷新。v1.1.0 记录 bridge、上游工具、平台和真实 Agent 行；缺失或 blocked 的行不会被宣传为 verified。
+verified metadata 记录在 [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) —— 项目自有、只做增量扩展的 schema，在 bridge release 或上游兼容基线变化时刷新。v1.2.0 记录 bridge、上游工具、平台和真实 Agent 行；缺失或 blocked 的行不会被宣传为 verified。
 
 当上游工具的新版破坏了桥，我们要么修补桥脚本，要么在 `CHANGELOG.md` 中钉住已验证的兼容版本。
 
@@ -397,6 +399,6 @@ Spec Kit `0.9.x` 已把 coding-agent context 更新迁移到 bundled `agent-cont
 
 MIT —— 见 [`LICENSE`](LICENSE)。
 
-本插件使用 AI 协作开发（Claude Code 负责设计 + 规划；Codex 负责实现；0.3.0 的瘦身和 v0.6.0 的美化都由 Claude Code 独立完成）满足 [Spec Kit CONTRIBUTING.md](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md) 的 AI 披露要求。所有 artifact 都经人工 review 后提交。[`tests/`](tests/) 下的 smoke 测试（009 之后已经全 bash 化）覆盖 handoff schema、5 条硬编码 guard 规则、bridge-state 输出和跨 Agent skill 对等。
+本插件使用 AI 协作开发（Claude Code 负责设计 + 规划；Codex 负责实现；0.3.0 的瘦身和 v0.6.0 的美化都由 Claude Code 独立完成）满足 [Spec Kit CONTRIBUTING.md](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md) 的 AI 披露要求。所有 artifact 都经人工 review 后提交。[`tests/`](tests/) 下的 smoke 测试（009 之后已经全 bash 化）覆盖 handoff schema、5 条硬编码 guard 规则、bridge-state 输出、before/after-implement hook 分发和跨 Agent skill 对等。
 
 Issues 与讨论：<https://github.com/lihan3238/speckit-superpowers-bridge/issues>

@@ -21,24 +21,48 @@ This skill is the **thin orchestrator** between Spec Kit (design) and Superpower
 
 1. Read `.specify/superpowers-handoff.json` to find `feature_directory`. If status is `complete`, run the platform-selected auto-archive script first so the new feature begins from `ready`.
 2. Read `<feature_directory>/spec.md`, `plan.md`, `tasks.md`, and `.specify/memory/constitution.md`.
-3. Transition handoff to `executing` using `.specify/init-options.json.script` (`ps` => PowerShell, `sh` => bash). **Do NOT pass `-ArtifactOwner` / `--artifact-owner`** — the script silently preserves the prior owner from the handoff JSON when the flag is omitted (per spec 003-bridge-cross-platform-scripts FR-001). Pass `-ArtifactOwner` only if you are intentionally transferring ownership (e.g., a maintainer rebasing a feature onto a different designer).
+3. Fire the `before_implement` extension hooks from `.specify/extensions.yml` (see "Extension hooks" below).
+4. Transition handoff to `executing` using `.specify/init-options.json.script` (`ps` => PowerShell, `sh` => bash). **Do NOT pass `-ArtifactOwner` / `--artifact-owner`** — the script silently preserves the prior owner from the handoff JSON when the flag is omitted (per spec 003-bridge-cross-platform-scripts FR-001). Pass `-ArtifactOwner` only if you are intentionally transferring ownership (e.g., a maintainer rebasing a feature onto a different designer).
    ```powershell
    .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status executing -FeatureDirectory <project-relative-path> -Actor claude
    ```
    ```bash
    bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/update-handoff.sh --status executing --feature-directory <project-relative-path> --actor claude
    ```
-4. Invoke `superpowers:executing-plans` against `tasks.md`. That skill drives the per-task loop and dispatches `superpowers:test-driven-development` and `superpowers:systematic-debugging` as needed.
-5. At completion of all tasks, invoke `superpowers:verification-before-completion`.
-6. Invoke `superpowers:requesting-code-review`.
-7. Invoke `superpowers:finishing-a-development-branch`.
-8. Transition handoff to `complete` with the same platform flavor:
+5. Invoke `superpowers:executing-plans` against `tasks.md`. That skill drives the per-task loop and dispatches `superpowers:test-driven-development` and `superpowers:systematic-debugging` as needed.
+6. At completion of all tasks, invoke `superpowers:verification-before-completion`.
+7. Invoke `superpowers:requesting-code-review`.
+8. Invoke `superpowers:finishing-a-development-branch`.
+9. Transition handoff to `complete` with the same platform flavor:
    ```powershell
    .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status complete -Actor claude
    ```
    ```bash
    bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/update-handoff.sh --status complete --actor claude
    ```
+10. Fire the `after_implement` extension hooks from `.specify/extensions.yml` (see "Extension hooks" below).
+
+## Extension hooks (before_implement / after_implement)
+
+This skill replaces `speckit.implement`, so it fires the same
+`before_implement` / `after_implement` extension hooks that `speckit.implement`
+would fire (mirroring Spec Kit's own `implement` command), so user and
+third-party hooks stay plug-and-play:
+
+- Source: `.specify/extensions.yml` (`hooks.before_implement` /
+  `hooks.after_implement`); skip silently if missing or invalid.
+- **Skip any hook whose `extension` is `speckit-superpowers-bridge`** — the
+  bridge's own `before_implement` hook is its guard, which blocks
+  `speckit.implement`, not the bridge.
+- Skip hooks where `enabled` is `false` (missing `enabled` = enabled).
+- Skip hooks with a non-empty `condition` (leave to upstream HookExecutor).
+- Fire each remaining hook via its `command`, dots→hyphens:
+  `speckit.git.commit` → `/speckit-git-commit` (Claude Code) or
+  `$speckit-git-commit` (Codex). Mandatory (`optional: false`) hooks execute and
+  wait; optional (`optional: true`) hooks prompt the user first.
+
+`before_implement` fires before the handoff transitions to `executing`;
+`after_implement` fires after it transitions to `complete`.
 
 ## Boundary rules (denied operations)
 

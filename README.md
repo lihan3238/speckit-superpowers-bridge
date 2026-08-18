@@ -86,6 +86,8 @@ v1.0.3 is a Spec Kit 0.10.x compatibility-alignment patch: re-verified on Spec K
 
 v1.1.0 is a Superpowers 6.0.0 compatibility-alignment release: the verified-against-Superpowers baseline moves `5.1.0` → `6.0.0` (a major upstream bump) with **zero bridge runtime change**. Superpowers 6.0.0's breaking changes are all internal to upstream skills (the `subagent-driven-development` reviewer-prompt consolidation, worktrees relocating to project `.worktrees/`, vendor-neutral prose, three new harnesses) and transparent to the thin bridge, which invokes Superpowers by skill name only. See [`specs/016-superpowers-6-0-0-alignment/research.md`](specs/016-superpowers-6-0-0-alignment/research.md) for the grep-backed impact analysis.
 
+v1.2.0 makes the bridge a true plug-and-play drop-in for `speckit.implement`: it now fires the same `before_implement` / `after_implement` extension hooks that `speckit.implement` fires (read from `.specify/extensions.yml`, mirroring Spec Kit's own `implement` command), so user and third-party hooks keep working. The dispatch skips the bridge's own `before_implement` guard hook (which blocks `speckit.implement`, not the bridge). No new command, hook, script, or state file — the dispatch is instruction-only. See [`specs/017-fire-implement-hooks/spec.md`](specs/017-fire-implement-hooks/spec.md).
+
 Spec Kit 0.11.1 was audited and re-verified against the same v1.1.0 bridge surface: workflow step catalog support, shell-step `output_format: json`, workflow failure exit-code fixes, non-ASCII skill frontmatter preservation, and installer self-install safety require no bridge protocol, command, hook, or manifest change.
 
 | Target | Status | Evidence |
@@ -239,7 +241,7 @@ release-verification sandbox `../test_specify_superpower`.
 **Version-pinned install** (for reproducible installs of a specific release):
 
 ```powershell
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.1.0/speckit-superpowers-bridge-v1.1.0.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.2.0/speckit-superpowers-bridge-v1.2.0.zip
 ```
 
 </details>
@@ -363,14 +365,14 @@ See `AGENTS.md` for the master cross-agent protocol; `CLAUDE.md` for Claude-spec
 <details>
 <summary><strong>Maintenance and versioning</strong></summary>
 
-This release (v1.1.0) is verified against:
+This release (v1.2.0) is verified against:
 
 - **Spec Kit** `0.11.1` on Linux bash; Windows PowerShell evidence retained from v1.0.0 (the `ps` script flavor is byte-identical), where the sandbox passed the bridge runtime floor with Spec Kit CLI `0.8.10`
 - **Superpowers** `6.0.0`
 - **Codex CLI** `0.137.0`
 - **Claude Code** `2.1.162`
 
-Verified metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned additive schema refreshed when a bridge release or upstream compatibility baseline changes. v1.1.0 records bridge, upstream tool, platform, and real-agent rows; missing or blocked rows are not advertised as verified.
+Verified metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned additive schema refreshed when a bridge release or upstream compatibility baseline changes. v1.2.0 records bridge, upstream tool, platform, and real-agent rows; missing or blocked rows are not advertised as verified.
 
 When upstream tools ship a new release that breaks the bridge, we either patch the bridge scripts or pin the documented compatible versions in `CHANGELOG.md`.
 
@@ -398,6 +400,6 @@ Spec Kit `0.9.x` moved coding-agent context updates into the bundled `agent-cont
 
 MIT — see [`LICENSE`](LICENSE).
 
-This extension was developed using AI coding assistants (Claude Code for design + planning; Codex for implementation passes; Claude Code for the v0.3.0 trim and the v0.6.0 polish) per the AI-disclosure requirement in [Spec Kit CONTRIBUTING.md](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md). Every artifact passes human review before commit. Smoke tests under [`tests/`](tests/) (bash flavor as of 009) exercise the handoff schema, the 5 hardcoded guard rules, the bridge-state output, and cross-agent skill parity.
+This extension was developed using AI coding assistants (Claude Code for design + planning; Codex for implementation passes; Claude Code for the v0.3.0 trim and the v0.6.0 polish) per the AI-disclosure requirement in [Spec Kit CONTRIBUTING.md](https://github.com/github/spec-kit/blob/main/CONTRIBUTING.md). Every artifact passes human review before commit. Smoke tests under [`tests/`](tests/) (bash flavor as of 009) exercise the handoff schema, the 5 hardcoded guard rules, the bridge-state output, the before/after-implement hook dispatch, and cross-agent skill parity.
 
 Issues and discussion: <https://github.com/lihan3238/speckit-superpowers-bridge/issues>

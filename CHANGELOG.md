@@ -29,6 +29,39 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
   installed the bridge as v1.1.0; `specify extension info` showed
   `Category: process`, `Effect: read-write`, 3 commands, and 5 hooks.
 
+## [1.2.0] - 2026-08-17
+
+The bridge now fires Spec Kit's `before_implement` / `after_implement` extension
+hooks, so it is a true plug-and-play drop-in for `speckit.implement`. Previously
+a project that replaced `speckit.implement` with the bridge silently lost every
+hook registered under `hooks.before_implement` / `hooks.after_implement` in
+`.specify/extensions.yml` (e.g. the git extension's auto-commit, or a user's own
+hooks).
+
+### Added
+
+- The `execute` command (and both per-agent `SKILL.md` peers) now dispatch the
+  same `before_implement` / `after_implement` extension hooks that
+  `speckit.implement` fires, mirroring Spec Kit's own `implement` command
+  (markdown-driven, no new script): read `.specify/extensions.yml`, filter
+  `enabled: false` and non-empty `condition` hooks, and fire each remaining hook
+  via its command (`speckit.git.commit` → `$speckit-git-commit` / `/speckit-git-commit`).
+- The dispatch **skips the bridge's own `before_implement` guard hook** (any hook
+  whose `extension` is `speckit-superpowers-bridge`), whose purpose is to block
+  `speckit.implement` while Superpowers owns execution — firing it from the
+  bridge would block the bridge itself.
+- `before_implement` fires before the handoff transitions to `executing`;
+  `after_implement` fires after it transitions to `complete`.
+- New smoke test `tests/test-implement-hooks-dispatch.sh` asserting the hook
+  dispatch contract is present and correct across `execute.md` and both SKILL
+  peers (7-test suite).
+
+### Changed
+
+- Bridge version bumped `1.1.0` → `1.2.0` (MINOR: new plug-and-play hook-dispatch
+  behavior; no new command, hook, script, or state file — the dispatch is
+  instruction-only, per constitution Principle VI).
+
 ## [1.1.0] - 2026-06-17
 
 Superpowers **6.0.0** compatibility-alignment + evidence refresh. The verified
