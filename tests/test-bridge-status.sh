@@ -125,6 +125,14 @@ assert_no_stderr() {
     [ -z "$STDERR" ] || fail "$1 (stderr had: $STDERR)"
 }
 
+file_mtime_epoch() {
+    if stat -c '%Y' "$1" >/dev/null 2>&1; then
+        stat -c '%Y' "$1"
+    else
+        stat -f '%m' "$1"
+    fi
+}
+
 # ---------------------------------------------------------------------------
 # Pre-flight
 # ---------------------------------------------------------------------------
@@ -279,11 +287,11 @@ sc003() {
     make_layout "$tmp" "executing" "constitution,featuredir,spec,plan,tasks"
     local handoff_path="$tmp/.specify/superpowers-handoff.json"
     local handoff_mtime_before handoff_mtime_after
-    handoff_mtime_before="$(stat -c '%Y' "$handoff_path")"
+    handoff_mtime_before="$(file_mtime_epoch "$handoff_path")"
     local out1 out2
     out1="$( cd "$tmp" && bash "$BRIDGE_STATUS" 2>/dev/null )"
     out2="$( cd "$tmp" && bash "$BRIDGE_STATUS" 2>/dev/null )"
-    handoff_mtime_after="$(stat -c '%Y' "$handoff_path")"
+    handoff_mtime_after="$(file_mtime_epoch "$handoff_path")"
     [ "$out1" = "$out2" ] || fail "SC-003 byte-identical idempotency (outputs differ)"
     [ "$handoff_mtime_before" = "$handoff_mtime_after" ] || fail "SC-003 handoff mtime changed across reads"
     [ ! -f "$tmp/.specify/bridge-events.jsonl" ] || fail "SC-003 bridge-events.jsonl was created by a read (must be append-free)"
@@ -622,4 +630,3 @@ run_case "S-EVT-6 — pre-070 handoff (no artifacts_sha256) → no false-positiv
 printf '\n=== test-bridge-status.sh: %d/%d passed ===\n' "$pass_count" "$case_count"
 [ "$pass_count" -eq "$case_count" ] || exit 1
 exit 0
-

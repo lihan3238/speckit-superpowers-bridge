@@ -33,6 +33,7 @@ OUTSIDE="$TEMP_ROOT/outside-feature"
 FAKE_BIN="$TEMP_ROOT/fake-bin"
 mkdir -p "$PROJECT/.specify/extensions" "$PROJECT/.specify/memory" \
     "$PROJECT/specs/001-normal" "$OUTSIDE" "$FAKE_BIN"
+OUTSIDE_CANONICAL="$(cd "$OUTSIDE" && pwd -P)"
 cp -a "$BRIDGE_SOURCE" "$PROJECT/.specify/extensions/"
 git -C "$PROJECT" init -q
 
@@ -79,9 +80,9 @@ run_update --status executing --feature-directory 'specs/001-normal/../missing/.
 # the handoff; a lexical-only normalizer would incorrectly call it in-repo.
 ln -s "$OUTSIDE" "$PROJECT/specs/002-outside-link"
 run_update --status ready --feature-directory 'specs/002-outside-link' --actor codex
-[ "$(jq -r '.feature_directory' "$HANDOFF")" = "$OUTSIDE" ] \
+[ "$(jq -r '.feature_directory' "$HANDOFF")" = "$OUTSIDE_CANONICAL" ] \
     || fail "outside symlink target was incorrectly classified as in-repository"
-[ "$(jq -r '.source_of_truth.tasks' "$HANDOFF")" = "$OUTSIDE/tasks.md" ] \
+[ "$(jq -r '.source_of_truth.tasks' "$HANDOFF")" = "$OUTSIDE_CANONICAL/tasks.md" ] \
     || fail "outside symlink artifact path was not preserved as absolute"
 
 printf 'update-handoff-portability-tests-ok (bash)\n'
