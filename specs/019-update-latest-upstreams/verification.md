@@ -38,4 +38,5 @@ A PASS requires a command result, hosted run, or public artifact check.
 
 - Spec Kit CLI: `1.0.12`; tracked git and agent-context extension sources: `1.0.1`; Claude and Codex integrations are installed in the source checkout.
 - Superpowers: `6.4.2`; all bridge-invoked skill identifiers exist; the checkbox-to-`Task N` adapter contract is covered by `tests/test-superpowers-adapter-contract.sh`.
+- Local plugin distribution: Codex has Superpowers `6.4.2`; the refreshed Claude official marketplace currently serves `6.4.1`, while the upstream `6.4.2` source audit passes and all bridge-invoked skill contracts remain present.
 - Preserved invariants: 3 commands, 5 registered hooks, handoff v1, guard rules, actor semantics, stable-alias URL, and `>=0.8.10` runtime floor.
