@@ -1,5 +1,5 @@
 ---
-description: "Execute Spec Kit tasks.md through the Superpowers bridge"
+description: "Execute Spec Kit tasks through the Superpowers bridge"
 ---
 
 # Bridge Execute
@@ -11,7 +11,7 @@ Execute the active Spec Kit feature through Superpowers without running `speckit
 1. Read `.specify/superpowers-handoff.json`; if it is missing or stale, create a ready handoff with the platform-selected `update-handoff` script.
 2. Read `.specify/memory/constitution.md`, `spec.md`, `plan.md`, and `tasks.md` before touching implementation files.
 3. Run the bridge guard for `superpowers.executing-plans`.
-4. Execute `tasks.md` with Superpowers implementation discipline: TDD, systematic debugging, review, verification, and branch finishing.
+4. Derive a disposable Superpowers adapter outside `.superpowers/sdd/` from the canonical `tasks.md` and execute that adapter with Superpowers implementation discipline: TDD, systematic debugging, review, verification, and branch finishing.
 5. Keep task checkboxes and handoff state current. If the Spec Kit contract is wrong or incomplete, stop and set handoff status to `blocked`.
 
 ## Execution
@@ -60,7 +60,9 @@ Post-Execution Hooks" sections) and adds one bridge-specific rule.
 Fire these BEFORE transitioning the handoff to `executing`:
 
 1. Check `.specify/extensions.yml`. If it does not exist, or has no
-   `hooks.before_implement`, skip silently.
+   `hooks.before_implement`, skip silently. If it is malformed, report the
+   parser error and state that no hooks were checked, including mandatory
+   hooks, then continue the core lifecycle normally.
 2. For each hook under `hooks.before_implement`:
    - **Skip any hook whose `extension` is `speckit-superpowers-bridge`.** The
      bridge's own `before_implement` hook is its guard, whose purpose is to
@@ -82,7 +84,7 @@ Fire these BEFORE transitioning the handoff to `executing`:
 
 Dispatch `after_implement` before transitioning the handoff to `complete`:
 
-1. Check `.specify/extensions.yml` for `hooks.after_implement`. If absent, skip.
+1. Check `.specify/extensions.yml` for `hooks.after_implement`. If absent, skip. If it is malformed, report the parser error and state that no hooks were checked, including mandatory hooks, then continue to the Completion Report.
 2. Apply the same filters as above (`enabled: false` → skip, non-empty
    `condition` → skip, and `extension` is `speckit-superpowers-bridge` → skip —
    the bridge registers no `after_implement` hook today, but the rule keeps the
@@ -120,9 +122,30 @@ only after surfacing the extension, command, description, prompt, and
 agent-native invocation and receiving user confirmation. Declining one does not
 fail implementation.
 
+## Superpowers 6.4.2 adapter contract
+
+Spec Kit `tasks.md` remains the only requirements and completion contract.
+Because Superpowers 6.4.2's `task-brief` extractor requires headings that
+match `### Task N`, create a deterministic disposable adapter outside the
+native `.superpowers/sdd/` workspace (for example, under the OS temporary
+directory using a stable repository/feature-derived name reused on resume). Include pointers to
+the active `spec.md`, `plan.md`, constitution, and global constraints. For
+each unchecked non-deferred `- [ ] T###` line, emit one `### Task N: T###`
+heading followed by the exact canonical checkbox line and its file paths.
+Do not include already checked or deferred tasks. Invoke
+`superpowers:executing-plans` with the adapter, and after each native task
+passes, mark the corresponding canonical checkbox in `tasks.md`. Verify all
+IDs map exactly and no non-deferred canonical tasks remain unchecked before
+completion. Remove the adapter with cleanup on success or failure; the native
+`.superpowers/sdd/` workspace remains Superpowers-owned scratch.
+
+Malformed `.specify/extensions.yml` must be reported with the parser error and
+with an explicit statement that no hooks, including mandatory hooks, were
+checked; continue the core lifecycle normally. A missing registry is skipped.
+
 ## Required Superpowers Discipline
 
-Use Superpowers execution skills only against Spec Kit `tasks.md`:
+Use Superpowers execution skills only against the disposable adapter derived from Spec Kit `tasks.md`:
 
 - `superpowers:test-driven-development` before each code-modifying task.
 - `superpowers:systematic-debugging` before fixing any failure or unexpected behavior.

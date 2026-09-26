@@ -1,6 +1,7 @@
 # Release Runbook
 
 > Audience: maintainer cutting a release of **speckit-superpowers-bridge**.
+> Current audited upstream baseline for the v1.3.0 release work is Spec Kit 1.0.12 and Superpowers 6.4.2; the bridge runtime floor remains `>=0.8.10`.
 > Each step has a `Verify:` line — do not skip them.
 
 ## Pre-flight

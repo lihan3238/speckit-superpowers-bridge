@@ -36,6 +36,7 @@ node_modules/
 .specify/bridge-events.jsonl
 .specify/bridge-snapshots/
 .specify/superpowers-handoff.json
+.superpowers/
 .specify/feature.json
 
 # Local checklist scratch from bridge validation experiments

@@ -8,6 +8,23 @@ This project adheres to [Keep a Changelog 1.1.0](https://keepachangelog.com/en/1
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-09-26
+
+This release aligns the bridge with Spec Kit 1.0.12 and Superpowers 6.4.2 while preserving the existing handoff protocol.
+
+### Added
+
+- Added a disposable Superpowers task adapter: canonical Spec Kit checkbox tasks are mapped to the `Task N` headings required by Superpowers 6.4.2, then reconciled back to `tasks.md`.
+- Added regression assertions for current malformed `.specify/extensions.yml` reporting and stable adapter-path guidance.
+
+### Changed
+
+- Refreshed tracked Spec Kit `git` and `agent-context` extension sources to v1.0.12, including portable branch-name normalization, current defaults, and multi-context configuration guidance.
+- Updated tracked Spec Kit templates to v1.0.12 command placeholders while retaining project release-sandbox and Native-First gates.
+- Updated hook guidance to report malformed extension registries with parser errors and to state that no hooks, including mandatory hooks, were checked.
+- Audited Superpowers v6.4.2 and documented its inline `executing-plans` semantics; verification, review, and branch-finishing remain explicit native phases.
+- Advanced the bridge release metadata and verified baselines to v1.3.0, Spec Kit 1.0.12, and Superpowers 6.4.2.
+
 ## [1.2.0] - 2026-08-18
 
 This release accepts and hardens PR #14's implement-hook composition, fixes
@@ -695,7 +712,9 @@ Hooks in `.specify/extensions.yml`:
 - AGENTS.md as the master cross-agent protocol; CLAUDE.md as the Claude-specific supplement.
 - Constitution (`.specify/memory/constitution.md`) ratifying 5 principles: lightweight & repo-local, design/implementation separation, agent-neutral protocol, smooth bidirectional handoff, vendor-managed boundaries.
 
-[Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v0.4.3...HEAD
+[Unreleased]: https://github.com/lihan3238/speckit-superpowers-bridge/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v1.3.0
+[1.2.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v1.2.0
 [0.5.0]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.5.0
 [0.4.3]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.3
 [0.4.2]: https://github.com/lihan3238/speckit-superpowers-bridge/releases/tag/v0.4.2

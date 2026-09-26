@@ -6,7 +6,7 @@ compatibility: "Requires a Spec Kit project with .specify/ and Superpowers skill
 
 # Spec Kit <-> Superpowers Bridge (Codex peer)
 
-This skill is the **thin orchestrator** between Spec Kit (design) and Superpowers (implementation). It does not implement TDD, debugging, verification, code review, or branch finishing itself - those are native Superpowers skills. The bridge's only job is to invoke them in order against the Spec Kit `tasks.md`.
+This skill is the **thin orchestrator** between Spec Kit (design) and Superpowers (implementation). It does not implement TDD, debugging, verification, code review, or branch finishing itself - those are native Superpowers skills. The bridge's only job is to derive a disposable Superpowers adapter from the Spec Kit `tasks.md`, then invoke native skills in order without replacing the canonical task contract.
 
 ## When to use
 
@@ -26,12 +26,14 @@ This skill is the **thin orchestrator** between Spec Kit (design) and Superpower
    ```bash
    bash .specify/extensions/speckit-superpowers-bridge/scripts/bash/update-handoff.sh --status executing --feature-directory <project-relative-path> --actor codex
    ```
-5. Invoke `superpowers:executing-plans` against `tasks.md`. That skill drives the per-task loop and dispatches `superpowers:test-driven-development` and `superpowers:systematic-debugging` as needed.
-6. At completion of all tasks, invoke `superpowers:verification-before-completion`.
-7. Invoke `superpowers:requesting-code-review`.
-8. Invoke `superpowers:finishing-a-development-branch`.
-9. Fire the `after_implement` extension hooks from `.specify/extensions.yml` (see "Extension hooks" below).
-10. Transition handoff to `complete` with the same platform flavor only after mandatory post-hooks succeed:
+5. Derive a disposable adapter plan outside `.superpowers/sdd/` (for example, a stable repository/feature-derived OS temporary path reused on resume) from the canonical `tasks.md`. Each adapter entry MUST use a `### Task N: T###` heading and copy the exact Spec Kit task text; include pointers to `spec.md`, `plan.md`, the constitution, and the global constraints. Do not change the task meaning or create a second requirements source.
+6. Invoke `superpowers:executing-plans` against that adapter. Superpowers 6.4.2 executes it inline and requires the heading format; it cannot consume Spec Kit checkbox lines directly.
+7. After each native task completes, update the corresponding canonical `tasks.md` checkbox and verify the adapter and canonical task ID agree. Remove the temporary adapter after execution.
+8. At completion of all tasks, invoke `superpowers:verification-before-completion`.
+9. Invoke `superpowers:requesting-code-review`.
+10. Invoke `superpowers:finishing-a-development-branch`.
+11. Fire the `after_implement` extension hooks from `.specify/extensions.yml` (see "Extension hooks" below).
+12. Transition handoff to `complete` with the same platform flavor only after mandatory post-hooks succeed:
    ```powershell
    .\.specify\extensions\speckit-superpowers-bridge\scripts\powershell\update-handoff.ps1 -Status complete -Actor codex
    ```
@@ -47,7 +49,9 @@ would fire (mirroring Spec Kit's own `implement` command), so user and
 third-party hooks stay plug-and-play:
 
 - Source: `.specify/extensions.yml` (`hooks.before_implement` /
-  `hooks.after_implement`); skip silently if missing or invalid.
+  `hooks.after_implement`). If the YAML is malformed, report the parser error,
+  state that no hooks were checked (including mandatory hooks), and continue
+  the core lifecycle normally. Skip hook checking when the file is absent.
 - **Skip any hook whose `extension` is `speckit-superpowers-bridge`** — the
   bridge's own `before_implement` hook is its guard, which blocks
   `speckit.implement`, not the bridge.
@@ -80,6 +84,27 @@ Dispatch `after_implement` before transitioning the handoff to `complete`.
 If a mandatory `after_implement` hook fails, do not transition the handoff to `complete`;
 leave the non-complete state visible for recovery. Declining an optional hook
 does not fail implementation.
+
+## Superpowers 6.4.2 adapter contract
+
+Spec Kit `tasks.md` remains the only source of requirements and completion
+status. Before invoking `superpowers:executing-plans`, create an ephemeral
+adapter plan outside the native `.superpowers/sdd/` workspace at a stable repository/feature-derived temporary path reused on resume. Give it a
+`Global Constraints` section, pointers to the active Spec Kit artifacts, and
+one `### Task N: T###` heading for every canonical task being executed. Under
+each heading, copy the exact checkbox task text and its file paths. The
+adapter may add execution metadata needed by Superpowers, but it MUST NOT
+invent requirements or change ordering/dependencies. Mark the matching
+checkbox in `tasks.md` only after the native task has completed and its
+verification passed. Remove the adapter after the lifecycle. If a task ID
+cannot be mapped exactly, stop and mark the handoff `blocked`.
+
+Superpowers 6.4.2's `executing-plans` skill executes this adapter inline.
+The bridge still invokes `verification-before-completion`, `requesting-code-review`,
+and `finishing-a-development-branch` explicitly. It does not invoke
+`superpowers:writing-plans` or `superpowers:brainstorming` for an active
+Spec Kit feature. `subagent-driven-development` remains an upstream option,
+not a new bridge command.
 
 ## Boundary rules (denied operations)
 

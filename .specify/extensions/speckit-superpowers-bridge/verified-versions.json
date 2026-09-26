@@ -1,53 +1,53 @@
 {
-  "verified_at": "2026-08-18T00:00:00Z",
-  "spec_kit_version": "0.16.4",
-  "superpowers_version": "6.3.0",
-  "codex_cli_version": "0.147.0",
-  "claude_code_version": "2.1.233",
-  "bridge_version": "1.2.0",
+  "verified_at": "2026-09-26T10:51:04Z",
+  "spec_kit_version": "1.0.12",
+  "superpowers_version": "6.4.2",
+  "codex_cli_version": "0.157.1",
+  "claude_code_version": "2.1.283",
+  "bridge_version": "1.3.0",
   "platforms": [
     {
       "name": "Linux bash",
       "script_flavor": "sh",
       "status": "passed",
-      "spec_kit_version": "0.16.4",
-      "evidence": "specs/018-release-0-16-4-hardening/verification.md",
-      "notes": "Fresh 2026-08-18 source evidence covers the 8-test bash suite, focused macOS-style path regression, handoff/status regressions, hook instruction contract, and ShellCheck. The public v1.2.0 ZIP sandbox row is recorded in the feature verification file after publication."
+      "spec_kit_version": "1.0.12",
+      "evidence": "specs/019-update-latest-upstreams/verification.md",
+      "notes": "Fresh 2026-09-26 source evidence covers the 9-test bash suite, focused macOS-style path regression, handoff/status regressions, hook instruction contract, and ShellCheck. The public v1.3.0 ZIP sandbox row is recorded in the feature verification file after publication."
     },
     {
       "name": "Windows PowerShell",
       "script_flavor": "ps",
       "status": "release-gated",
-      "spec_kit_version": "0.16.4",
-      "evidence": "specs/018-release-0-16-4-hardening/verification.md",
-      "notes": "The v1.2.0 release workflow requires the native Windows PowerShell smoke and readiness self-tests before publication. Public-ZIP sandbox evidence is recorded after release; prior v1.0.0 runtime-floor evidence remains historical only."
+      "spec_kit_version": "1.0.12",
+      "evidence": "specs/019-update-latest-upstreams/verification.md",
+      "notes": "The v1.3.0 release workflow requires the native Windows PowerShell smoke and readiness self-tests before publication. Public-ZIP sandbox evidence is recorded after release; prior v1.0.0 runtime-floor evidence remains historical only."
     },
     {
       "name": "macOS bash",
       "script_flavor": "sh",
       "status": "release-gated",
-      "spec_kit_version": "0.16.4",
-      "evidence": ".github/workflows/release.yml and specs/018-release-0-16-4-hardening/verification.md",
+      "spec_kit_version": "1.0.12",
+      "evidence": ".github/workflows/release.yml and specs/019-update-latest-upstreams/verification.md",
       "notes": "Issue #13 is covered by a macOS-hosted release job plus a BSD-style realpath regression that exercises missing components and repository-external symlink targets. No local native macOS public-artifact sandbox claim is made."
     }
   ],
   "agents": [
     {
       "name": "Codex",
-      "version": "0.147.0",
+      "version": "0.157.1",
       "status": "passed",
       "platform": "Linux bash / WSL2",
-      "evidence": "specs/018-release-0-16-4-hardening/verification.md",
-      "notes": "Codex performed the v1.2.0 source implementation and fresh contract/runtime verification against Spec Kit 0.16.4 and the audited Superpowers 6.3.0 skill surface."
+      "evidence": "specs/019-update-latest-upstreams/verification.md",
+      "notes": "Codex performed the v1.3.0 source implementation and fresh contract/runtime verification against Spec Kit 1.0.12 and the audited Superpowers 6.4.2 skill surface."
     },
     {
       "name": "Claude Code",
-      "version": "2.1.233",
+      "version": "2.1.283",
       "status": "integration-verified",
       "platform": "Linux bash / WSL2",
-      "evidence": "specs/018-release-0-16-4-hardening/verification.md",
+      "evidence": "specs/019-update-latest-upstreams/verification.md",
       "notes": "The installed Claude integration is current for the recorded local baseline, Spec Kit reports no managed-file drift, and the project-owned Claude/Codex bridge skill parity contract passes. Any bounded live-agent result is recorded separately in the feature verification file."
     }
   ],
-  "notes": "v1.2.0 accepts PR #14 and hardens implement-hook dispatch to Spec Kit 0.16.4 semantics: mandatory hooks emit EXECUTE_COMMAND, are actually invoked and awaited, and mandatory after_implement hooks complete before handoff status becomes complete. It also fixes Issue #13 by replacing GNU-only realpath missing-path handling with a portable, symlink-aware Bash helper. Spec Kit 0.16.4 and Superpowers 6.3.0 are the audited development baselines. No command, registered hook, state file, schema, guard rule, actor semantic, stable-alias URL, or >=0.8.10 runtime-floor change."
+  "notes": "v1.3.0 aligns the tracked Spec Kit baseline to 1.0.12 and the audited Superpowers baseline to 6.4.2. It reports malformed extension registries per the current Spec Kit hook contract and adapts checkbox-based Spec Kit tasks to the Task N headings required by Superpowers 6.4.2 using disposable execution scaffolding. The bridge preserves three commands, five hooks, handoff v1, guard rules, actor semantics, the stable-alias URL, and the >=0.8.10 runtime floor."
 }

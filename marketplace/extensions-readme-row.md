@@ -6,4 +6,4 @@
   from the issue metadata.
 -->
 
-| Superpowers Implementation Bridge | Thin 1.2.0 bridge from Spec Kit design artifacts to Superpowers implementation discipline, with current implement-hook dispatch and portable macOS handoffs; verified against Superpowers 6.3.0 on Linux bash (Spec Kit 0.16.4), Windows PowerShell, macOS bash, Codex, and Claude Code. | `process` | Read+Write | [speckit-superpowers-bridge](https://github.com/lihan3238/speckit-superpowers-bridge) |
+| Superpowers Implementation Bridge | Thin 1.3.0 bridge from Spec Kit design artifacts to Superpowers implementation discipline, with current implement-hook dispatch and portable macOS handoffs; verified against Superpowers 6.4.2 on Linux bash (Spec Kit 1.0.12), Windows PowerShell, macOS bash, Codex, and Claude Code. | `process` | Read+Write | [speckit-superpowers-bridge](https://github.com/lihan3238/speckit-superpowers-bridge) |

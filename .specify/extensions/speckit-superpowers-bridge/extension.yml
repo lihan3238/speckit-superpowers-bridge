@@ -3,7 +3,7 @@ schema_version: "1.0"
 extension:
   id: speckit-superpowers-bridge
   name: "Superpowers Implementation Bridge"
-  version: "1.2.0"
+  version: "1.3.0"
   description: "Thin orchestrator between Spec Kit (design) and Superpowers (implementation). Cross-agent."
   author: "lihan3238"
   repository: "https://github.com/lihan3238/speckit-superpowers-bridge"
@@ -36,7 +36,7 @@ provides:
       description: "Guard Spec Kit and Superpowers commands from crossing bridge ownership boundaries"
     - name: speckit.speckit-superpowers-bridge.execute
       file: commands/speckit.speckit-superpowers-bridge.execute.md
-      description: "Execute Spec Kit tasks.md through the Superpowers bridge"
+      description: "Execute Spec Kit tasks through the Superpowers bridge"
       aliases:
         - speckit.superpowers-bridge
 

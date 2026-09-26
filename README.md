@@ -9,8 +9,8 @@
 <p align="center">
   <a href="./LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" /></a>
   <a href="https://github.com/lihan3238/speckit-superpowers-bridge/releases"><img alt="Bridge version" src="https://img.shields.io/github/v/release/lihan3238/speckit-superpowers-bridge?style=flat-square&label=bridge" /></a>
-  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 0.16.4" src="https://img.shields.io/badge/Spec_Kit-verified_0.16.4-success?style=flat-square" /></a>
-  <a href="https://github.com/obra/superpowers"><img alt="Superpowers verified 6.3.0" src="https://img.shields.io/badge/Superpowers-verified_6.3.0-success?style=flat-square" /></a>
+  <a href="https://github.com/github/spec-kit"><img alt="Spec Kit verified 1.0.12" src="https://img.shields.io/badge/Spec_Kit-verified_1.0.12-success?style=flat-square" /></a>
+  <a href="https://github.com/obra/superpowers"><img alt="Superpowers verified 6.4.2" src="https://img.shields.io/badge/Superpowers-verified_6.4.2-success?style=flat-square" /></a>
   <a href="https://github.com/github/spec-kit/blob/main/docs/community/extensions.md"><img alt="Spec Kit Marketplace listed" src="https://img.shields.io/badge/Spec_Kit_Marketplace-listed-blueviolet?style=flat-square" /></a>
 </p>
 
@@ -69,7 +69,7 @@ What this does, in 7 steps:
 4. Bridge writes its boundary guard at `.specify/extensions/speckit-superpowers-bridge/scripts/`.
 5. Drive a feature: `/speckit-specify` → `/speckit-clarify` → `/speckit-plan` → `/speckit-tasks`.
 6. The `after_tasks` hook fires automatically — bridge writes `.specify/superpowers-handoff.json` with status `executing`.
-7. `/speckit-superpowers-bridge` (Claude Code) or `$speckit-superpowers-bridge` (Codex) drives native `superpowers:executing-plans` against `tasks.md`, then verification + code review + branch finishing. Handoff transitions to `complete`.
+7. `/speckit-superpowers-bridge` (Claude Code) or `$speckit-superpowers-bridge` (Codex) maps canonical `tasks.md` into a disposable `Task N` adapter for native `superpowers:executing-plans`, then invokes verification + code review + branch finishing. Handoff transitions to `complete`.
 
 > [!TIP]
 > Have only a vague idea? Run `superpowers:brainstorming` *before* `/speckit-specify`. The bridge guard allows it in the pre-spec window — the resulting design doc at `docs/superpowers/specs/<date>-<topic>-design.md` can be referenced in your `/speckit-specify` description so the LLM picks it up as context. See feature [010-prespec-brainstorming](specs/010-prespec-brainstorming/spec.md) for the documented lifecycle decision.
@@ -88,15 +88,17 @@ v1.1.0 is a Superpowers 6.0.0 compatibility-alignment release: the verified-agai
 
 v1.2.0 makes the bridge a true plug-and-play drop-in for `speckit.implement`: it dispatches the same `before_implement` / `after_implement` extension hooks, emits Spec Kit's mandatory `EXECUTE_COMMAND:` directive, actually invokes and waits for each mandatory hook, and runs post-hooks before the handoff becomes `complete`. It also fixes Issue #13 by replacing GNU-only missing-path canonicalization in the bash handoff writer, so standard macOS installations need no GNU coreutils. No command, registered hook, state file, schema, or guard rule was added. See [`specs/018-release-0-16-4-hardening/spec.md`](specs/018-release-0-16-4-hardening/spec.md).
 
-Spec Kit 0.16.4 and Superpowers 6.3.0 are the current audited development baselines. The Spec Kit 0.11.1 → 0.16.4 range adds managed local-state policy, Python script flavors, agent-context hardening, git branch templates, Conventional Commit support, and agent-native runtime events; none supersedes the bridge's core-command hook composition or requires raising the `>=0.8.10` runtime floor. Superpowers 6.1.0 → 6.3.0 keeps all six skill names and the `tasks.md` consumption boundary used by the bridge.
+Spec Kit 1.0.12 and Superpowers 6.4.2 are the current audited development baselines. The bridge adopts the latest tracked git and agent-context sources, current command placeholders, Spec Kit's malformed-registry reporting, and a disposable task adapter for Superpowers' `Task N` heading contract. The runtime floor remains `>=0.8.10`; the bridge still owns no parallel hook runner, planner, or state machine. Superpowers 6.4.2 keeps all invoked skill names, while its heading-based executor is fed from the canonical Spec Kit `tasks.md` through disposable execution scaffolding.
+v1.3.0 aligns the bridge with Spec Kit 1.0.12 and Superpowers 6.4.2. It reports malformed extension registries using the current parser-error contract and adapts Spec Kit checkbox tasks to the `Task N` headings required by Superpowers 6.4.2 using stable disposable files outside the native Superpowers workspace. The canonical `tasks.md` remains the only requirements and completion source; the three-command, five-hook, handoff v1, guard, actor, stable-alias, and `>=0.8.10` runtime contracts are unchanged. See [`specs/019-update-latest-upstreams/spec.md`](specs/019-update-latest-upstreams/spec.md).
+
 
 | Target | Status | Evidence |
 |---|---|---|
 | Linux bash | Verified | Full bash smoke suite plus release-artifact sandbox cycle. |
 | Windows PowerShell 5.1+ | Verified | Native PowerShell smoke plus release-artifact sandbox cycle. Set `PYTHONUTF8=1` if an older Windows Spec Kit CLI renders Rich symbols through a GBK console. |
 | macOS bash | Release-gated | Native hosted macOS smoke and portability regression must pass before publication; no claim of a local published-artifact sandbox run. |
-| Codex | Verified | Current source and sandbox checks use Codex CLI `0.147.0`. |
-| Claude Code | Integration verified | Spec Kit-managed integration state and the project-owned Claude/Codex skill-parity contract pass on local Claude Code `2.1.233`; no new live-provider behavior claim. |
+| Codex | Verified | Current source and sandbox checks use Codex CLI `0.157.1`. |
+| Claude Code | Integration verified | Spec Kit-managed integration state and the project-owned Claude/Codex skill-parity contract pass on local Claude Code `2.1.283`; no new live-provider behavior claim. |
 
 Run the lightweight readiness check after install:
 
@@ -242,7 +244,7 @@ release-verification sandbox `../test_specify_superpower`.
 **Version-pinned install** (for reproducible installs of a specific release):
 
 ```powershell
-specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.2.0/speckit-superpowers-bridge-v1.2.0.zip
+specify extension add speckit-superpowers-bridge --from https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.3.0/speckit-superpowers-bridge-v1.3.0.zip
 ```
 
 </details>
@@ -282,7 +284,7 @@ Contributors who run the repository smoke tests on any OS use the WSL bash suite
 6. /speckit-superpowers-bridge      (Claude Code)  or  $speckit-superpowers-bridge  (Codex)
        │
        │ bridge SKILL.md loads; native Superpowers skills run in order:
-       │   • superpowers:executing-plans drives the per-task loop
+       │   • superpowers:executing-plans runs the disposable Task N adapter inline
        │   • superpowers:test-driven-development per code-modifying task
        │   • superpowers:verification-before-completion at phase boundary
        │   • superpowers:requesting-code-review then :finishing-a-development-branch at end
@@ -366,18 +368,18 @@ See `AGENTS.md` for the master cross-agent protocol; `CLAUDE.md` for Claude-spec
 <details>
 <summary><strong>Maintenance and versioning</strong></summary>
 
-This release (v1.2.0) is verified against:
+This release (v1.3.0) is verified against:
 
-- **Spec Kit** `0.16.4` for repository bootstrap, Linux bash verification, and the v1.2.0 release sandbox; runtime floor remains `>=0.8.10`
-- **Superpowers** `6.3.0`
+- **Spec Kit** `1.0.12` for repository bootstrap, Linux bash verification, and the v1.3.0 release sandbox; runtime floor remains `>=0.8.10`
+- **Superpowers** `6.4.2`
 - **Codex CLI** `0.147.0`
 - **Claude Code** `2.1.233`
 
-Verified metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned additive schema refreshed when a bridge release or upstream compatibility baseline changes. v1.2.0 records bridge, upstream tool, platform, and real-agent rows; missing or blocked rows are not advertised as verified.
+Verified metadata is captured in [`.specify/extensions/speckit-superpowers-bridge/verified-versions.json`](.specify/extensions/speckit-superpowers-bridge/verified-versions.json) — a project-owned additive schema refreshed when a bridge release or upstream compatibility baseline changes. v1.3.0 records bridge, upstream tool, platform, and real-agent rows; missing or blocked rows are not advertised as verified.
 
 When upstream tools ship a new release that breaks the bridge, we either patch the bridge scripts or pin the documented compatible versions in `CHANGELOG.md`.
 
-Spec Kit `0.9.x` moved coding-agent context updates into the bundled `agent-context` extension. The bridge runtime does not depend on that extension, so `requires.speckit_version` stays at `>=0.8.10`; this repository tracks the current 0.16.4 `agent-context` and `git` sources only to keep its own Spec Kit project bootstrap current.
+Spec Kit `0.9.x` moved coding-agent context updates into the bundled `agent-context` extension. The bridge runtime does not depend on that extension, so `requires.speckit_version` stays at `>=0.8.10`; this repository tracks the current 1.0.12 `agent-context` and `git` sources only to keep its own Spec Kit project bootstrap current.
 
 > [!NOTE]
 > **From v0.6.0 onward**, the marketplace `download_url` is decoupled from the version. It permanently points at `https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip` and resolves via GitHub's `/releases/latest/` alias. Future bridge releases never edit `download_url`; only `version` is bumped in `marketplace/catalog-entry.json`. This removes a recurring per-release edit class and a drift surface — one of the smallest possible Principle-VI wins.

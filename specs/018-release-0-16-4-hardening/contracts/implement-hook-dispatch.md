@@ -2,7 +2,7 @@
 
 ## Source
 
-Read `.specify/extensions.yml` and select `hooks.before_implement` or `hooks.after_implement`. Missing or invalid YAML skips dispatch, matching Spec Kit core-command behavior.
+Read `.specify/extensions.yml` and select `hooks.before_implement` or `hooks.after_implement`. Missing YAML skips dispatch. Malformed YAML reports the parser error and states that no hooks, including mandatory hooks, were checked, matching Spec Kit v1.0.12 core-command behavior.
 
 ## Filtering
 

@@ -30,7 +30,7 @@ description: "Task list template for feature implementation"
   ============================================================================
   IMPORTANT: The tasks below are SAMPLE TASKS for illustration purposes only.
 
-  The /speckit-tasks command MUST replace these with actual tasks based on:
+  The __SPECKIT_COMMAND_TASKS__ command MUST replace these with actual tasks based on:
   - User stories from spec.md (with their priorities P1, P2, P3...)
   - Feature requirements from plan.md
   - Entities from data-model.md
@@ -156,7 +156,7 @@ Examples of foundational tasks (adjust based on your project):
 - [ ] TXXX Performance optimization across all stories
 - [ ] TXXX [P] Additional unit tests (if requested) in tests/unit/
 - [ ] TXXX Security hardening
-- [ ] TXXX **(Release-only)** End-user verification in `..\test_specify_superpower` per constitution §"End-User Verification Sandbox": fresh `specify init` → install from published release URL → drive one full bridge cycle per supported platform → record outcome in feature's `quickstart.md` or `verification.md`.
+- [ ] TXXX **(Release-only)** End-user verification in `..\test_specify_superpower` per constitution §"End-User Verification Sandbox": fresh `specify init` → install from published release URL → drive one full bridge cycle per supported platform → record outcome in the feature's `quickstart.md` or `verification.md`.
 - [ ] TXXX Run quickstart.md validation
 
 ---

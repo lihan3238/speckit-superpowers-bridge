@@ -40,6 +40,19 @@ check_file() {
         || fail "$label: missing 'before_implement' reference"
     grep -q 'after_implement' "$f" \
         || fail "$label: missing 'after_implement' reference"
+    grep -q 'malformed' "$f" \
+        || fail "$label: missing malformed extensions registry behavior"
+    grep -q 'parser error' "$f" \
+        || fail "$label: missing parser-error reporting contract"
+    grep -q 'no hooks were checked' "$f" \
+        || fail "$label: missing explicit no-hooks-checked warning"
+    grep -q 'Task N' "$f" \
+        || fail "$label: missing Superpowers Task N adapter contract"
+    grep -q 'stable repository/feature-derived' "$f" \
+        || fail "$label: missing stable adapter path contract"
+    if grep -q 'skip silently if missing or invalid' "$f"; then
+        fail "$label: retains obsolete malformed-registry silent-skip wording"
+    fi
     grep -q 'Skip any hook whose `extension` is `speckit-superpowers-bridge`' "$f" \
         || fail "$label: missing skip-own-guard rule (extension is speckit-superpowers-bridge)"
     grep -q 'before the handoff transitions to `executing`' "$f" \
