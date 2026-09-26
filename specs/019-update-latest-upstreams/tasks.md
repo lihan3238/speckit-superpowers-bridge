@@ -55,9 +55,9 @@
 - [x] T017 [P] [US3] Update `.specify/extensions/speckit-superpowers-bridge/verified-versions.json` with v1.0.12/v6.4.2 evidence, current Codex/Claude versions, and honest platform statuses
 - [x] T018 [P] [US3] Add the v1.3.0 changelog section and refresh version/baseline/maintenance/install claims in `README.md` and `README.zh-CN.md`
 - [x] T019 [US3] Run `bash tests/run-all.sh`, release-readiness self-tests, source validator, deterministic ZIP build, package smoke, and candidate-ZIP validation; record outputs and SHA256 in `specs/019-update-latest-upstreams/verification.md`
-- [ ] T020 [US3] Install the published v1.3.0 ZIP in `../test_specify_superpower` for each locally available supported platform, drive a full bridge cycle, and record artifact SHA256 and result in `specs/019-update-latest-upstreams/verification.md`
-- [ ] T021 [US3] Run or await the hosted macOS release gate and label unavailable native evidence honestly in `specs/019-update-latest-upstreams/verification.md`
-- [ ] T022 [US3] Commit the release, create tag `v1.3.0`, publish both versioned and stable-alias assets, and verify their reachability before transitioning the handoff
+- [x] T020 [US3] Install the published v1.3.0 ZIP in `../test_specify_superpower` for each locally available supported platform, drive a full bridge cycle, and record artifact SHA256 and result in `specs/019-update-latest-upstreams/verification.md`
+- [x] T021 [US3] Run or await the hosted macOS release gate and label unavailable native evidence honestly in `specs/019-update-latest-upstreams/verification.md`
+- [x] T022 [US3] Commit the release, create tag `v1.3.0`, publish both versioned and stable-alias assets, and verify their reachability before transitioning the handoff
 
 **Checkpoint**: v1.3.0 is installable, evidence-backed, and consistent across all release files.
 
@@ -65,7 +65,7 @@
 
 - [x] T023 [P] Update `docs/release-runbook.md` and `AGENTS.md` with the v1.0.12/v6.4.2 baseline and any changed upstream operational notes
 - [x] T024 Run `git diff --check`, shell syntax checks, targeted ShellCheck, and final command/hook/schema/runtime-floor invariant audit; complete `specs/019-update-latest-upstreams/verification.md`
-- [ ] T025 Transition `.specify/superpowers-handoff.json` to `complete` only after mandatory post-implementation hooks and all non-deferred tasks are complete
+- [x] T025 Transition `.specify/superpowers-handoff.json` to `complete` only after mandatory post-implementation hooks and all non-deferred tasks are complete
 
 ## Dependencies & Execution Order
 

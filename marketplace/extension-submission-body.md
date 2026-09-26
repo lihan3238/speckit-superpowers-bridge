@@ -109,7 +109,7 @@ bridge, superpowers, cross-agent, tdd, workflow
 | Target | Result | Evidence |
 |---|---|---|
 | Linux bash | PASS | `bash tests/run-all.sh` (9/9) on Spec Kit 1.0.12, source/package validators, and the public-v1.3.0 WSL2 sandbox cycle. |
-| Windows PowerShell 5.1+ | PASS | Native `tests/test-release-powershell.ps1`, readiness validation, and the public-v1.3.0 Windows sandbox cycle. |
+| Windows PowerShell 5.1+ | PASS | Native `tests/test-release-powershell.ps1`, readiness validation, and the public-v1.3.0 Windows sibling sandbox cycle (`v1-3-0-windows-20260926T111613Z`). |
 | macOS bash | PASS | GitHub-hosted native macOS release gate runs the full bash suite and the Issue #13 portability regression; no local public-artifact sandbox claim. |
 | Codex | PASS | v1.3.0 implementation, source verification, and public-artifact cycle with Codex CLI `0.157.1`. |
 | Claude Code | PASS | Claude Code `2.1.283` integration/skill contract verification recorded in the v1.3.0 feature evidence. |

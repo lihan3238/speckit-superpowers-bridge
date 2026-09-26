@@ -17,18 +17,18 @@
     {
       "name": "Windows PowerShell",
       "script_flavor": "ps",
-      "status": "release-gated",
+      "status": "passed",
       "spec_kit_version": "1.0.12",
       "evidence": "specs/019-update-latest-upstreams/verification.md",
-      "notes": "The v1.3.0 release workflow requires the native Windows PowerShell smoke and readiness self-tests before publication. Public-ZIP sandbox evidence is recorded after release; prior v1.0.0 runtime-floor evidence remains historical only."
+      "notes": "Fresh Windows sibling sandbox `v1-3-0-windows-20260926T111613Z` passed the public ZIP cycle; hosted release gate and readiness self-tests also pass."
     },
     {
       "name": "macOS bash",
       "script_flavor": "sh",
-      "status": "release-gated",
+      "status": "passed",
       "spec_kit_version": "1.0.12",
-      "evidence": ".github/workflows/release.yml and specs/019-update-latest-upstreams/verification.md",
-      "notes": "Issue #13 is covered by a macOS-hosted release job plus a BSD-style realpath regression that exercises missing components and repository-external symlink targets. No local native macOS public-artifact sandbox claim is made."
+      "evidence": "specs/019-update-latest-upstreams/verification.md",
+      "notes": "The macOS-hosted release job passed the full Bash suite and BSD-style realpath regression. No local native macOS public-artifact sandbox claim is made."
     }
   ],
   "agents": [
@@ -49,5 +49,5 @@
       "notes": "The installed Claude integration is current for the recorded local baseline, Spec Kit reports no managed-file drift, and the project-owned Claude/Codex bridge skill parity contract passes. Any bounded live-agent result is recorded separately in the feature verification file."
     }
   ],
-  "notes": "v1.3.0 aligns the tracked Spec Kit baseline to 1.0.12 and the audited Superpowers baseline to 6.4.2. It reports malformed extension registries per the current Spec Kit hook contract and adapts checkbox-based Spec Kit tasks to the Task N headings required by Superpowers 6.4.2 using disposable execution scaffolding. The bridge preserves three commands, five hooks, handoff v1, guard rules, actor semantics, the stable-alias URL, and the >=0.8.10 runtime floor."
+  "notes": "v1.3.0 aligns the tracked Spec Kit baseline to 1.0.12 and the audited Superpowers baseline to 6.4.2. It reports malformed extension registries per the current Spec Kit hook contract and adapts checkbox-based Spec Kit tasks to the Task N headings required by Superpowers 6.4.2 using disposable execution scaffolding. The v1.3.0 public ZIP passed Linux, Windows, and macOS release gates; the WSL2 sibling sandbox completed a full handoff cycle. The bridge preserves three commands, five hooks, handoff v1, guard rules, actor semantics, the stable-alias URL, and the >=0.8.10 runtime floor."
 }
