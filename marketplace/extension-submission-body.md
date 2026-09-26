@@ -28,13 +28,9 @@ https://github.com/lihan3238/speckit-superpowers-bridge
 
 ### Download URL
 
-https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip
-
-Version-pinned artifact:
-
 https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.3.0/speckit-superpowers-bridge-v1.3.0.zip
 
-The catalog `download_url` intentionally remains the stable latest-release alias. Since v0.6.0 every release uploads both the versioned ZIP and `speckit-superpowers-bridge.zip`; future catalog updates should bump only `version` unless the distribution policy changes.
+The source repository's marketplace metadata keeps the stable latest-release alias for convenience. The official Spec Kit catalog submission uses this immutable versioned ZIP URL, as required for reproducible catalog installs.
 
 ### License
 
@@ -112,7 +108,7 @@ bridge, superpowers, cross-agent, tdd, workflow
 | Windows PowerShell 5.1+ | PASS | Native `tests/test-release-powershell.ps1`, readiness validation, and the public-v1.3.0 Windows sibling sandbox cycle (`v1-3-0-windows-20260926T111613Z`). |
 | macOS bash | PASS | GitHub-hosted native macOS release gate runs the full bash suite and the Issue #13 portability regression; no local public-artifact sandbox claim. |
 | Codex | PASS | v1.3.0 implementation, source verification, and public-artifact cycle with Codex CLI `0.157.1`. |
-| Claude Code | PASS | Claude Code `2.1.283` integration/skill contract verification recorded in the v1.3.0 feature evidence. |
+| Claude Code | PASS | Claude Code `2.1.283` integration/skill contract verification recorded in the v1.3.0 feature evidence; the official Claude marketplace currently serves Superpowers `6.4.1`, while the upstream `6.4.2` source audit passes. |
 
 ### Release Validation Summary
 
@@ -121,7 +117,7 @@ bridge, superpowers, cross-agent, tdd, workflow
 - `bash tests/run-all.sh` passes.
 - `tests/test-release-powershell.ps1` passes under Windows PowerShell.
 - The macOS-hosted release gate passes the full bash suite and focused handoff portability regression.
-- Final v1.3.0 ZIP SHA256 is recorded in the GitHub release notes for both the versioned ZIP and the stable latest alias.
+- GitHub release asset API reports both ZIPs at 83,891 bytes with SHA256 `2caba4377f003a6229585f1d559de6dedc1d5654e7f2566dcf9b98462c154525`; hosted workflow [36237907349](https://github.com/lihan3238/speckit-superpowers-bridge/actions/runs/36237907349) passed all platform gates.
 
 ### Lightweight Positioning
 
@@ -163,10 +159,10 @@ Test scenarios:
 1. Audited Spec Kit v1.0.12; refreshed tracked templates and bundled extension sources while preserving project-owned gates and bridge skills.
 2. Audited Superpowers `6.4.2`; confirmed all invoked skill paths and the Task N adapter contract remain present.
 3. Ran the full bash smoke suite (9/9), focused hook contract tests, the macOS/BSD path regression, shell syntax checks, and ShellCheck.
-4. Registered the v1.3.0 bridge from a safe temporary `--dev` copy in the source checkout; installed metadata reported Category: process, Effect: read-write, 3 commands, and 5 hooks.
+4. Installed the public v1.3.0 ZIP in fresh WSL2/Linux and native Windows sibling sandboxes; the installed metadata reported 3 commands and 5 hooks.
 5. Ran package and release-readiness validators plus native Windows PowerShell coverage.
 6. Required Linux, Windows, and macOS release jobs to pass before publication.
-7. Installed the public v1.3.0 ZIP in the WSL2 and Windows sibling sandboxes and drove complete handoff cycles, including synthetic implement hooks.
+7. Drove complete handoff cycles in both sibling sandboxes; focused hook and adapter contract tests covered the markdown-driven hook behavior.
 
 ### Example Usage
 
@@ -196,7 +192,7 @@ Claude Code users invoke the same bridge contract as:
     "description": "Thin orchestrator between Spec Kit (design) and Superpowers (implementation). Cross-agent.",
     "author": "lihan3238",
     "version": "1.3.0",
-    "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/latest/download/speckit-superpowers-bridge.zip",
+    "download_url": "https://github.com/lihan3238/speckit-superpowers-bridge/releases/download/v1.3.0/speckit-superpowers-bridge-v1.3.0.zip",
     "repository": "https://github.com/lihan3238/speckit-superpowers-bridge",
     "homepage": "https://github.com/lihan3238/speckit-superpowers-bridge",
     "documentation": "https://github.com/lihan3238/speckit-superpowers-bridge#readme",
@@ -239,7 +235,7 @@ Claude Code users invoke the same bridge contract as:
     "downloads": 0,
     "stars": 0,
     "created_at": "2026-05-15T00:00:00Z",
-    "updated_at": "2026-09-26T10:51:04Z"
+    "updated_at": "2026-09-26T00:00:00Z"
   }
 }
 ```
