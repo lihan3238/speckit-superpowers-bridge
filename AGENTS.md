@@ -175,12 +175,18 @@ one and fails the workflow on any miss (v1.0.3 failed its first tag run
 because the two `marketplace/` files still carried the prior version):
 
 1. `.specify/extensions/speckit-superpowers-bridge/extension.yml` — `extension.version`
-2. `marketplace/catalog-entry.json` — `version` + `updated_at` (`download_url` stays the stable alias; never edit it)
-3. `CHANGELOG.md` — new `## [X.Y.Z]` section
-4. `.specify/extensions/speckit-superpowers-bridge/verified-versions.json` — `bridge_version` + refreshed evidence rows
-5. `README.md` + `README.zh-CN.md` — version badges, maintenance section, version-pinned install example
-6. `marketplace/extensions-readme-row.md` — version string in the support summary
-7. `marketplace/extension-submission-body.md` — `### Version`, baseline, support matrix, Proposed Catalog Entry (incl. `updated_at`)
+2. `extension.yml` — byte-identical catalog-facing copy of the bridge manifest
+3. `marketplace/catalog-entry.json` — `version` + `updated_at` (`download_url` stays the stable alias; never edit it)
+4. `CHANGELOG.md` — new `## [X.Y.Z]` section
+5. `.specify/extensions/speckit-superpowers-bridge/verified-versions.json` — `bridge_version` + refreshed evidence rows
+6. `README.md` + `README.zh-CN.md` — version badges, maintenance section, version-pinned install example
+7. `marketplace/extensions-readme-row.md` — version string in the support summary
+8. `marketplace/extension-submission-body.md` — `### Version`, baseline, support matrix, Proposed Catalog Entry (incl. `updated_at`)
+
+The root `extension.yml` exists for the upstream community-catalog validator; the
+nested copy remains the source used by this repository's Spec Kit bootstrap and
+release builders. The release readiness validator and package smoke test require
+the two files to remain byte-identical.
 
 If the release gate fails on a tag: fix on a branch, merge to main, then
 re-point the tag (`git tag -f vX.Y.Z <merge-sha> && git push -f origin vX.Y.Z`)

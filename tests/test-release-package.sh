@@ -23,6 +23,7 @@ assert_dir() {
 printf 'release-package: checking source package inventory\n'
 
 assert_file ".specify/extensions/speckit-superpowers-bridge/extension.yml"
+assert_file "extension.yml"
 assert_file ".specify/extensions/speckit-superpowers-bridge/verified-versions.json"
 assert_dir ".specify/extensions/speckit-superpowers-bridge/commands"
 assert_dir ".specify/extensions/speckit-superpowers-bridge/scripts/bash"
@@ -32,6 +33,9 @@ assert_file "README.zh-CN.md"
 assert_file "CHANGELOG.md"
 assert_file "LICENSE"
 assert_file ".gitattributes"
+
+cmp -s "$REPO_ROOT/extension.yml" "$BRIDGE_DIR/extension.yml" ||
+    fail "root extension.yml is out of sync with the bridge source manifest"
 
 command -v jq >/dev/null 2>&1 || fail "jq is required for package smoke checks"
 command -v python3 >/dev/null 2>&1 || fail "python3 is required for package smoke checks"

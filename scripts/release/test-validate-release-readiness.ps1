@@ -19,6 +19,7 @@ function New-FakeRepo {
         [int]$BashCount = 6,
         [string]$GitAttributesContent = "*.sh text eol=lf`n*.ps1 text eol=crlf`n",
         [string]$WorkflowContent = "name: Release`nsteps:`n  - run: bash scripts/release/build-extension-zip.sh --version 9.9.9`n  - run: bash tests/run-all.sh`n",
+        [bool]$IncludeRootManifest = $true,
         [bool]$IncludeVerifiedVersions = $true,
         [bool]$IncludeCodexRow = $true,
         [bool]$IncludeClaudeRow = $true,
@@ -69,6 +70,9 @@ hooks:
   after_tasks:
     command: $HookNamespace.handoff
 "@ | Set-Content -LiteralPath (Join-Path $bridgeDir "extension.yml") -Encoding UTF8
+    if ($IncludeRootManifest) {
+        Copy-Item -LiteralPath (Join-Path $bridgeDir "extension.yml") -Destination (Join-Path $root "extension.yml")
+    }
 
     foreach ($cmd in @("handoff", "guard", "execute")) {
         Set-Content -LiteralPath (Join-Path $cmdDir "speckit.speckit-superpowers-bridge.$cmd.md") -Value "# $cmd" -Encoding UTF8
@@ -329,6 +333,22 @@ $cases = @(
         Repo = { New-FakeRepo -Version $targetVersion }
         ExpectFail = $false
         ExpectsInOutput = @()
+    },
+    @{
+        Name = "missing root extension manifest -> fail naming root extension.yml"
+        Repo = { New-FakeRepo -Version $targetVersion -IncludeRootManifest $false }
+        ExpectFail = $true
+        ExpectsInOutput = @("root extension.yml")
+    },
+    @{
+        Name = "root extension manifest drift -> fail naming sync"
+        Repo = {
+            $repo = New-FakeRepo -Version $targetVersion
+            Add-Content -LiteralPath (Join-Path $repo "extension.yml") -Value "# drift"
+            return $repo
+        }
+        ExpectFail = $true
+        ExpectsInOutput = @("root extension.yml is out of sync")
     },
     @{
         Name = "extension.yml version mismatch -> fail naming extension.yml"
