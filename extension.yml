@@ -1,0 +1,70 @@
+schema_version: "1.0"
+
+extension:
+  id: speckit-superpowers-bridge
+  name: "Superpowers Implementation Bridge"
+  version: "1.3.0"
+  description: "Thin orchestrator between Spec Kit (design) and Superpowers (implementation). Cross-agent."
+  author: "lihan3238"
+  repository: "https://github.com/lihan3238/speckit-superpowers-bridge"
+  homepage: "https://github.com/lihan3238/speckit-superpowers-bridge"
+  documentation: "https://github.com/lihan3238/speckit-superpowers-bridge#readme"
+  license: MIT
+  category: process
+  effect: read-write
+
+requires:
+  speckit_version: ">=0.8.10"
+  tools:
+    - name: "powershell"
+      version: ">=5.1"
+      required: false
+    - name: "bash"
+      version: ">=4.0"
+      required: false
+    - name: "jq"
+      version: ">=1.6"
+      required: false
+
+provides:
+  commands:
+    - name: speckit.speckit-superpowers-bridge.handoff
+      file: commands/speckit.speckit-superpowers-bridge.handoff.md
+      description: "Create or update the Superpowers implementation handoff state"
+    - name: speckit.speckit-superpowers-bridge.guard
+      file: commands/speckit.speckit-superpowers-bridge.guard.md
+      description: "Guard Spec Kit and Superpowers commands from crossing bridge ownership boundaries"
+    - name: speckit.speckit-superpowers-bridge.execute
+      file: commands/speckit.speckit-superpowers-bridge.execute.md
+      description: "Execute Spec Kit tasks through the Superpowers bridge"
+      aliases:
+        - speckit.superpowers-bridge
+
+hooks:
+  before_clarify:
+    command: speckit.speckit-superpowers-bridge.guard
+    optional: false
+    description: "Prevent Spec Kit contract changes while Superpowers implementation is executing"
+  before_plan:
+    command: speckit.speckit-superpowers-bridge.guard
+    optional: false
+    description: "Prevent Spec Kit contract changes while Superpowers implementation is executing"
+  before_tasks:
+    command: speckit.speckit-superpowers-bridge.guard
+    optional: false
+    description: "Prevent Spec Kit contract changes while Superpowers implementation is executing"
+  before_implement:
+    command: speckit.speckit-superpowers-bridge.guard
+    optional: false
+    description: "Block speckit.implement for features handed off to Superpowers"
+  after_tasks:
+    command: speckit.speckit-superpowers-bridge.handoff
+    optional: false
+    description: "Create the Superpowers handoff after Spec Kit task generation"
+
+tags:
+  - bridge
+  - superpowers
+  - cross-agent
+  - tdd
+  - workflow

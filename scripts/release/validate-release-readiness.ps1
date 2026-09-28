@@ -125,9 +125,18 @@ if (-not (Test-Path -LiteralPath $RepoRoot)) {
 
 $problems = New-Object System.Collections.Generic.List[string]
 
-# 1. extension.yml version matches
+# 1. extension.yml version matches and the catalog-facing root copy stays in sync
 $extYml = Join-Path $RepoRoot ".specify/extensions/speckit-superpowers-bridge/extension.yml"
 $manifest = Get-RequiredText -Path $extYml -Problems $problems -Label "extension.yml"
+$rootExtYml = Join-Path $RepoRoot "extension.yml"
+$rootManifest = Get-RequiredText -Path $rootExtYml -Problems $problems -Label "root extension.yml"
+if ($manifest -ne $null -and $rootManifest -ne $null) {
+    $sourceHash = (Get-FileHash -LiteralPath $extYml -Algorithm SHA256).Hash
+    $rootHash = (Get-FileHash -LiteralPath $rootExtYml -Algorithm SHA256).Hash
+    if ($sourceHash -ne $rootHash) {
+        Add-Problem $problems "root extension.yml is out of sync with $extYml"
+    }
+}
 $extensionId = $null
 if ($manifest -ne $null) {
     $pattern = "version:\s*[`"']?$([regex]::Escape($Version))[`"']?\b"

@@ -5,7 +5,9 @@
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
-TASKS="$REPO_ROOT/specs/019-update-latest-upstreams/tasks.md"
+# Use a stable fixture so this contract test remains meaningful after the
+# current feature's tasks.md reaches its terminal all-checked state.
+TASKS="$REPO_ROOT/tests/fixtures/tasks-with-pending.md"
 CODEX_SKILL="$REPO_ROOT/.agents/skills/speckit-superpowers-bridge/SKILL.md"
 EXECUTE_MD="$REPO_ROOT/.specify/extensions/speckit-superpowers-bridge/commands/speckit.speckit-superpowers-bridge.execute.md"
 

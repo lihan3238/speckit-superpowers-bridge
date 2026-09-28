@@ -11,19 +11,20 @@
 - Required scripts present: `tests/run-all.sh`, `tests/test-release-package.sh`, `tests/test-release-powershell.ps1`, `scripts/release/validate-release-readiness.ps1`, `scripts/release/test-validate-release-readiness.ps1`, `scripts/release/build-extension-zip.sh`, and the Windows fallback `scripts/release/build-extension-zip.ps1`.
 - Native Windows PowerShell 5.1+ is available for the Windows gate. WSL bash is valid Linux evidence only; it does not satisfy the Windows row.
 
-## Step 1 — Bump version (all seven file groups)
+## Step 1 — Bump version (all eight file groups)
 
 The tag-triggered release gate validates every file below and fails the
 workflow on any miss (v1.0.3's first tag run failed on stale `marketplace/`
 files). Bump ALL of them in the same release commit:
 
 1. `.specify/extensions/speckit-superpowers-bridge/extension.yml` — `extension.version`
-2. `marketplace/catalog-entry.json` — `version` + `updated_at`
-3. `CHANGELOG.md` — new section (Step 2)
-4. `.specify/extensions/speckit-superpowers-bridge/verified-versions.json` — `bridge_version` + evidence rows (Step 3)
-5. `README.md` + `README.zh-CN.md` — version badges, maintenance section, version-pinned install example
-6. `marketplace/extensions-readme-row.md` — version string in the support summary
-7. `marketplace/extension-submission-body.md` — `### Version`, verified baseline, support matrix, Release Validation Summary, Submission Requirements release link, Proposed Catalog Entry (`version` + `updated_at`)
+2. `extension.yml` — byte-identical root copy for the upstream catalog validator
+3. `marketplace/catalog-entry.json` — `version` + `updated_at`
+4. `CHANGELOG.md` — new section (Step 2)
+5. `.specify/extensions/speckit-superpowers-bridge/verified-versions.json` — `bridge_version` + evidence rows (Step 3)
+6. `README.md` + `README.zh-CN.md` — version badges, maintenance section, version-pinned install example
+7. `marketplace/extensions-readme-row.md` — version string in the support summary
+8. `marketplace/extension-submission-body.md` — `### Version`, verified baseline, support matrix, Release Validation Summary, Submission Requirements release link, Proposed Catalog Entry (`version` + `updated_at`)
 
 Edit `.specify/extensions/speckit-superpowers-bridge/extension.yml`:
 
@@ -41,7 +42,7 @@ Edit `marketplace/catalog-entry.json`:
 
 Leave `marketplace/catalog-entry.json.download_url` alone; it permanently points at the GitHub latest-release alias.
 
-**Verify**: `grep -E '^  version:' .specify/extensions/speckit-superpowers-bridge/extension.yml` reports the new value, `jq -r '.version' marketplace/catalog-entry.json` reports the same value, and `grep -rn '<previous-version>' README.md README.zh-CN.md marketplace/extensions-readme-row.md marketplace/extension-submission-body.md` returns no live-claim hits (historical "New in vX" feature notes are fine).
+**Verify**: `grep -E '^  version:' .specify/extensions/speckit-superpowers-bridge/extension.yml` and `grep -E '^  version:' extension.yml` report the new value, `cmp extension.yml .specify/extensions/speckit-superpowers-bridge/extension.yml` succeeds, `jq -r '.version' marketplace/catalog-entry.json` reports the same value, and `grep -rn '<previous-version>' README.md README.zh-CN.md marketplace/extensions-readme-row.md marketplace/extension-submission-body.md` returns no live-claim hits (historical "New in vX" feature notes are fine).
 
 ## Step 2 — Update CHANGELOG
 

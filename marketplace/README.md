@@ -19,10 +19,11 @@ Per the upstream [EXTENSION-PUBLISHING-GUIDE](https://github.com/github/spec-kit
 **Manual pre-tag steps (do these all in one commit on `main`):**
 
 1. Bump `.specify/extensions/speckit-superpowers-bridge/extension.yml` -> `extension.version: "X.Y.Z"`.
-2. Bump `marketplace/catalog-entry.json` -> `"version": "X.Y.Z"` and leave `download_url` on the stable latest-release alias.
-3. Add a `## [X.Y.Z] - <date>` section to `CHANGELOG.md` (this becomes the GitHub release notes).
-4. Commit + push to `main`.
-5. Verify locally before tagging:
+2. Copy the nested manifest to the repository-root `extension.yml`; the two files must remain byte-identical.
+3. Bump `marketplace/catalog-entry.json` -> `"version": "X.Y.Z"` and leave `download_url` on the stable latest-release alias.
+4. Add a `## [X.Y.Z] - <date>` section to `CHANGELOG.md` (this becomes the GitHub release notes).
+5. Commit + push to `main`.
+6. Verify locally before tagging:
    ```powershell
    .\scripts\release\validate-release-readiness.ps1 -Version X.Y.Z
    ```
@@ -84,7 +85,7 @@ As of v0.5.0, **v0.4.2** is the minimum supported direct-upgrade source. Users o
 
 ## Why hand-built ZIP (not auto-archive)?
 
-Some canonical catalog entries use the GitHub auto-generated archive at `archive/refs/tags/vX.Y.Z.zip`. Those repos place `extension.yml` at the repo root. **Our repo doesn't**: the bridge content lives under `.specify/extensions/speckit-superpowers-bridge/` because the repo is also a Spec Kit dev environment used to dogfood the bridge on itself. The hand-built ZIP from `scripts/release/build-extension-zip.sh` produces a standard extension ZIP tree (extension.yml at top, plus commands/, scripts/, LICENSE, README) so the catalog install path works without restructuring the source repo. `scripts/release/build-extension-zip.ps1` remains as a Windows fallback, but CI builds through bash.
+Some canonical catalog entries use the GitHub auto-generated archive at `archive/refs/tags/vX.Y.Z.zip`. This repository keeps its Spec Kit development copy under `.specify/extensions/speckit-superpowers-bridge/`, while the root-level `extension.yml` is a byte-identical catalog-validation copy. The hand-built ZIP from `scripts/release/build-extension-zip.sh` still stages the nested source manifest at the archive root, along with `commands/`, `scripts/`, `LICENSE`, and `README`, so the catalog install path remains independent of the repository's development layout. `scripts/release/build-extension-zip.ps1` remains as a Windows fallback, but CI builds through bash.
 
 ## Cross-platform ZIP
 
